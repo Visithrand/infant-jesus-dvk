@@ -3,17 +3,19 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, Mail, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import schoolLogo from "@/assets/school-logo.png";
+import herocampus from "@/assets/hero-campus.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
-    { name: "Home", href: "#home" },
+    { name: "Home", href: "/" },
     { name: "About", href: "#about" },
     { name: "Academics", href: "#academics" },
     { name: "Admissions", href: "#admissions" },
     { name: "Facilities", href: "#facilities" },
-    { name: "Contact", href: "#contact" },
+    { name: "Celebrations", href: "/celebrations" },
+    { name: "Contact", href: "/contact" },
   ];
 
   return (
@@ -24,7 +26,7 @@ const Header = () => {
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <Phone className="h-4 w-4" />
-              <span>+91 123 456 7890</span>
+              <span>8220092495</span>
             </div>
             <div className="flex items-center space-x-2">
               <Mail className="h-4 w-4" />
@@ -33,7 +35,7 @@ const Header = () => {
           </div>
           <div className="flex items-center space-x-2">
             <MapPin className="h-4 w-4" />
-            <span>Karamadai, Coimbatore, Tamil Nadu</span>
+            <span>DEVAKOTTAI, sivagangai, 630302</span>
           </div>
         </div>
       </div>

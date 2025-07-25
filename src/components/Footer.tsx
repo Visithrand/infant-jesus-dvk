@@ -1,15 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin, ArrowUp } from "lucide-react";
 import schoolLogo from "@/assets/school-logo.png";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   const quickLinks = [
-    { name: "About Us", href: "#about" },
-    { name: "Academic Programs", href: "#academics" },
-    { name: "Admissions", href: "#admissions" },
-    { name: "Facilities", href: "#facilities" },
-    { name: "Contact", href: "#contact" },
-    { name: "Alumni", href: "#alumni" }
+    { name: "About Us", href: "/#about" },
+    { name: "Academic Programs", href: "/#academics" },
+    { name: "Admissions", href: "/#admissions" },
+    { name: "Facilities", href: "/#facilities" },
+    { name: "Contact", href: "/contact" },
+    { name: "Alumni", href: "/#alumni" }
   ];
 
   const programs = [
@@ -77,12 +78,12 @@ const Footer = () => {
             <ul className="space-y-3">
               {quickLinks.map((link, index) => (
                 <li key={index}>
-                  <a 
-                    href={link.href}
+                  <Link
+                    to={link.href}
                     className="text-primary-foreground/80 hover:text-accent transition-colors duration-300"
                   >
                     {link.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -114,14 +115,14 @@ const Footer = () => {
                 <div>
                   <p className="text-primary-foreground/80">
                     Infant Jesus Matric Higher Secondary School<br />
-                    Karamadai, Coimbatore<br />
-                    Tamil Nadu - 641104
+                    DEVAKOTTAI, sivagangai<br />
+                    630302
                   </p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-accent flex-shrink-0" />
-                <span className="text-primary-foreground/80">+91 123 456 7890</span>
+                <span className="text-primary-foreground/80">8220092495</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-accent flex-shrink-0" />

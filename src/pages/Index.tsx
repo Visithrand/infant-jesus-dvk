@@ -7,6 +7,7 @@ import Admissions from "@/components/Admissions";
 import ParentPortal from "@/components/ParentPortal";
 import Footer from "@/components/Footer";
 import LiveEventPopup from "@/components/LiveEventPopup";
+import Facilities from "@/components/Facilities";
 
 const Index = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -23,11 +24,14 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <Header />
-      <Hero />
-      <About />
-      <Programs />
-      <Admissions />
-      <ParentPortal />
+      <div className="space-y-12">
+        <Hero />
+        <About />
+        <Programs />
+        <Admissions />
+        <Facilities />
+        <ParentPortal />
+      </div>
       <Footer />
       {showPopup && <LiveEventPopup />}
     </div>

@@ -54,11 +54,18 @@ const LiveEventPopup = () => {
     }
   ];
 
+  const admissionsImage = "https://infantjesusdvk.org/wp-content/uploads/2023/10/WhatsApp-Image-2023-10-18-at-7.05.45-PM.jpeg";
+
   if (!isVisible) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <Card className="max-w-md w-full bg-white shadow-xl border-2 border-primary">
+        {/* Admissions Open Banner */}
+        <div className="flex flex-col items-center bg-green-100 p-3 border-b border-green-300">
+          <img src={admissionsImage} alt="Admissions Open" className="w-full h-30 max-h-28 object-cover rounded mb-2" />
+          <span className="text-lg font-bold text-green-800">Admissions Open!</span>
+        </div>
         {/* Header */}
         <div className="bg-hero-gradient text-white p-4 rounded-t-lg relative">
           <Button
