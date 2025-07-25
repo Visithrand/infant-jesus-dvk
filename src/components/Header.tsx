@@ -28,7 +28,7 @@ const Header = () => {
             </div>
             <div className="flex items-center space-x-2">
               <Mail className="h-4 w-4" />
-              <span>info@vvinscbe.ac.in</span>
+              <span>info@infantjesusschool.ac.in</span>
             </div>
           </div>
           <div className="flex items-center space-x-2">
@@ -46,12 +46,12 @@ const Header = () => {
             <div className="flex items-center space-x-4">
               <img 
                 src={schoolLogo} 
-                alt="VVINS CBE Logo" 
+                alt="Infant Jesus School Logo" 
                 className="h-12 w-12 object-contain"
               />
               <div>
                 <h1 className="text-xl font-bold text-foreground">
-                  VVINS College of Business Excellence
+                  INFANT JESUS MATRIC HIGHER SECONDARY SCHOOL
                 </h1>
                 <p className="text-sm text-muted-foreground">
                   Excellence in Education

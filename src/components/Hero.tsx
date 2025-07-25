@@ -23,7 +23,7 @@ const Hero = () => {
             <span className="text-accent"> Leaders</span>
           </h1>
           <p className="text-xl md:text-2xl mb-8 text-white/90 max-w-3xl mx-auto">
-            VVINS College of Business Excellence - Where academic excellence meets 
+            Infant Jesus Matric Higher Secondary School - Where academic excellence meets 
             innovation, nurturing students to become global leaders and change-makers.
           </p>
 

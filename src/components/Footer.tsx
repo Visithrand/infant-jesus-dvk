@@ -43,16 +43,16 @@ const Footer = () => {
             <div className="flex items-center space-x-4">
               <img 
                 src={schoolLogo} 
-                alt="VVINS CBE Logo" 
+                alt="Infant Jesus School Logo" 
                 className="h-12 w-12 object-contain"
               />
               <div>
-                <h3 className="text-xl font-bold">VVINS CBE</h3>
+                <h3 className="text-xl font-bold">Infant Jesus School</h3>
                 <p className="text-sm text-primary-foreground/80">Excellence in Education</p>
               </div>
             </div>
             <p className="text-primary-foreground/80 leading-relaxed">
-              Nurturing minds, shaping futures. VVINS College of Business Excellence 
+              Nurturing minds, shaping futures. Infant Jesus Matric Higher Secondary School 
               has been a beacon of quality education for over two decades.
             </p>
             <div className="flex space-x-4">
@@ -113,7 +113,7 @@ const Footer = () => {
                 <MapPin className="h-5 w-5 text-accent flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="text-primary-foreground/80">
-                    VVINS College of Business Excellence<br />
+                    Infant Jesus Matric Higher Secondary School<br />
                     Karamadai, Coimbatore<br />
                     Tamil Nadu - 641104
                   </p>
@@ -125,7 +125,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-accent flex-shrink-0" />
-                <span className="text-primary-foreground/80">info@vvinscbe.ac.in</span>
+                <span className="text-primary-foreground/80">info@infantjesusschool.ac.in</span>
               </div>
             </div>
           </div>
@@ -135,7 +135,7 @@ const Footer = () => {
         <div className="border-t border-white/20 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-primary-foreground/80 text-sm">
-              © 2024 VVINS College of Business Excellence. All rights reserved.
+              © 2024 Infant Jesus Matric Higher Secondary School. All rights reserved.
             </p>
             <div className="flex space-x-6 text-sm">
               <a href="#" className="text-primary-foreground/80 hover:text-accent transition-colors">

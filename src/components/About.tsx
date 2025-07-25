@@ -27,7 +27,7 @@ const About = () => {
 
   const achievements = [
     "NAAC A+ Accredited Institution",
-    "Top 10 CBSE Schools in Coimbatore",
+    "Top Matriculation School in Coimbatore",
     "100% University Placement Record",
     "State-of-the-art Infrastructure",
     "Award-winning Faculty Team",
@@ -44,7 +44,7 @@ const About = () => {
               About Our Institution
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              For over two decades, VVINS College of Business Excellence has been 
+              For over two decades, Infant Jesus Matric Higher Secondary School has been 
               a beacon of quality education, nurturing minds and shaping futures 
               with our commitment to academic excellence and holistic development.
             </p>
