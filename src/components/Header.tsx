@@ -5,21 +5,26 @@ import { cn } from "@/lib/utils";
 import schoolLogo from "@/assets/school-logo.png";
 import herocampus from "@/assets/hero-campus.png";
 
-const Header = () => {
+const Header = ({ setActiveSection }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
-    { name: "Home", href: "/" },
-    { name: "About", href: "#about" },
-    { name: "Academics", href: "#academics" },
-    { name: "Admissions", href: "#admissions" },
-    { name: "Facilities", href: "#facilities" },
-    { name: "Celebrations", href: "/celebrations" },
-    { name: "Contact", href: "/contact" },
+    { name: "Home", section: "home" },
+    { name: "About", section: "about" },
+    { name: "Academics", section: "programs" }, // Assuming Academics corresponds to Programs component
+    { name: "Admissions", section: "admissions" },
+    { name: "Facilities", section: "facilities" },
+    { name: "Celebrations", href: "/celebrations" }, // These will still be links to other pages
+    { name: "Contact", href: "/contact" }, // These will still be links to other pages
   ];
 
+  const handleNavClick = (section) => {
+    setActiveSection(section);
+    setIsMenuOpen(false); // Close mobile menu on click
+  };
+
   return (
-    <>
+    <> секретарь
       {/* Top Contact Bar */}
       <div className="bg-primary text-primary-foreground py-2 px-4">
         <div className="container mx-auto flex flex-wrap items-center justify-between text-sm">
@@ -34,7 +39,7 @@ const Header = () => {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <MapPin className="h-4 w-4" />
+            <MapPin className="h-4 w-4 mr-2" />
             <span>DEVAKOTTAI, sivagangai, 630302</span>
           </div>
         </div>
@@ -64,13 +69,23 @@ const Header = () => {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-6">
               {navItems.map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="text-foreground hover:text-primary transition-colors duration-300 font-medium"
-                >
-                  {item.name}
-                </a>
+                item.section ? (
+                  <button
+                    key={item.name}
+                    onClick={() => handleNavClick(item.section)}
+                    className="text-foreground hover:text-primary transition-colors duration-300 font-medium"
+                  >
+                    {item.name}
+                  </button>
+                ) : (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className="text-foreground hover:text-primary transition-colors duration-300 font-medium"
+                  >
+                    {item.name}
+                  </a>
+                )
               ))}
               <Button variant="accent" size="sm">
                 Apply Now
@@ -100,14 +115,24 @@ const Header = () => {
             )}
           >
             {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {item.name}
-              </a>
+               item.section ? (
+                <button
+                  key={item.name}
+                  onClick={() => handleNavClick(item.section)}
+                  className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2"
+                >
+                  {item.name}
+                </button>
+              ) : (
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.name}
+                </a>
+              )
             ))}
             <Button variant="accent" size="sm" className="w-full">
               Apply Now

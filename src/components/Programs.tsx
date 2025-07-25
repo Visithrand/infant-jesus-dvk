@@ -38,6 +38,16 @@ const Programs = () => {
     }
   ];
 
+  const courses = [
+    "Biology",
+    "Botany",
+    "Zoology",
+    "Commerce",
+    "Arts",
+    "History",
+    "Computer Science"
+  ];
+
   return (
     <section id="academics" className="py-20 bg-background">
       <div className="container mx-auto px-4">
@@ -107,8 +117,25 @@ const Programs = () => {
             ))}
           </div>
 
+          {/* Courses Section */}
+          <div className="mt-16 text-center">
+            <h3 className="text-3xl font-bold text-foreground mb-6">
+              Available Courses
+            </h3>
+            <div className="flex flex-wrap justify-center gap-4">
+              {courses.map((course, index) => (
+                <span
+                  key={index}
+                  className="text-lg font-semibold text-accent hover:text-primary transition-colors duration-300"
+                >
+                  {course}
+                </span>
+              ))}
+            </div>
+          </div>
+
           {/* Additional Info */}
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8 mt-12">
             <Card className="p-6 text-center bg-card-gradient">
               <Award className="h-12 w-12 text-accent mx-auto mb-4" />
               <h3 className="text-xl font-bold text-foreground mb-2">

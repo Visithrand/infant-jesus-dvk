@@ -11,6 +11,7 @@ import Facilities from "@/components/Facilities";
 
 const Index = () => {
   const [showPopup, setShowPopup] = useState(false);
+  const [activeSection, setActiveSection] = useState('home'); // 'home', 'about', 'programs', 'admissions', 'facilities', 'parentportal'
 
   useEffect(() => {
     // Show popup after 2 seconds
@@ -21,17 +22,38 @@ const Index = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const renderSection = () => {
+    switch (activeSection) {
+      case 'home':
+        return (
+          <div className="space-y-12">
+            <Hero />
+            <About />
+            <Programs />
+            <Admissions />
+            <Facilities />
+            <ParentPortal />
+          </div>
+        );
+      case 'about':
+        return <About />;
+      case 'programs':
+        return <Programs />;
+      case 'admissions':
+        return <Admissions />;
+      case 'facilities':
+        return <Facilities />;
+      case 'parentportal':
+        return <ParentPortal />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="min-h-screen">
-      <Header />
-      <div className="space-y-12">
-        <Hero />
-        <About />
-        <Programs />
-        <Admissions />
-        <Facilities />
-        <ParentPortal />
-      </div>
+      <Header setActiveSection={setActiveSection} />
+      {renderSection()}
       <Footer />
       {showPopup && <LiveEventPopup />}
     </div>

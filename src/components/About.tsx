@@ -54,7 +54,7 @@ const About = () => {
             {/* About Text */}
             <div>
               <h3 className="text-3xl font-bold text-foreground mb-6">
-                Excellence in Education Since 1999
+                Excellence in Education Since 1996
               </h3>
               <p className="text-muted-foreground mb-6 leading-relaxed">
                 Located in the serene environment of Karamadai, Coimbatore, 
