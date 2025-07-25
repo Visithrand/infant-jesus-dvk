@@ -12,40 +12,41 @@ const Admissions = () => {
     },
     {
       step: "02", 
-      title: "Entrance Test",
-      description: "Appear for our entrance examination and personal interview",
+      title: "Document Verification",
+      description: "Verification of submitted documents and academic records",
       icon: Users
     },
     {
       step: "03",
       title: "Merit List",
-      description: "Check your name in the published merit list",
+      description: "Check your name in the published merit list based on academic performance",
       icon: CheckCircle
     },
     {
       step: "04",
-      title: "Admission",
-      description: "Complete the admission process and join our institution",
+      title: "Admission Confirmation",
+      description: "Complete the admission process and secure your seat",
       icon: GraduationCap
     }
   ];
 
   const requirements = [
-    "Completed Higher Secondary Education (12th Grade)",
-    "Minimum 60% aggregate marks in qualifying examination",
-    "Valid entrance test score",
+    "Completed previous grade with minimum 60% marks",
+    "Transfer Certificate from previous school (if applicable)",
+    "Academic records and mark sheets",
     "Medical fitness certificate",
     "Character certificate from previous institution",
+    "Birth certificate (original and photocopy)",
     "Caste certificate (if applicable)"
   ];
 
   const importantDates = [
     { event: "Application Start Date", date: "March 1, 2024" },
     { event: "Application Deadline", date: "May 31, 2024" },
-    { event: "Entrance Examination", date: "June 15, 2024" },
-    { event: "Merit List Publication", date: "June 30, 2024" },
-    { event: "Admission Process", date: "July 1-15, 2024" },
-    { event: "Classes Commence", date: "August 1, 2024" }
+    { event: "Document Verification", date: "June 5-10, 2024" },
+    { event: "Merit List Publication", date: "June 15, 2024" },
+    { event: "Admission Process", date: "June 20-30, 2024" },
+    { event: "Classes Commence", date: "July 1, 2024" }
   ];
 
   return (

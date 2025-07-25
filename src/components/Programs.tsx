@@ -5,36 +5,36 @@ import { BookOpen, Users, Clock, Award, ArrowRight } from "lucide-react";
 const Programs = () => {
   const programs = [
     {
-      title: "Business Administration",
-      level: "Undergraduate & Graduate",
-      duration: "3-4 Years",
-      students: "500+ Students",
-      highlights: ["Marketing", "Finance", "HR Management", "International Business"],
-      description: "Comprehensive business education preparing students for leadership roles in the corporate world."
+      title: "Higher Secondary (11th & 12th)",
+      level: "Plus Two",
+      duration: "2 Years",
+      students: "300+ Students",
+      highlights: ["Science Stream", "Commerce Stream", "Computer Science", "Mathematics"],
+      description: "Comprehensive higher secondary education preparing students for competitive exams and higher education."
     },
     {
-      title: "Computer Science",
-      level: "Undergraduate & Graduate", 
-      duration: "3-4 Years",
+      title: "Secondary Education (9th & 10th)",
+      level: "High School", 
+      duration: "2 Years",
       students: "400+ Students",
-      highlights: ["AI & ML", "Software Development", "Cybersecurity", "Data Science"],
-      description: "Cutting-edge technology programs designed for the digital future."
+      highlights: ["CBSE Curriculum", "Science & Math Focus", "Language Arts", "Social Studies"],
+      description: "Strong foundation in core subjects with focus on conceptual understanding and skill development."
     },
     {
-      title: "Commerce & Accounting",
-      level: "Undergraduate",
+      title: "Middle School (6th to 8th)",
+      level: "Upper Primary",
       duration: "3 Years",
-      students: "300+ Students", 
-      highlights: ["Financial Accounting", "Taxation", "Auditing", "Banking"],
-      description: "Strong foundation in commerce and accounting principles for financial careers."
+      students: "350+ Students", 
+      highlights: ["Activity-based Learning", "Language Development", "Basic Sciences", "Creative Arts"],
+      description: "Transitional phase focusing on conceptual learning and personality development."
     },
     {
-      title: "Mass Communication",
-      level: "Undergraduate",
-      duration: "3 Years",
-      students: "200+ Students",
-      highlights: ["Journalism", "Digital Media", "Public Relations", "Film Studies"],
-      description: "Creative programs for the media and communication industry."
+      title: "Primary School (1st to 5th)",
+      level: "Elementary",
+      duration: "5 Years",
+      students: "500+ Students",
+      highlights: ["Foundation Skills", "Reading & Writing", "Basic Math", "Moral Education"],
+      description: "Building strong educational foundation with emphasis on core learning skills and values."
     }
   ];
 
@@ -48,8 +48,8 @@ const Programs = () => {
               Academic Programs
             </h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Discover our comprehensive range of undergraduate and graduate programs 
-              designed to prepare you for success in today's competitive world.
+              Discover our comprehensive curriculum from primary to higher secondary education 
+              designed to provide holistic development and academic excellence.
             </p>
           </div>
 
@@ -112,10 +112,10 @@ const Programs = () => {
             <Card className="p-6 text-center bg-card-gradient">
               <Award className="h-12 w-12 text-accent mx-auto mb-4" />
               <h3 className="text-xl font-bold text-foreground mb-2">
-                Industry Partnerships
+                School Partnerships
               </h3>
               <p className="text-muted-foreground">
-                Strong ties with leading companies for internships and placements
+                Strong ties with educational institutions for academic excellence and growth
               </p>
             </Card>
 
@@ -125,7 +125,7 @@ const Programs = () => {
                 Expert Faculty
               </h3>
               <p className="text-muted-foreground">
-                Experienced professors with industry and research backgrounds
+                Experienced teachers with advanced qualifications and teaching expertise
               </p>
             </Card>
 
@@ -135,7 +135,7 @@ const Programs = () => {
                 Modern Curriculum
               </h3>
               <p className="text-muted-foreground">
-                Updated syllabus aligned with current industry requirements
+                Updated syllabus aligned with current educational standards and requirements
               </p>
             </Card>
           </div>
