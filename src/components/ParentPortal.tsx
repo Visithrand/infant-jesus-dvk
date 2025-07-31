@@ -6,6 +6,8 @@ import { toast } from "@/components/ui/use-toast";
 import { MessageSquare } from "lucide-react";
 
 const ParentPortal = () => {
+  const [query, setQuery] = useState("");
+
   const majorUpdates = [
     {
       title: "Annual Sports Day",
@@ -41,6 +43,55 @@ const ParentPortal = () => {
       responses: 12
     }
   ];
+
+  const handleSubmitQuery = () => {
+    if (query.trim()) {
+      // Sending the query to the backend for email
+      fetch('http://localhost:3001/api/send-query-email', { // Assuming backend runs on port 3001
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: query }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Success:', data);
+        if (data.success) {
+          toast({
+            title: "Query Submitted",
+            description: "Your query has been submitted successfully.",
+            duration: 3000,
+          });
+          setQuery("");
+        } else {
+          toast({
+            title: "Submission Failed",
+            description: data.message || "There was an error submitting your query. Please try again later.",
+            duration: 3000,
+            variant: "destructive",
+          });
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        toast({
+          title: "Submission Failed",
+          description: "There was an error submitting your query. Please try again later.",
+          duration: 3000,
+          variant: "destructive",
+        });
+      });
+
+    } else {
+       toast({
+        title: "Empty Query",
+        description: "Please enter your question before submitting.",
+        duration: 3000,
+        variant: "destructive",
+      });
+    }
+  };
 
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -82,6 +133,31 @@ const ParentPortal = () => {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12">
+            {/* Query Submission */}
+             <Card className="p-6 bg-card-gradient">
+              <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center">
+                <MessageSquare className="h-6 w-6 text-primary mr-3" />
+                Ask Your Question
+              </h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-foreground mb-2 block">
+                    Your Question/Query
+                  </label>
+                  <Textarea
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Type your question here... (e.g., What are the admission requirements? When is the next parent meeting?)"
+                    className="min-h-32"
+                  />
+                </div>
+
+                <Button onClick={handleSubmitQuery} className="w-full">
+                  Submit Query
+                </Button>
+              </div>
+            </Card>
             {/* Recent Queries */}
             <Card className="p-6">
               <h3 className="text-2xl font-bold text-foreground mb-6">Recent Queries</h3>

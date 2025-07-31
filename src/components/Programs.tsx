@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"; // Import Button component
 import { BookOpen, Users, Clock, Award, ArrowRight } from "lucide-react";
 
 const Programs = () => {
@@ -10,7 +10,8 @@ const Programs = () => {
       duration: "2 Years",
       students: "300+ Students",
       highlights: ["Science Stream", "Commerce Stream", "Computer Science", "Mathematics"],
-      description: "Comprehensive higher secondary education preparing students for competitive exams and higher education."
+      description: "Comprehensive higher secondary education preparing students for competitive exams and higher education.",
+      link: "/academics/higher-secondary", // Placeholder link
     },
     {
       title: "Secondary Education (9th & 10th)",
@@ -18,7 +19,8 @@ const Programs = () => {
       duration: "2 Years",
       students: "400+ Students",
       highlights: ["CBSE Curriculum", "Science & Math Focus", "Language Arts", "Social Studies"],
-      description: "Strong foundation in core subjects with focus on conceptual understanding and skill development."
+      description: "Strong foundation in core subjects with focus on conceptual understanding and skill development.",
+      link: "/academics/secondary-education", // Placeholder link
     },
     {
       title: "Middle School (6th to 8th)",
@@ -26,7 +28,8 @@ const Programs = () => {
       duration: "3 Years",
       students: "350+ Students", 
       highlights: ["Activity-based Learning", "Language Development", "Basic Sciences", "Creative Arts"],
-      description: "Transitional phase focusing on conceptual learning and personality development."
+      description: "Transitional phase focusing on conceptual learning and personality development.",
+      link: "/academics/middle-school", // Placeholder link
     },
     {
       title: "Primary School (1st to 5th)",
@@ -34,18 +37,41 @@ const Programs = () => {
       duration: "5 Years",
       students: "500+ Students",
       highlights: ["Foundation Skills", "Reading & Writing", "Basic Math", "Moral Education"],
-      description: "Building strong educational foundation with emphasis on core learning skills and values."
+      description: "Building strong educational foundation with emphasis on core learning skills and values.",
+      link: "/academics/primary-school", // Placeholder link
     }
   ];
 
+  // Reverted the courses array to the previous version
   const courses = [
-    "Biology",
-    "Botany",
-    "Zoology",
-    "Commerce",
-    "Arts",
-    "History",
-    "Computer Science"
+    {
+      name: "Biology",
+      description: "Explore the fascinating world of living organisms, from cells to ecosystems."
+    },
+    {
+      name: "Botany",
+      description: "Study the plant kingdom and its vital role in our environment."
+    },
+    {
+      name: "Zoology",
+      description: "Delve into the diversity of animal life and their behaviors."
+    },
+    {
+      name: "Commerce",
+      description: "Understand the principles of business, finance, and economics."
+    },
+    {
+      name: "Arts",
+      description: "Unleash your creativity through various art forms and expressions."
+    },
+    {
+      name: "History",
+      description: "Journey through time and learn about significant events and civilizations."
+    },
+    {
+      name: "Computer Science",
+      description: "Discover the fundamentals of computing, programming, and technology."
+    }
   ];
 
   return (
@@ -109,27 +135,31 @@ const Programs = () => {
                   </div>
                 </div>
 
-                <Button variant="outline" className="w-full group">
-                  Learn More
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
+                <a href={program.link} className="w-full">
+                  <Button variant="outline" className="w-full group">
+                    Learn More
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </a>
               </Card>
             ))}
           </div>
 
           {/* Courses Section */}
           <div className="mt-16 text-center">
-            <h3 className="text-3xl font-bold text-foreground mb-6">
+            <h3 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
               Available Courses
             </h3>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {courses.map((course, index) => (
-                <span
-                  key={index}
-                  className="text-lg font-semibold text-accent hover:text-primary transition-colors duration-300"
-                >
-                  {course}
-                </span>
+                <Card key={index} className="p-6 text-left bg-card-gradient border-t-4 border-t-accent">
+                  <h4 className="text-2xl font-bold text-foreground mb-2">
+                    {course.name}
+                  </h4>
+                  <p className="text-muted-foreground">
+                    {course.description}
+                  </p>
+                </Card>
               ))}
             </div>
           </div>

@@ -4,9 +4,16 @@ import { Menu, X, Phone, Mail, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import schoolLogo from "@/assets/school-logo.png";
 import herocampus from "@/assets/hero-campus.png";
+import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
 
-const Header = ({ setActiveSection }) => {
+// Define the prop type for clarity (optional but good practice)
+interface HeaderProps {
+  setActiveSection?: (section: string) => void; // Make setActiveSection optional
+}
+
+const Header: React.FC<HeaderProps> = ({ setActiveSection = () => {} }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate(); // Get the navigate function from React Router
 
   const navItems = [
     { name: "Home", section: "home" },
@@ -18,13 +25,19 @@ const Header = ({ setActiveSection }) => {
     { name: "Contact", href: "/contact" }, // These will still be links to other pages
   ];
 
-  const handleNavClick = (section) => {
+  const handleNavClick = (section: string) => {
     setActiveSection(section);
     setIsMenuOpen(false); // Close mobile menu on click
   };
 
+  const handlePageNavClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, href: string) => {
+    event.preventDefault(); // Prevent default anchor tag behavior
+    setIsMenuOpen(false); // Close mobile menu on click
+    navigate(href); // Use the navigate function to go to the specified href
+  };
+
   return (
-    <> секретарь
+    <>
       {/* Top Contact Bar */}
       <div className="bg-primary text-primary-foreground py-2 px-4">
         <div className="container mx-auto flex flex-wrap items-center justify-between text-sm">
@@ -82,6 +95,7 @@ const Header = ({ setActiveSection }) => {
                     key={item.name}
                     href={item.href}
                     className="text-foreground hover:text-primary transition-colors duration-300 font-medium"
+                    onClick={(e) => handlePageNavClick(e, item.href)}
                   >
                     {item.name}
                   </a>
@@ -128,7 +142,7 @@ const Header = ({ setActiveSection }) => {
                   key={item.name}
                   href={item.href}
                   className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={(e) => handlePageNavClick(e, item.href)}
                 >
                   {item.name}
                 </a>

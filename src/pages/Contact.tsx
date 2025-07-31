@@ -23,13 +23,8 @@ const Contact = () => {
 
   const handleSubmitQuery = () => {
     if (query.trim()) {
-      // In a real application, you would send the query to a backend endpoint here
-      // The backend would then send the email to infantjesusmatricschooldvk.yahoo.com
-      console.log("Query submitted from Contact page:", query);
-
-      // Example of how you might send data to a backend using fetch:
-      /*
-      fetch('/api/send-contact-query-email', {
+      // Sending the query to the backend for email
+      fetch('http://localhost:3001/api/send-query-email', { // Assuming backend runs on port 3001
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,12 +34,21 @@ const Contact = () => {
       .then(response => response.json())
       .then(data => {
         console.log('Success:', data);
-        toast({
-          title: "Query Submitted",
-          description: "Your query has been submitted successfully. You will receive a response soon.",
-          duration: 3000,
-        });
-        setQuery("");
+        if (data.success) {
+          toast({
+            title: "Query Submitted",
+            description: "Your query has been submitted successfully.",
+            duration: 3000,
+          });
+          setQuery("");
+        } else {
+          toast({
+            title: "Submission Failed",
+            description: data.message || "There was an error submitting your query. Please try again later.",
+            duration: 3000,
+            variant: "destructive",
+          });
+        }
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -55,16 +59,7 @@ const Contact = () => {
           variant: "destructive",
         });
       });
-      */
 
-      // For now, we'll just show a toast notification as a placeholder
-      toast({
-        title: "Query Submitted",
-        description: "Your query has been submitted successfully. (Email functionality needs backend implementation)",
-        duration: 3000,
-      });
-
-      setQuery("");
     } else {
        toast({
         title: "Empty Query",
@@ -77,11 +72,11 @@ const Contact = () => {
 
   return (
     <>
-      <Header />
+      <Header setActiveSection={undefined} />
       <main className="flex flex-col min-h-screen bg-background">
         <div className="flex-1 flex flex-col items-center justify-center py-16 px-4">
           <div className="max-w-xl w-full bg-card shadow-lg rounded-lg p-8 flex flex-col items-center">
-            <h1 className="text-3xl font-bold mb-2 text-center text-foreground">Contact Us</h1>
+         <h1 className="text-3xl font-bold mb-2 text-center text-foreground">Contact Us</h1>
             <p className="mb-6 text-center text-muted-foreground">We’re here to help! Reach out for any queries or information.</p>
             <div className="space-y-6 w-full">
               <div className="flex items-start space-x-4">

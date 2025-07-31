@@ -26,8 +26,8 @@ const About = () => {
   ];
 
   const achievements = [
-    "NAAC A+ Accredited Institution",
-    "Top Matriculation School in Coimbatore",
+    "Govt+ Accredited Institution",
+    "Top Matriculation School in Sivagangai , devakottai",
     "100% University Placement Record",
     "State-of-the-art Infrastructure",
     "Award-winning Faculty Team",
