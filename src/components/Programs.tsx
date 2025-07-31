@@ -50,7 +50,7 @@ const Programs = () => {
     },
     {
       name: "Botany",
-      description: "Study the plant kingdom and its vital role in our environment."
+      description: "Botany is the scientific study of plants, their structure, growth, reproduction, metabolism, development, diseases, and chemical properties."
     },
     {
       name: "Zoology",

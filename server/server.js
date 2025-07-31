@@ -9,6 +9,13 @@ const port = 3001;
 app.use(cors());
 app.use(express.json());
 
+// ✅ GET route to check if server is running
+app.get('/', (req, res) => {
+  res.send('🚀 Server is running. Use POST /send-query to send data.');
+});
+
+
+
 // ✅ POST route to handle contact form query
 app.post('/send-query', async (req, res) => {
   const { name, email, message } = req.body;
