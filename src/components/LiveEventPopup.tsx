@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { X, Calendar, Clock, User, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import schoolLogo from "@/assets/school-logo.png";
+import { Progress } from "@/components/ui/progress";
 
 const LiveEventPopup = () => {
   const [isVisible, setIsVisible] = useState(true);
@@ -36,21 +37,24 @@ const LiveEventPopup = () => {
       professor: "Prof. Sarah John",
       time: "10:00 AM - 11:30 AM",
       type: "Live Class",
-      urgent: true
+      urgent: true,
+      progress: 75 // Added progress
     },
     {
       title: "Parent-Teacher Meeting",
       professor: "All Faculty",
       time: "2:00 PM - 4:00 PM",
       type: "Meeting",
-      urgent: false
+      urgent: false,
+      progress: 30 // Added progress
     },
     {
       title: "Science Exhibition Preparation",
       professor: "Prof. Michael David",
       time: "3:30 PM - 5:00 PM",
       type: "Activity",
-      urgent: false
+      urgent: false,
+      progress: 0 // Added progress
     }
   ];
 
@@ -140,6 +144,7 @@ const LiveEventPopup = () => {
                   <Clock className="h-3 w-3" />
                   <span>{event.time}</span>
                 </div>
+                 <Progress value={event.progress} className="w-full mt-2" />
               </Card>
             ))}
           </div>

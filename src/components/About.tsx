@@ -57,7 +57,7 @@ const About = () => {
                 Excellence in Education Since 1996
               </h3>
               <p className="text-muted-foreground mb-6 leading-relaxed">
-                Located in the serene environment of Karamadai, Coimbatore, 
+                Located in the serene environment of devakottai,Sivagangai, 
                 our institution stands as a testament to quality education and 
                 character building. We believe in nurturing not just academic 
                 excellence but also the overall personality development of our students.
