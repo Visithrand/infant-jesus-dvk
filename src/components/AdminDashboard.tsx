@@ -24,6 +24,8 @@ import AdminLogin from "./AdminLogin";
 import AdminRegistration from "./AdminRegistration";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import SuperAdminNav from "@/components/SuperAdminNav";
+import { getStoredAuth } from "@/utils/auth";
 
 interface Event {
   id: number;
@@ -54,6 +56,7 @@ const AdminDashboard = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [username, setUsername] = useState("");
+  const [role, setRole] = useState<string | null>(null);
   const [showAuthForm, setShowAuthForm] = useState<'login' | 'register'>('login');
 
   // Data states
@@ -88,6 +91,7 @@ const AdminDashboard = () => {
         const data = await response.json();
         setToken(tokenToValidate);
         setUsername(data.username);
+        setRole(data.role || null);
         setIsLoggedIn(true);
         fetchAllData();
       } else {
@@ -101,6 +105,10 @@ const AdminDashboard = () => {
   const handleLoginSuccess = (token: string, username: string) => {
     setToken(token);
     setUsername(username);
+    try {
+      const stored = getStoredAuth();
+      if (stored?.role) setRole(stored.role);
+    } catch {}
     setIsLoggedIn(true);
     fetchAllData();
   };
@@ -343,6 +351,10 @@ const AdminDashboard = () => {
               Logout
             </Button>
           </div>
+
+          {role === 'SUPER_ADMIN' && (
+            <SuperAdminNav onCreateAdminClick={() => setShowAuthForm('register')} />
+          )}
 
           {/* Dashboard Tabs */}
           <Tabs defaultValue="events" className="space-y-6">

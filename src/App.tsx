@@ -12,6 +12,11 @@ import KindergartenSection from "./pages/KindergartenSection";
 import KindergartenEssay from "./pages/KindergartenEssay";
 import MatricSection from "./pages/MatricSection";
 import MatricEssay from "./pages/MatricEssay";
+import PrimaryEssay from "./pages/PrimaryEssay";
+import SeniorEssay from "./pages/SeniorEssay";
+import SecondaryEssay from "./pages/SecondaryEssay";
+import HigherSecondaryEssay from "./pages/HigherSecondaryEssay";
+import RequireAdmin from "./components/RequireAdmin";
 
 const queryClient = new QueryClient();
 
@@ -29,7 +34,11 @@ const App = () => (
           <Route path="/kindergarten-essay" element={<KindergartenEssay />} />
           <Route path="/matric" element={<MatricSection />} />
           <Route path="/matric-essay" element={<MatricEssay />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/primary-essay" element={<PrimaryEssay />} />
+          <Route path="/senior-essay" element={<SeniorEssay />} />
+          <Route path="/secondary-essay" element={<SecondaryEssay />} />
+          <Route path="/higher-secondary-essay" element={<HigherSecondaryEssay />} />
+          <Route path="/admin" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

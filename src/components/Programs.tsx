@@ -11,7 +11,7 @@ const Programs = () => {
       students: "300+ Students",
       highlights: ["Science Stream", "Commerce Stream", "Computer Science", "Mathematics"],
       description: "Comprehensive higher secondary education preparing students for competitive exams and higher education.",
-      link: "/academics/higher-secondary", // Placeholder link
+      link: "/higher-secondary-essay", // Updated link
     },
     {
       title: "Secondary Education (9th & 10th)",
@@ -20,7 +20,7 @@ const Programs = () => {
       students: "400+ Students",
       highlights: ["CBSE Curriculum", "Science & Math Focus", "Language Arts", "Social Studies"],
       description: "Strong foundation in core subjects with focus on conceptual understanding and skill development.",
-      link: "/academics/secondary-education", // Placeholder link
+      link: "/secondary-essay", // Updated link
     },
     {
       title: "Middle School (6th to 8th)",
@@ -29,7 +29,7 @@ const Programs = () => {
       students: "350+ Students", 
       highlights: ["Activity-based Learning", "Language Development", "Basic Sciences", "Creative Arts"],
       description: "Transitional phase focusing on conceptual learning and personality development.",
-      link: "/academics/middle-school", // Placeholder link
+      link: "/senior-essay", // Updated link
     },
     {
       title: "Primary School (1st to 5th)",
@@ -38,7 +38,7 @@ const Programs = () => {
       students: "500+ Students",
       highlights: ["Foundation Skills", "Reading & Writing", "Basic Math", "Moral Education"],
       description: "Building strong educational foundation with emphasis on core learning skills and values.",
-      link: "/academics/primary-school", // Placeholder link
+      link: "/primary-essay", // Updated link
     }
   ];
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { getStoredAuth } from "@/utils/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -63,8 +64,20 @@ const AdminLogin = ({ onSwitchToRegistration, onLoginSuccess }: AdminLoginProps)
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Store token in localStorage
+        // Store token and role so RequireAdmin/AdminDashboard can gate correctly
         localStorage.setItem('adminToken', data.token);
+        try {
+          localStorage.setItem('auth', JSON.stringify({
+            token: data.token,
+            role: data.role,
+            email: data.email,
+            username: data.username,
+          }));
+          localStorage.setItem('role', data.role);
+          localStorage.setItem('email', data.email);
+          localStorage.setItem('username', data.username);
+          localStorage.setItem('token', data.token);
+        } catch {}
         // Call success callback
         onLoginSuccess(data.token, data.username);
       } else {

@@ -24,8 +24,10 @@ public class AdminUserDetailsService implements UserDetailsService {
         
         if (adminOptional.isPresent()) {
             Admin admin = adminOptional.get();
+            String roleName = admin.getRole() != null && admin.getRole().name().equals("SUPER_ADMIN")
+                    ? "ROLE_SUPER_ADMIN" : "ROLE_ADMIN";
             return new User(admin.getUsername(), admin.getPassword(), 
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
+                Collections.singletonList(new SimpleGrantedAuthority(roleName)));
         } else {
             throw new UsernameNotFoundException("User not found: " + username);
         }

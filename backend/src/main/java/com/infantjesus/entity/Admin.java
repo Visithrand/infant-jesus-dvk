@@ -20,6 +20,10 @@ public class Admin {
     @Column(nullable = false)
     private String password;
     
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role = Role.ADMIN;
+    
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
     
@@ -77,6 +81,14 @@ public class Admin {
     
     public void setPassword(String password) {
         this.password = password;
+    }
+    
+    public Role getRole() {
+        return role;
+    }
+    
+    public void setRole(Role role) {
+        this.role = role;
     }
     
     public LocalDateTime getCreatedAt() {

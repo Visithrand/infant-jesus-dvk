@@ -2,7 +2,9 @@ package com.infantjesus.service;
 
 import com.infantjesus.dto.AdminLoginDto;
 import com.infantjesus.dto.AdminRegistrationDto;
+import com.infantjesus.dto.AdminCreationDto;
 import com.infantjesus.entity.Admin;
+import com.infantjesus.entity.Role;
 import com.infantjesus.repository.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -71,11 +73,12 @@ public class AdminService {
             return response;
         }
         
-        // Create new admin
+        // Create new admin (regular admin)
         Admin admin = new Admin();
         admin.setUsername(registrationDto.getUsername().trim());
         admin.setEmail(registrationDto.getEmail().trim().toLowerCase());
         admin.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
+        admin.setRole(Role.ADMIN);
         
         try {
             Admin savedAdmin = adminRepository.save(admin);
@@ -88,6 +91,52 @@ public class AdminService {
             response.put("message", "Registration failed: " + e.getMessage());
         }
         
+        return response;
+    }
+
+    /**
+     * Create an admin (super admin only)
+     */
+    public Map<String, Object> createAdmin(AdminCreationDto dto) {
+        Map<String, Object> response = new HashMap<>();
+
+        if (dto.getUsername() == null || dto.getUsername().trim().isEmpty()) {
+            response.put("success", false);
+            response.put("message", "Username is required");
+            return response;
+        }
+        if (dto.getEmail() == null || dto.getEmail().trim().isEmpty()) {
+            response.put("success", false);
+            response.put("message", "Email is required");
+            return response;
+        }
+        if (dto.getPassword() == null || dto.getPassword().trim().isEmpty()) {
+            response.put("success", false);
+            response.put("message", "Password is required");
+            return response;
+        }
+        if (adminRepository.existsByUsername(dto.getUsername())) {
+            response.put("success", false);
+            response.put("message", "Username already exists");
+            return response;
+        }
+        if (adminRepository.existsByEmail(dto.getEmail())) {
+            response.put("success", false);
+            response.put("message", "Email already exists");
+            return response;
+        }
+
+        Admin admin = new Admin();
+        admin.setUsername(dto.getUsername().trim());
+        admin.setEmail(dto.getEmail().trim().toLowerCase());
+        admin.setPassword(passwordEncoder.encode(dto.getPassword()));
+        admin.setRole(Role.ADMIN);
+
+        Admin saved = adminRepository.save(admin);
+        response.put("success", true);
+        response.put("message", "Admin created successfully");
+        response.put("adminId", saved.getId());
+        response.put("username", saved.getUsername());
         return response;
     }
     
@@ -128,12 +177,20 @@ public class AdminService {
             return response;
         }
         
+        // Only allow login if account is ADMIN or SUPER_ADMIN
+        if (admin.getRole() == null || (admin.getRole() != Role.ADMIN && admin.getRole() != Role.SUPER_ADMIN)) {
+            response.put("success", false);
+            response.put("message", "Unauthorized: admin access only");
+            return response;
+        }
+
         // Login successful
         response.put("success", true);
         response.put("message", "Login successful");
         response.put("adminId", admin.getId());
         response.put("username", admin.getUsername());
         response.put("email", admin.getEmail());
+        response.put("role", admin.getRole().name());
         
         return response;
     }
@@ -150,5 +207,35 @@ public class AdminService {
      */
     public boolean existsByUsername(String username) {
         return adminRepository.existsByUsername(username);
+    }
+
+    /**
+     * Bootstrap or update the super admin with fixed credentials
+     */
+    public Map<String, Object> bootstrapSuperAdmin(String email, String password, String username) {
+        Map<String, Object> response = new HashMap<>();
+        Optional<Admin> existingByEmail = adminRepository.findByEmail(email.toLowerCase());
+
+        Admin superAdmin;
+        if (existingByEmail.isPresent()) {
+            superAdmin = existingByEmail.get();
+            superAdmin.setUsername(username);
+            superAdmin.setPassword(passwordEncoder.encode(password));
+            superAdmin.setRole(Role.SUPER_ADMIN);
+        } else {
+            superAdmin = new Admin();
+            superAdmin.setUsername(username);
+            superAdmin.setEmail(email.toLowerCase());
+            superAdmin.setPassword(passwordEncoder.encode(password));
+            superAdmin.setRole(Role.SUPER_ADMIN);
+        }
+
+        Admin saved = adminRepository.save(superAdmin);
+        response.put("success", true);
+        response.put("message", "Super admin bootstrapped");
+        response.put("adminId", saved.getId());
+        response.put("email", saved.getEmail());
+        response.put("role", saved.getRole().name());
+        return response;
     }
 }
