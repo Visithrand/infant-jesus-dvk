@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infant Jesus School - Admission Application Form</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .school-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 5px;
+        }
+        .school-subtitle {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+        .school-address {
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 10px;
+        }
+        .form-title {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: #1f2937;
+        }
+        .form-number {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .section {
+            margin-bottom: 25px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #1f2937;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        .field {
+            margin-bottom: 15px;
+        }
+        .field-label {
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 5px;
+        }
+        .field-input {
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            padding: 8px 12px;
+            width: 100%;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .field-input:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        .field-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .field-row .field {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        .checkbox-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .checkbox-field input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+        .declaration {
+            background-color: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .signature-box {
+            width: 45%;
+        }
+        .signature-line {
+            border-bottom: 1px solid #000;
+            height: 30px;
+            margin-top: 5px;
+        }
+        .important-note {
+            background-color: #fef3c7;
+            border: 1px solid #f59e0b;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        .print-button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 20px 0;
+        }
+        .print-button:hover {
+            background-color: #1d4ed8;
+        }
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            .print-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="school-name">INFANT JESUS MATRIC. HR. SEC. SCHOOL</div>
+            <div class="school-subtitle">(Recognized by the Govt. of Tamil Nadu)</div>
+            <div class="school-address">E.B. Road (Extn) Devakottai - 630 302</div>
+        </div>
+
+        <div class="form-title">APPLICATION FOR ADMISSION</div>
+
+        <div class="form-number">
+            <div><strong>Admission No.:</strong> _______________</div>
+            <div><strong>Application No.:</strong> _______________</div>
+        </div>
+
+        <div class="important-note">
+            <strong>IMPORTANT:</strong> Application defective in particulars or in any other manner will not be considered
+        </div>
+
+        <div class="section">
+            <div class="section-title">APPLICANT'S PERSONAL DETAILS</div>
+            
+            <div class="field-row">
+                <div class="field">
+                    <div class="field-label">1. Name of the Pupil (Block Letters)</div>
+                    <input type="text" class="field-input" placeholder="Enter full name in block letters">
+                </div>
+                <div class="field">
+                    <div class="field-label">Name of the Pupil in Tamil</div>
+                    <input type="text" class="field-input" placeholder="தமிழில் மாணவர் பெயர்">
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <div class="field-label">2. Date of Birth</div>
+                    <input type="date" class="field-input">
+                </div>
+                <div class="field">
+                    <div class="field-label">3. Gender</div>
+                    <select class="field-input">
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <div class="field-label">4. Nationality & State</div>
+                    <input type="text" class="field-input" placeholder="e.g., Indian, Tamil Nadu">
+                </div>
+                <div class="field">
+                    <div class="field-label">5. Native Place</div>
+                    <input type="text" class="field-input" placeholder="Enter native place">
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <div class="field-label">6. Religion</div>
+                    <input type="text" class="field-input" placeholder="Enter religion">
+                </div>
+                <div class="field">
+                    <div class="field-label">7. Caste</div>
+                    <input type="text" class="field-input" placeholder="Enter caste">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="field-label">8. Community</div>
+                <input type="text" class="field-input" placeholder="Enter community">
+            </div>
+
+            <div class="field">
+                <div class="field-label">9. Whether living with Parent or Guardian</div>
+                <div class="checkbox-field">
+                    <input type="checkbox" id="parent">
+                    <label for="parent">Parent</label>
+                </div>
+                <div class="checkbox-field">
+                    <input type="checkbox" id="guardian">
+                    <label for="guardian">Guardian</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">PARENT/GUARDIAN DETAILS</div>
+            
+            <div class="field-row">
+                <div class="field">
+                    <div class="field-label">10a. Name of the Father / Guardian</div>
+                    <input type="text" class="field-input" placeholder="Enter father's name">
+                </div>
+                <div class="field">
+                    <div class="field-label">Name of the Father in Tamil</div>
+                    <input type="text" class="field-input" placeholder="தமிழில் தந்தை பெயர்">
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <div class="field-label">10b. Occupation</div>
+                    <input type="text" class="field-input" placeholder="Enter occupation">
+                </div>
+                <div class="field">
+                    <div class="field-label">10c. Annual Income (Father / Mother)</div>
+                    <input type="text" class="field-input" placeholder="Enter annual income">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="field-label">10d. Full Address</div>
+                <textarea class="field-input" rows="3" placeholder="Enter complete address"></textarea>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <div class="field-label">10e. Telephone Number</div>
+                    <input type="tel" class="field-input" placeholder="Enter phone number">
+                </div>
+                <div class="field">
+                    <div class="field-label">10f. Name of the Mother</div>
+                    <input type="text" class="field-input" placeholder="Enter mother's name">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="field-label">Name of the Mother in Tamil</div>
+                <input type="text" class="field-input" placeholder="தமிழில் தாய் பெயர்">
+            </div>
+
+            <div class="field">
+                <div class="field-label">10g. Mother's Occupation</div>
+                <input type="text" class="field-input" placeholder="Enter mother's occupation">
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">EXAMINATION AND MARKS DETAILS</div>
+            
+            <div class="field">
+                <div class="field-label">11. Qualifying examination passed</div>
+                <input type="text" class="field-input" placeholder="e.g., 5th Standard, 10th Standard">
+            </div>
+
+            <div class="field">
+                <div class="field-label">12. Marks obtained in the examination</div>
+                <textarea class="field-input" rows="4" placeholder="Enter subject-wise marks and percentages"></textarea>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">ADDITIONAL QUESTIONS</div>
+            
+            <div class="field">
+                <div class="field-label">13. Name of the School Pupil last studied and Reason for leaving it</div>
+                <textarea class="field-input" rows="3" placeholder="Enter school name and reason for leaving"></textarea>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <div class="field-label">14. Mother-tongue of the Pupil</div>
+                    <input type="text" class="field-input" placeholder="Enter mother tongue">
+                </div>
+                <div class="field">
+                    <div class="field-label">15. Medium in which the Pupil studied</div>
+                    <select class="field-input">
+                        <option value="">Select Medium</option>
+                        <option value="tamil">Tamil</option>
+                        <option value="english">English</option>
+                        <option value="hindi">Hindi</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="field-label">16. Medium of instruction desired at the Higher Secondary Stage</div>
+                <select class="field-input">
+                    <option value="">Select Medium</option>
+                    <option value="tamil">Tamil</option>
+                    <option value="english">English</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">SUBJECT CHOICE</div>
+            
+            <div class="field">
+                <div class="field-label">17. Choice of subjects under Part III (Refer Prospectus)</div>
+                <textarea class="field-input" rows="3" placeholder="Enter preferred subjects"></textarea>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">FURTHER DETAILS</div>
+            
+            <div class="field">
+                <div class="field-label">18. Whether protected from small pox, vaccinated or small pox marked / Blood Group</div>
+                <input type="text" class="field-input" placeholder="Enter vaccination details and blood group">
+            </div>
+
+            <div class="field">
+                <div class="field-label">19. Proficiency in extra-curricular activities</div>
+                <textarea class="field-input" rows="3" placeholder="Enter extra-curricular activities and achievements"></textarea>
+            </div>
+
+            <div class="field">
+                <div class="field-label">20. Full postal address of the Applicant for communication (Block Letters)</div>
+                <textarea class="field-input" rows="3" placeholder="Enter complete postal address"></textarea>
+            </div>
+        </div>
+
+        <div class="declaration">
+            <strong>APPLICANT'S DECLARATION:</strong><br>
+            All the particulars stated above are true to the best of my knowledge. If selected for admission I promise to abide by the rules and regulations of the school and to avoid association with any outside organization without the written permission of the Principal.
+        </div>
+
+        <div class="signature-section">
+            <div class="signature-box">
+                <div><strong>Signature of the Applicant:</strong></div>
+                <div class="signature-line"></div>
+                <div style="text-align: center; margin-top: 5px;">Date: _______________</div>
+            </div>
+            <div class="signature-box">
+                <div><strong>Signature of the Parent / Guardian:</strong></div>
+                <div class="signature-line"></div>
+                <div style="text-align: center; margin-top: 5px;">Date: _______________</div>
+            </div>
+        </div>
+
+        <div class="declaration">
+            <strong>UNDERTAKING BY PARENT OR GUARDIAN:</strong><br>
+            In the event of the above Applicant my son/daughter/ward, being admitted to the school, I undertake to pay regularly all his/her dues to the school till completion of his/her course of study. I also undertake to be responsible for his/her conduct and remove him/her forth from the school if the Principal were to order the same for legitimate reasons.
+        </div>
+
+        <div class="section">
+            <div class="section-title">ENCLOSURES REQUIRED</div>
+            <div style="margin-left: 20px;">
+                <div>1. T.C. Original</div>
+                <div>2. Mark Sheet Original</div>
+                <div>3. Birth Certificate Xerox</div>
+                <div>4. Community Certificate Xerox</div>
+                <div>5. Aadhar Card Xerox</div>
+            </div>
+        </div>
+
+        <div class="field">
+            <div class="field-label">EMIS No.:</div>
+            <div style="display: flex; gap: 5px; margin-top: 5px;">
+                <input type="text" style="width: 30px; text-align: center;" maxlength="1">
+                <input type="text" style="width: 30px; text-align: center;" maxlength="1">
+                <input type="text" style="width: 30px; text-align: center;" maxlength="1">
+                <input type="text" style="width: 30px; text-align: center;" maxlength="1">
+                <input type="text" style="width: 30px; text-align: center;" maxlength="1">
+                <input type="text" style="width: 30px; text-align: center;" maxlength="1">
+                <input type="text" style="width: 30px; text-align: center;" maxlength="1">
+                <input type="text" style="width: 30px; text-align: center;" maxlength="1">
+                <input type="text" style="width: 30px; text-align: center;" maxlength="1">
+                <input type="text" style="width: 30px; text-align: center;" maxlength="1">
+                <input type="text" style="width: 30px; text-align: center;" maxlength="1">
+            </div>
+        </div>
+
+        <button class="print-button" onclick="window.print()">Print Application Form</button>
+    </div>
+
+    <script>
+        // Auto-focus on first input
+        document.addEventListener('DOMContentLoaded', function() {
+            const firstInput = document.querySelector('.field-input');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        });
+    </script>
+</body>
+</html>

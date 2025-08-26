@@ -30,6 +30,25 @@ const FacilitiesSection = () => {
   }, []);
 
   useEffect(() => {
+    const revalidate = () => fetchFacilities();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'ij:lastUpdate') fetchFacilities();
+    };
+    window.addEventListener('focus', revalidate);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') fetchFacilities();
+    });
+    window.addEventListener('ij:data-updated' as any, revalidate);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener('focus', revalidate);
+      document.removeEventListener('visibilitychange', () => {});
+      window.removeEventListener('ij:data-updated' as any, revalidate);
+      window.removeEventListener('storage', onStorage);
+    };
+  }, []);
+
+  useEffect(() => {
     // Filter facilities based on search term
     if (searchTerm.trim() === "") {
       setFilteredFacilities(facilities);
@@ -46,13 +65,16 @@ const FacilitiesSection = () => {
   const fetchFacilities = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8080/api/facilities');
+      const response = await fetch('http://localhost:8080/api/facilities', { cache: 'no-store' });
       if (!response.ok) {
         throw new Error('Failed to fetch facilities');
       }
       const data = await response.json();
-      setFacilities(data);
-      setFilteredFacilities(data);
+      const sorted = [...data].sort((a: Facility, b: Facility) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      setFacilities(sorted);
+      setFilteredFacilities(sorted);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -105,7 +127,7 @@ const FacilitiesSection = () => {
   }
 
   return (
-    <section className="py-20 bg-secondary/30">
+    <section id="facilities" className="py-20 bg-secondary/30">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
@@ -163,6 +185,8 @@ const FacilitiesSection = () => {
                         src={`http://localhost:8080${facility.imageUrl}`}
                         alt={facility.name}
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                     </div>

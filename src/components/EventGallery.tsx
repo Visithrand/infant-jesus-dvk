@@ -20,15 +20,37 @@ const EventGallery = () => {
     fetchEvents();
   }, []);
 
+  useEffect(() => {
+    const revalidate = () => fetchEvents();
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === 'ij:lastUpdate') fetchEvents();
+    };
+    window.addEventListener('focus', revalidate);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') fetchEvents();
+    });
+    window.addEventListener('ij:data-updated' as any, revalidate);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener('focus', revalidate);
+      document.removeEventListener('visibilitychange', () => {});
+      window.removeEventListener('ij:data-updated' as any, revalidate);
+      window.removeEventListener('storage', onStorage);
+    };
+  }, []);
+
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8080/api/events');
+      const response = await fetch('http://localhost:8080/api/events', { cache: 'no-store' });
       if (!response.ok) {
         throw new Error('Failed to fetch events');
       }
       const data = await response.json();
-      setEvents(data);
+      const sorted = [...data].sort((a: Event, b: Event) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+      setEvents(sorted);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -46,7 +68,7 @@ const EventGallery = () => {
 
   if (loading) {
     return (
-      <section className="py-20 bg-background">
+      <section id="events" className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
@@ -59,7 +81,7 @@ const EventGallery = () => {
 
   if (error) {
     return (
-      <section className="py-20 bg-background">
+      <section id="events" className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <div className="bg-destructive/10 text-destructive p-4 rounded-lg max-w-md mx-auto">
@@ -81,7 +103,7 @@ const EventGallery = () => {
 
   if (events.length === 0) {
     return (
-      <section className="py-20 bg-background">
+      <section id="events" className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <div className="bg-muted/50 p-8 rounded-lg max-w-md mx-auto">
@@ -98,7 +120,7 @@ const EventGallery = () => {
   }
 
   return (
-    <section className="py-20 bg-background">
+    <section id="events" className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
@@ -126,6 +148,8 @@ const EventGallery = () => {
                       src={`http://localhost:8080${event.imageUrl}`}
                       alt={event.title}
                       className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                   </div>

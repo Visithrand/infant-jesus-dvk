@@ -17,6 +17,7 @@ D:\infant-web\vvinscbe-clone-showcase\backend\src\main\java\com\infantjesus\secu
 D:\infant-web\vvinscbe-clone-showcase\backend\src\main\java\com\infantjesus\repository\FacilityRepository.java
 D:\infant-web\vvinscbe-clone-showcase\backend\src\main\java\com\infantjesus\controller\FacilityController.java
 D:\infant-web\vvinscbe-clone-showcase\backend\src\main\java\com\infantjesus\dto\FacilityDto.java
+D:\infant-web\vvinscbe-clone-showcase\backend\src\main\java\com\infantjesus\config\WebMvcConfig.java
 D:\infant-web\vvinscbe-clone-showcase\backend\src\main\java\com\infantjesus\entity\Admin.java
 D:\infant-web\vvinscbe-clone-showcase\backend\src\main\java\com\infantjesus\repository\AdminRepository.java
 D:\infant-web\vvinscbe-clone-showcase\backend\src\main\java\com\infantjesus\SchoolWebsiteApplication.java

@@ -1,27 +1,34 @@
-import { useState, useEffect } from "react";
 import Header from "@/components/Header";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import AboutSlideshow from "@/components/AboutSlideshow";
+import LeadershipSection from "@/components/LeadershipSection";
 import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Programs from "@/components/Programs";
 import Admissions from "@/components/Admissions";
 import ParentPortal from "@/components/ParentPortal";
 import Footer from "@/components/Footer";
-import LiveEventPopup from "@/components/LiveEventPopup";
 import EventGallery from "@/components/EventGallery";
 import LiveNotification from "@/components/LiveNotification";
 import FacilitiesSection from "@/components/FacilitiesSection";
 
 const Index = () => {
-  const [showPopup, setShowPopup] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
-    // Show popup after 2 seconds
-    const timer = setTimeout(() => {
-      setShowPopup(true);
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, []);
+    if (location.pathname !== '/') return;
+    const hash = location.hash;
+    if (hash) {
+      const id = hash.slice(1);
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [location.pathname, location.hash]);
 
   return (
     <div className="min-h-screen">
@@ -29,14 +36,15 @@ const Index = () => {
       <div className="space-y-12">
         <Hero />
         <About />
+        <AboutSlideshow />
         <Programs />
         <Admissions />
         <EventGallery />
         <FacilitiesSection />
         <ParentPortal />
+        <LeadershipSection />
       </div>
       <Footer />
-      {showPopup && <LiveEventPopup />}
       <LiveNotification />
     </div>
   );

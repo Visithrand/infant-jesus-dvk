@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import AdminLogin from "./AdminLogin";
 import AdminRegistration from "./AdminRegistration";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 interface Event {
   id: number;
@@ -166,6 +168,10 @@ const AdminDashboard = () => {
       if (response.ok) {
         setEventForm({ title: "", description: "", image: null });
         fetchAllData();
+        try {
+          localStorage.setItem('ij:lastUpdate', String(Date.now()));
+          window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'events' } }));
+        } catch {}
       }
     } catch (error) {
       console.error('Error creating event:', error);
@@ -183,6 +189,10 @@ const AdminDashboard = () => {
 
       if (response.ok) {
         fetchAllData();
+        try {
+          localStorage.setItem('ij:lastUpdate', String(Date.now()));
+          window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'events' } }));
+        } catch {}
       }
     } catch (error) {
       console.error('Error deleting event:', error);
@@ -253,17 +263,42 @@ const AdminDashboard = () => {
       if (response.ok) {
         setFacilityForm({ name: "", description: "", image: null });
         fetchAllData();
+        try {
+          localStorage.setItem('ij:lastUpdate', String(Date.now()));
+          window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'facilities' } }));
+        } catch {}
       }
     } catch (error) {
       console.error('Error creating facility:', error);
     }
   };
 
+  const handleDeleteFacility = async (id: number) => {
+    if (!token) return;
+    try {
+      const response = await fetch(`http://localhost:8080/api/facilities/admin/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        fetchAllData();
+        try {
+          localStorage.setItem('ij:lastUpdate', String(Date.now()));
+          window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'facilities' } }));
+        } catch {}
+      }
+    } catch (error) {
+      console.error('Error deleting facility:', error);
+    }
+  };
+
   if (!isLoggedIn) {
     return (
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="max-w-md mx-auto">
+      <>
+        <Header />
+        <section className="py-20 bg-background">
+          <div className="container mx-auto px-4">
+            <div className="max-w-md mx-auto">
             <div className="text-center mb-8">
               <div className="bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
                 <Lock className="h-8 w-8 text-primary" />
@@ -272,27 +307,31 @@ const AdminDashboard = () => {
               <p className="text-muted-foreground">Access the school management dashboard</p>
             </div>
 
-            {showAuthForm === 'login' ? (
-              <AdminLogin
-                onSwitchToRegistration={() => setShowAuthForm('register')}
-                onLoginSuccess={handleLoginSuccess}
-              />
-            ) : (
-              <AdminRegistration
-                onSwitchToLogin={() => setShowAuthForm('login')}
-                onRegistrationSuccess={handleRegistrationSuccess}
-              />
-            )}
+              {showAuthForm === 'login' ? (
+                <AdminLogin
+                  onSwitchToRegistration={() => setShowAuthForm('register')}
+                  onLoginSuccess={handleLoginSuccess}
+                />
+              ) : (
+                <AdminRegistration
+                  onSwitchToLogin={() => setShowAuthForm('login')}
+                  onRegistrationSuccess={handleRegistrationSuccess}
+                />
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+        <Footer />
+      </>
     );
   }
 
   return (
-    <section className="py-20 bg-background">
-      <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
+    <>
+      <Header />
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -509,6 +548,14 @@ const AdminDashboard = () => {
                     <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
                       {facility.description}
                     </p>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDeleteFacility(facility.id)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete
+                    </Button>
                   </Card>
                 ))}
               </div>
@@ -516,7 +563,9 @@ const AdminDashboard = () => {
           </Tabs>
         </div>
       </div>
-    </section>
+      </section>
+      <Footer />
+    </>
   );
 };
 

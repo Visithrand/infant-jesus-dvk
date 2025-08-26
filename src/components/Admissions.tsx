@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { CalendarDays, FileText, Users, GraduationCap, ArrowRight, CheckCircle, Download } from "lucide-react";
 
 const Admissions = () => {
@@ -52,12 +53,12 @@ const Admissions = () => {
   const handleDownloadForm = () => {
     // Create a link element to trigger download
     const link = document.createElement('a');
-    link.href = '/admission-form.txt';
-    link.download = 'Infant-Jesus-School-Admission-Form.txt';
+    link.href = '/admission-form.html';
+    link.download = 'Infant-Jesus-School-Admission-Form.html';
     link.target = '_blank';
     
     // Add a message about Chrome download
-    const message = "The admission application form is now downloading. Please check your Chrome downloads folder for the text file. You can print this form, fill it out, and submit it to complete your application.";
+    const message = "✅ Admission form downloaded successfully!\n\n📁 Check your Chrome downloads folder for: 'Infant-Jesus-School-Admission-Form.html'\n\n📝 Open the HTML file in your browser, fill it out, and print it to complete your application.\n\n💡 Tip: You can also save as PDF from the browser's print menu.\n\n📞 Contact us if you need any assistance!";
     
     // Show download message
     alert(message);
@@ -75,12 +76,39 @@ const Admissions = () => {
           {/* Section Header */}
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              Admissions
+              Admissions Open
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
               Begin your journey towards excellence. Join our community of learners 
               and unlock your potential with our comprehensive admission process.
             </p>
+            
+            {/* Grade Level Cards */}
+            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12">
+              <Card className="p-6 bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
+                <div className="text-center">
+                  <h3 className="text-2xl font-bold text-blue-800 mb-2">LKG to 5th Grade</h3>
+                  <p className="text-blue-700 mb-4">Early childhood and primary education with focus on foundational skills</p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    <Badge variant="secondary" className="bg-blue-200 text-blue-800">Yoga & Chess</Badge>
+                    <Badge variant="secondary" className="bg-blue-200 text-blue-800">Music & Dance</Badge>
+                    <Badge variant="secondary" className="bg-blue-200 text-blue-800">Computer Education</Badge>
+                  </div>
+                </div>
+              </Card>
+              
+              <Card className="p-6 bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200">
+                <div className="text-center">
+                  <h3 className="text-2xl font-bold text-purple-800 mb-2">6th to 12th Grade</h3>
+                  <p className="text-purple-700 mb-4">Secondary education with specialized subjects and career guidance</p>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    <Badge variant="secondary" className="bg-purple-200 text-purple-800">NEET Coaching</Badge>
+                    <Badge variant="secondary" className="bg-purple-200 text-purple-800">Research Labs</Badge>
+                    <Badge variant="secondary" className="bg-purple-200 text-purple-800">Sports Excellence</Badge>
+                  </div>
+                </div>
+              </Card>
+            </div>
           </div>
 
           {/* Admission Process */}
@@ -136,9 +164,9 @@ const Admissions = () => {
                 <Download className="mr-2 h-4 w-4" />
                 Download Application Form
               </Button>
-              <p className="text-xs text-muted-foreground mt-2 text-center">
-                Text file will download to your Chrome downloads folder
-              </p>
+                             <p className="text-xs text-muted-foreground mt-2 text-center">
+                 HTML form will download - open in browser to fill & print
+               </p>
             </Card>
 
             {/* Important Dates */}
@@ -163,9 +191,9 @@ const Admissions = () => {
                 <Download className="mr-2 h-4 w-4" />
                 Download & Apply Now
               </Button>
-              <p className="text-xs text-muted-foreground mt-2 text-center">
-                Get the form, fill it out, and submit to apply
-              </p>
+                             <p className="text-xs text-muted-foreground mt-2 text-center">
+                 Open HTML file in browser, fill it out, and print to apply
+               </p>
             </Card>
           </div>
 
@@ -192,9 +220,9 @@ const Admissions = () => {
                   Schedule Campus Visit
                 </Button>
               </div>
-              <p className="text-sm text-white/80 mt-4 max-w-2xl mx-auto">
-                Download the admission application form to your Chrome downloads folder. Print the form, fill it out completely, and submit it along with all required documents to complete your application.
-              </p>
+                             <p className="text-sm text-white/80 mt-4 max-w-2xl mx-auto">
+                 Download the HTML admission form to your Chrome downloads folder. Open it in your browser, fill it out completely, and print it along with all required documents to complete your application.
+               </p>
             </Card>
           </div>
         </div>

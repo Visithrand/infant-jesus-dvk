@@ -5,12 +5,15 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   const quickLinks = [
+    { name: "Home", href: "/" },
+    { name: "Kindergarten", href: "/kindergarten" },
+    { name: "Matric", href: "/matric" },
+    { name: "Celebrations", href: "/celebrations" },
     { name: "About Us", href: "/#about" },
     { name: "Academic Programs", href: "/#academics" },
     { name: "Admissions", href: "/#admissions" },
     { name: "Facilities", href: "/#facilities" },
-    { name: "Contact", href: "/contact" },
-    { name: "Alumni", href: "/#alumni" }
+    { name: "Contact", href: "/contact" }
   ];
 
   const programs = [

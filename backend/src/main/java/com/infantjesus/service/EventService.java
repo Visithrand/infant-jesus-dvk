@@ -117,7 +117,7 @@ public class EventService {
         String fileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
         Path filePath = Paths.get(uploadDir + fileName);
         Files.copy(imageFile.getInputStream(), filePath);
-        return "/uploads/events/" + fileName;
+        return "/api/uploads/events/" + fileName;
     }
     
     /**
@@ -125,9 +125,11 @@ public class EventService {
      */
     private void deleteImage(String imageUrl) {
         try {
-            if (imageUrl != null && imageUrl.startsWith("/uploads/")) {
-                Path filePath = Paths.get("." + imageUrl);
-                Files.deleteIfExists(filePath);
+            if (imageUrl != null && imageUrl.startsWith("/api/uploads/")) {
+                // Remove /api prefix for file system path
+                String filePath = imageUrl.replace("/api", "");
+                Path path = Paths.get("." + filePath);
+                Files.deleteIfExists(path);
             }
         } catch (IOException e) {
             // Log error but don't throw exception
