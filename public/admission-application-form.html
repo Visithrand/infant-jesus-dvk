@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infant Jesus School - Admission Application Form</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .school-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .school-info {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .form-section {
+            margin-bottom: 25px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #f0f0f0;
+            padding: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #007bff;
+        }
+        .form-row {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        .form-label {
+            width: 300px;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+        .form-input {
+            flex: 1;
+            border-bottom: 1px solid #ccc;
+            padding: 5px;
+            min-height: 20px;
+        }
+        .photo-box {
+            width: 120px;
+            height: 150px;
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f9f9f9;
+            margin-left: 20px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        .table th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .declaration {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 4px solid #28a745;
+            margin: 20px 0;
+        }
+        .signature-line {
+            border-bottom: 1px solid #333;
+            min-width: 200px;
+            display: inline-block;
+            margin: 0 10px;
+        }
+        .enclosures {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .emis-boxes {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .emis-box {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+        }
+        .important-note {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        @media print {
+            body { margin: 0; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="school-name">INFANT JESUS MATRIC. HR. SEC. SCHOOL</div>
+        <div class="school-info">(Recognized by the Govt. of Tamil Nadu)</div>
+        <div class="school-info">E.B. Road (Extn) Devakottai - 630 302</div>
+        <div style="margin-top: 20px;">
+            <span style="margin-right: 50px;">Admission No.: <span class="form-input" style="width: 100px; display: inline-block;"></span></span>
+            <span>Application No.: <span class="form-input" style="width: 100px; display: inline-block;"></span></span>
+        </div>
+        <h1 style="margin-top: 20px;">APPLICATION FOR ADMISSION</h1>
+    </div>
+
+    <div class="important-note">
+        ⚠️ Application defective in particulars or in any other manner will not be considered
+    </div>
+
+    <div class="form-section">
+        <div class="section-title">Applicant's Personal Details</div>
+        <div style="display: flex;">
+            <div style="flex: 1;">
+                <div class="form-row">
+                    <div class="form-label">1. Name of the Pupil (Block Letters):</div>
+                    <div class="form-input"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">Name of the Pupil in Tamil:</div>
+                    <div class="form-input"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">2. Date of Birth:</div>
+                    <div class="form-input"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">3. Gender:</div>
+                    <div class="form-input"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">4. Nationality & State:</div>
+                    <div class="form-input"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">5. Native Place:</div>
+                    <div class="form-input"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">6. Religion:</div>
+                    <div class="form-input"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">7. Caste:</div>
+                    <div class="form-input"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">8. Community:</div>
+                    <div class="form-input"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">9. Whether living with Parent or Guardian:</div>
+                    <div class="form-input"></div>
+                </div>
+            </div>
+            <div class="photo-box">
+                PHOTO
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="section-title">Parent/Guardian Details</div>
+        <div class="form-row">
+            <div class="form-label">10. a) Name of the Father / Guardian:</div>
+            <div class="form-input"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">Name of the Father in Tamil:</div>
+            <div class="form-input"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">b) Occupation:</div>
+            <div class="form-input"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">c) Annual Income (Father / Mother):</div>
+            <div class="form-input"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">c) Full address:</div>
+            <div class="form-input"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">d) Telephone Number:</div>
+            <div class="form-input"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">e) Name of the Mother:</div>
+            <div class="form-input"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">Name of the Mother in Tamil:</div>
+            <div class="form-input"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">f) Occupation:</div>
+            <div class="form-input"></div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="section-title">Examination and Marks Details</div>
+        <div class="form-row">
+            <div class="form-label">11. Qualifying examination passed:</div>
+            <div class="form-input"></div>
+        </div>
+        <div class="form-label">12. Marks obtained in the examination:</div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name of Examination</th>
+                    <th>Month & Year</th>
+                    <th>S.No.</th>
+                    <th>SUBJECTS</th>
+                    <th>Maximum Marks Prescribed</th>
+                    <th>Marks Obtained</th>
+                    <th>Percentage</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>SSLC</td>
+                    <td></td>
+                    <td>1</td>
+                    <td></td>
+                    <td>100</td>
+                    <td></td>
+                    <td>%</td>
+                </tr>
+                <tr>
+                    <td>SSLC</td>
+                    <td></td>
+                    <td>2</td>
+                    <td></td>
+                    <td>100</td>
+                    <td></td>
+                    <td>%</td>
+                </tr>
+                <tr>
+                    <td>CBSE</td>
+                    <td></td>
+                    <td>3</td>
+                    <td></td>
+                    <td>100</td>
+                    <td></td>
+                    <td>%</td>
+                </tr>
+                <tr>
+                    <td>CBSE</td>
+                    <td></td>
+                    <td>4</td>
+                    <td></td>
+                    <td>100</td>
+                    <td></td>
+                    <td>%</td>
+                </tr>
+                <tr>
+                    <td>ICSE</td>
+                    <td></td>
+                    <td>5</td>
+                    <td></td>
+                    <td>100</td>
+                    <td></td>
+                    <td>%</td>
+                </tr>
+                <tr style="font-weight: bold;">
+                    <td colspan="5">TOTAL</td>
+                    <td></td>
+                    <td>%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="form-section">
+        <div class="section-title">Additional Information</div>
+        <div class="form-row">
+            <div class="form-label">13. Name of the School Pupil last studied and Reason for leaving it:</div>
+            <div class="form-input"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">14. Mother-tongue of the Pupil:</div>
+            <div class="form-input"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">15. Medium in which the Pupil studied at the time of leaving the school:</div>
+            <div class="form-input"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">16. Medium of instruction desired at the Higher Secondary Stage:</div>
+            <div class="form-input"></div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="section-title">Subject Choice</div>
+        <div class="form-label">17. Choice of subjects under Part III (Refer Prospectus) and write the subjects:</div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Order of Priority</th>
+                    <th>1st Choice</th>
+                    <th>2nd Choice</th>
+                    <th>3rd Choice</th>
+                    <th>4th Choice</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1st Choice</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>2nd Choice</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>3rd Choice</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="form-section">
+        <div class="section-title">Further Details</div>
+        <div class="form-row">
+            <div class="form-label">18. Whether protected from small pox, vaccinated or small pox marked / Blood Group:</div>
+            <div class="form-input"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">19. Proficiency in extra-curricular activities:</div>
+            <div class="form-input"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">20. Full postal address of the Applicant for communication (Block Letters):</div>
+            <div class="form-input"></div>
+        </div>
+    </div>
+
+    <div class="declaration">
+        <strong>Applicant's Declaration:</strong><br>
+        All the particulars stated above are true to the best of my knowledge. If selected for admission I promise to abide by the rules and regulations of the school and to avoid association with any outside organization without the written permission of the Principal.
+        <div style="margin-top: 15px;">
+            Signature of the Applicant: <span class="signature-line"></span>
+            Date: <span class="signature-line"></span>
+        </div>
+    </div>
+
+    <div class="declaration">
+        <strong>Undertaking by Parent or Guardian:</strong><br>
+        In the event of the above Applicant my son/daughter/ward, being admitted to the school, I undertake to pay regularly all his/her dues to the school till completion of his/her course of study. I also undertake to be responsible for his/her conduct and remove him/her forth from the school if the Principal were to order the same for legitimate reasons.
+        <div style="margin-top: 15px;">
+            Signature of the Parent / Guardian: <span class="signature-line"></span>
+            Date: <span class="signature-line"></span>
+        </div>
+    </div>
+
+    <div class="enclosures">
+        <strong>Enclosures:</strong>
+        <ol>
+            <li>T.C. Original</li>
+            <li>Mark Sheet Original</li>
+            <li>Birth Certificate Xerox</li>
+            <li>Community Certificate Xerox</li>
+            <li>Aadhar Card Xerox</li>
+        </ol>
+    </div>
+
+    <div class="form-section">
+        <div class="section-title">EMIS Number</div>
+        <div class="form-label">EMIS No.:</div>
+        <div class="emis-boxes">
+            <div class="emis-box"></div>
+            <div class="emis-box"></div>
+            <div class="emis-box"></div>
+            <div class="emis-box"></div>
+            <div class="emis-box"></div>
+            <div class="emis-box"></div>
+            <div class="emis-box"></div>
+            <div class="emis-box"></div>
+            <div class="emis-box"></div>
+            <div class="emis-box"></div>
+            <div class="emis-box"></div>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc;">
+        <p><strong>Infant Jesus Matric. Hr. Sec. School</strong></p>
+        <p>E.B. Road (Extn) Devakottai - 630 302</p>
+        <p>Phone: 8220092495 | Email: info@infantjesusschool.ac.in</p>
+    </div>
+
+    <div class="no-print" style="text-align: center; margin-top: 30px; padding: 20px; background-color: #f8f9fa; border-radius: 5px;">
+        <h3>Instructions for Form Submission</h3>
+        <p>1. Download this form to your Chrome downloads folder</p>
+        <p>2. Print the form on A4 size paper</p>
+        <p>3. Fill out all required fields completely and accurately</p>
+        <p>4. Attach all required documents as listed in the enclosures section</p>
+        <p>5. Submit the completed form to the school office</p>
+        <p><strong>Note:</strong> Incomplete or inaccurate forms will not be considered for admission.</p>
+    </div>
+</body>
+</html>

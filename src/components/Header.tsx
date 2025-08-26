@@ -1,39 +1,38 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone, Mail, MapPin } from "lucide-react";
+import { Menu, X, Phone, Mail, MapPin, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import schoolLogo from "@/assets/school-logo.png";
 import herocampus from "@/assets/hero-campus.png";
-import { useNavigate } from 'react-router-dom'; // Import useNavigate hook
 
-// Define the prop type for clarity (optional but good practice)
-interface HeaderProps {
-  setActiveSection?: (section: string) => void; // Make setActiveSection optional
-}
-
-const Header: React.FC<HeaderProps> = ({ setActiveSection = () => {} }) => {
+const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const navigate = useNavigate(); // Get the navigate function from React Router
 
   const navItems = [
-    { name: "Home", section: "home" },
-    { name: "About", section: "about" },
-    { name: "Academics", section: "programs" }, // Assuming Academics corresponds to Programs component
-    { name: "Admissions", section: "admissions" },
-    { name: "Facilities", section: "facilities" },
-    { name: "Celebrations", href: "/celebrations" }, // These will still be links to other pages
-    { name: "Contact", href: "/contact" }, // These will still be links to other pages
+    { name: "Home", href: "/" },
+    { name: "About", href: "#about" },
+    { name: "Academics", href: "#academics" },
+    { name: "Admissions", href: "#admissions" },
+    { name: "Facilities", href: "#facilities" },
+    { name: "Celebrations", href: "/celebrations" },
+    { name: "Contact", href: "/contact" },
+    { name: "Admin", href: "/admin" },
   ];
 
-  const handleNavClick = (section: string) => {
-    setActiveSection(section);
-    setIsMenuOpen(false); // Close mobile menu on click
-  };
-
-  const handlePageNavClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, href: string) => {
-    event.preventDefault(); // Prevent default anchor tag behavior
-    setIsMenuOpen(false); // Close mobile menu on click
-    navigate(href); // Use the navigate function to go to the specified href
+  const handleDownloadForm = () => {
+    // Create a link element to trigger download
+    const link = document.createElement('a');
+    link.href = '/admission-form.txt';
+    link.download = 'Infant-Jesus-School-Admission-Form.txt';
+    link.target = '_blank';
+    
+    // Add a message about Chrome download
+    const message = "The admission application form is now downloading. Please check your Chrome downloads folder for the text file. You can print this form, fill it out, and submit it to complete your application.";
+    
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -52,7 +51,7 @@ const Header: React.FC<HeaderProps> = ({ setActiveSection = () => {} }) => {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <MapPin className="h-4 w-4 mr-2" />
+            <MapPin className="h-4 w-4" />
             <span>DEVAKOTTAI, sivagangai, 630302</span>
           </div>
         </div>
@@ -82,26 +81,16 @@ const Header: React.FC<HeaderProps> = ({ setActiveSection = () => {} }) => {
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-6">
               {navItems.map((item) => (
-                item.section ? (
-                  <button
-                    key={item.name}
-                    onClick={() => handleNavClick(item.section)}
-                    className="text-foreground hover:text-primary transition-colors duration-300 font-medium"
-                  >
-                    {item.name}
-                  </button>
-                ) : (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className="text-foreground hover:text-primary transition-colors duration-300 font-medium"
-                    onClick={(e) => handlePageNavClick(e, item.href)}
-                  >
-                    {item.name}
-                  </a>
-                )
+                <a
+                  key={item.name}
+                  href={item.href}
+                  className="text-foreground hover:text-primary transition-colors duration-300 font-medium"
+                >
+                  {item.name}
+                </a>
               ))}
-              <Button variant="accent" size="sm">
+              <Button variant="accent" size="sm" onClick={handleDownloadForm}>
+                <Download className="mr-2 h-3 w-3" />
                 Apply Now
               </Button>
             </nav>
@@ -129,26 +118,17 @@ const Header: React.FC<HeaderProps> = ({ setActiveSection = () => {} }) => {
             )}
           >
             {navItems.map((item) => (
-               item.section ? (
-                <button
-                  key={item.name}
-                  onClick={() => handleNavClick(item.section)}
-                  className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2"
-                >
-                  {item.name}
-                </button>
-              ) : (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2"
-                  onClick={(e) => handlePageNavClick(e, item.href)}
-                >
-                  {item.name}
-                </a>
-              )
+              <a
+                key={item.name}
+                href={item.href}
+                className="block text-foreground hover:text-primary transition-colors duration-300 font-medium py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {item.name}
+              </a>
             ))}
-            <Button variant="accent" size="sm" className="w-full">
+            <Button variant="accent" size="sm" className="w-full" onClick={handleDownloadForm}>
+              <Download className="mr-2 h-3 w-3" />
               Apply Now
             </Button>
           </div>

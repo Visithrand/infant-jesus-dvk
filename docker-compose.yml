@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: infant_jesus_mysql
+m    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "Visithran@mysql#123"
+      MYSQL_DATABASE: "school_db"
+      MYSQL_USER: "school_user"
+      MYSQL_PASSWORD: "Visithran@mysql#123"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/src/main/resources/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password
+
+volumes:
+  mysql_data:

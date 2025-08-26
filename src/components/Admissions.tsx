@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, FileText, Users, GraduationCap, ArrowRight, CheckCircle } from "lucide-react";
+import { CalendarDays, FileText, Users, GraduationCap, ArrowRight, CheckCircle, Download } from "lucide-react";
 
 const Admissions = () => {
   const admissionSteps = [
@@ -48,6 +48,25 @@ const Admissions = () => {
     { event: "Admission Process", date: "June 20-30, 2024" },
     { event: "Classes Commence", date: "July 1, 2024" }
   ];
+
+  const handleDownloadForm = () => {
+    // Create a link element to trigger download
+    const link = document.createElement('a');
+    link.href = '/admission-form.txt';
+    link.download = 'Infant-Jesus-School-Admission-Form.txt';
+    link.target = '_blank';
+    
+    // Add a message about Chrome download
+    const message = "The admission application form is now downloading. Please check your Chrome downloads folder for the text file. You can print this form, fill it out, and submit it to complete your application.";
+    
+    // Show download message
+    alert(message);
+    
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <section id="admissions" className="py-20 bg-secondary/30">
@@ -109,9 +128,17 @@ const Admissions = () => {
                   </div>
                 ))}
               </div>
-              <Button variant="accent" className="w-full mt-6">
+              <Button 
+                variant="accent" 
+                className="w-full mt-6"
+                onClick={handleDownloadForm}
+              >
+                <Download className="mr-2 h-4 w-4" />
                 Download Application Form
               </Button>
+              <p className="text-xs text-muted-foreground mt-2 text-center">
+                Text file will download to your Chrome downloads folder
+              </p>
             </Card>
 
             {/* Important Dates */}
@@ -128,9 +155,17 @@ const Admissions = () => {
                   </div>
                 ))}
               </div>
-              <Button variant="hero" className="w-full mt-6">
-                Apply Now
+              <Button 
+                variant="hero" 
+                className="w-full mt-6"
+                onClick={handleDownloadForm}
+              >
+                <Download className="mr-2 h-4 w-4" />
+                Download & Apply Now
               </Button>
+              <p className="text-xs text-muted-foreground mt-2 text-center">
+                Get the form, fill it out, and submit to apply
+              </p>
             </Card>
           </div>
 
@@ -144,14 +179,22 @@ const Admissions = () => {
                 Join thousands of successful alumni who have built their careers with us.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="accent" size="lg">
-                  Apply Online
+                <Button 
+                  variant="accent" 
+                  size="lg"
+                  onClick={handleDownloadForm}
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Download & Apply Online
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <Button variant="outline" size="lg" className="bg-white/10 border-white text-white hover:bg-white hover:text-primary">
                   Schedule Campus Visit
                 </Button>
               </div>
+              <p className="text-sm text-white/80 mt-4 max-w-2xl mx-auto">
+                Download the admission application form to your Chrome downloads folder. Print the form, fill it out completely, and submit it along with all required documents to complete your application.
+              </p>
             </Card>
           </div>
         </div>

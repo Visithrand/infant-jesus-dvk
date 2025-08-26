@@ -1,73 +1,278 @@
-# Welcome to your Lovable project
+# Infant Jesus School Website
 
-## Project info
+A modern, responsive school website built with React frontend and Spring Boot backend, featuring event management, live class notifications, facilities showcase, and admin dashboard.
 
-**URL**: https://lovable.dev/projects/f34b7226-ab99-4896-a422-3ccc4bcd3375
+## 🚀 Features
 
-## How can I edit this code?
+### Frontend (React)
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **Event Gallery**: Dynamic event display with image uploads
+- **Live Notifications**: Real-time live class notifications with 10-second polling
+- **Facilities Section**: Searchable facilities showcase
+- **Admin Dashboard**: Secure admin panel for content management
+- **Admission Forms**: Downloadable application forms
 
-There are several ways of editing your application.
+### Backend (Spring Boot)
+- **RESTful APIs**: Complete CRUD operations for events, classes, and facilities
+- **JWT Authentication**: Secure admin access with token-based authentication
+- **File Upload**: Local image storage for events and facilities
+- **MySQL Database**: Persistent data storage with JPA/Hibernate
+- **Spring Security**: Protected admin endpoints
 
-**Use Lovable**
+## 🛠️ Technology Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/f34b7226-ab99-4896-a422-3ccc4bcd3375) and start prompting.
+### Frontend
+- **React 18** with TypeScript
+- **Tailwind CSS** for styling
+- **Lucide React** for icons
+- **React Router** for navigation
+- **Shadcn/ui** components
 
-Changes made via Lovable will be committed automatically to this repo.
+### Backend
+- **Java 17**
+- **Spring Boot 3.2.0**
+- **Spring Data JPA**
+- **Spring Security**
+- **MySQL 8.0**
+- **JWT Authentication**
 
-**Use your preferred IDE**
+## 📋 Prerequisites
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **Java 17** or higher
+- **Node.js 18** or higher
+- **MySQL 8.0** (or Docker)
+- **Maven 3.6+**
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🚀 Quick Start
 
-Follow these steps:
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd vvinscbe-clone-showcase
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### 2. Backend Setup
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+#### Option A: Using Docker (Recommended)
+```bash
+# Start MySQL container
+docker-compose up -d mysql
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Wait for MySQL to start
+docker-compose logs mysql
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+#### Option B: Local MySQL
+1. Install MySQL 8.0
+2. Create database: `CREATE DATABASE infant_jesus_school;`
+3. Update `backend/src/main/resources/application.properties`
+
+#### Start Spring Boot Backend
+```bash
+cd backend
+
+# Build the project
+mvn clean install
+
+# Run the application
+mvn spring-boot:run
+```
+
+The backend will start on `http://localhost:8080`
+
+### 3. Frontend Setup
+```bash
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The frontend will start on `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### 4. Admin Access
+Navigate to `/admin` and use:
+- **Username**: `admin`
+- **Password**: `password`
 
-**Use GitHub Codespaces**
+## 🗄️ Database Schema
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Events Table
+```sql
+CREATE TABLE events (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    image_url VARCHAR(255),
+    created_at TIMESTAMP NOT NULL
+);
+```
 
-## What technologies are used for this project?
+### Classes Table
+```sql
+CREATE TABLE classes (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    subject VARCHAR(255) NOT NULL,
+    teacher VARCHAR(255) NOT NULL,
+    schedule_time TIMESTAMP NOT NULL,
+    is_live BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL
+);
+```
 
-This project is built with:
+### Facilities Table
+```sql
+CREATE TABLE facilities (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    image_url VARCHAR(255),
+    created_at TIMESTAMP NOT NULL
+);
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🔌 API Endpoints
 
-## How can I deploy this project?
+### Public Endpoints
+- `GET /api/events` - Get all events
+- `GET /api/classes/live` - Get live classes
+- `GET /api/facilities` - Get all facilities
+- `POST /api/admin/login` - Admin login
 
-Simply open [Lovable](https://lovable.dev/projects/f34b7226-ab99-4896-a422-3ccc4bcd3375) and click on Share -> Publish.
+### Admin Endpoints (Authentication Required)
+- `POST /api/events/admin` - Create event
+- `PUT /api/events/admin/{id}` - Update event
+- `DELETE /api/events/admin/{id}` - Delete event
+- `POST /api/classes/admin` - Create class
+- `PUT /api/classes/admin/{id}` - Update class
+- `PUT /api/classes/admin/{id}/toggle-live` - Toggle live status
+- `POST /api/facilities/admin` - Create facility
+- `PUT /api/facilities/admin/{id}` - Update facility
+- `DELETE /api/facilities/admin/{id}` - Delete facility
 
-## Can I connect a custom domain to my Lovable project?
+## 🎯 Key Components
 
-Yes, you can!
+### Frontend Components
+- **EventGallery**: Displays school events with images
+- **LiveNotification**: Real-time live class notifications
+- **FacilitiesSection**: Searchable facilities showcase
+- **AdminDashboard**: Admin panel for content management
+- **Admissions**: Application form downloads
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Backend Services
+- **EventService**: Event CRUD operations with image upload
+- **ClassScheduleService**: Class management and live status
+- **FacilityService**: Facility CRUD operations
+- **JWT Authentication**: Secure admin access
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 🔐 Security Features
+
+- JWT-based authentication for admin endpoints
+- BCrypt password hashing
+- CORS configuration for frontend integration
+- Stateless session management
+- Protected admin routes
+
+## 📁 Project Structure
+
+```
+vvinscbe-clone-showcase/
+├── backend/                          # Spring Boot backend
+│   ├── src/main/java/com/infantjesus/
+│   │   ├── entity/                  # JPA entities
+│   │   ├── repository/              # Data repositories
+│   │   ├── service/                 # Business logic
+│   │   ├── controller/              # REST controllers
+│   │   ├── dto/                     # Data transfer objects
+│   │   ├── security/                # JWT and security
+│   │   └── config/                  # Configuration classes
+│   ├── src/main/resources/
+│   │   └── application.properties   # Application config
+│   └── pom.xml                      # Maven dependencies
+├── src/                             # React frontend
+│   ├── components/                  # React components
+│   │   ├── ui/                      # Shadcn/ui components
+│   │   ├── EventGallery.tsx         # Events display
+│   │   ├── LiveNotification.tsx     # Live class notifications
+│   │   ├── FacilitiesSection.tsx    # Facilities showcase
+│   │   └── AdminDashboard.tsx       # Admin panel
+│   ├── pages/                       # Page components
+│   └── App.tsx                      # Main application
+├── docker-compose.yml               # MySQL container setup
+└── README.md                        # This file
+```
+
+## 🚀 Deployment
+
+### Backend Deployment
+1. Build JAR: `mvn clean package`
+2. Run: `java -jar target/school-website-backend-0.0.1-SNAPSHOT.jar`
+3. Configure production database
+4. Set up proper JWT secret
+5. Configure file storage (consider cloud storage)
+
+### Frontend Deployment
+1. Build: `npm run build`
+2. Deploy `dist/` folder to web server
+3. Configure API base URL for production
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Database Connection Error**
+   - Ensure MySQL is running
+   - Check credentials in `application.properties`
+   - Verify database exists
+
+2. **Port Already in Use**
+   - Change port in `application.properties`
+   - Kill process using port 8080
+
+3. **File Upload Errors**
+   - Ensure `uploads/` directory has write permissions
+   - Check file size limits
+
+4. **CORS Issues**
+   - Verify backend CORS configuration
+   - Check frontend API calls
+
+### Development Tips
+
+- Use browser dev tools to debug API calls
+- Check Spring Boot logs for backend errors
+- Verify JWT token in localStorage for admin access
+- Test file uploads with smaller images first
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📝 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For issues or questions:
+1. Check the troubleshooting section
+2. Review logs and error messages
+3. Check API documentation
+4. Contact the development team
+
+## 🔄 Updates and Maintenance
+
+- Regularly update dependencies
+- Monitor database performance
+- Backup data regularly
+- Test admin functionality
+- Review security configurations
+
+---
+
+**Built with ❤️ for Infant Jesus School**
