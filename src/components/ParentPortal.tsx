@@ -7,6 +7,8 @@ import { MessageSquare } from "lucide-react";
 
 const ParentPortal = () => {
   const [query, setQuery] = useState("");
+  const [parentName, setParentName] = useState("");
+  const [parentEmail, setParentEmail] = useState("");
 
   const majorUpdates = [
     {
@@ -45,14 +47,16 @@ const ParentPortal = () => {
   ];
 
   const handleSubmitQuery = () => {
+    const apiBase = (import.meta as any).env?.VITE_SERVER_URL || 'http://localhost:3001';
+
     if (query.trim()) {
       // Sending the query to the backend for email
-      fetch('http://localhost:3001/api/send-query-email', { // Assuming backend runs on port 3001
+      fetch(`${apiBase}/send-query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ query: query }),
+        body: JSON.stringify({ name: parentName, email: parentEmail, message: query }),
       })
       .then(response => response.json())
       .then(data => {
@@ -64,6 +68,8 @@ const ParentPortal = () => {
             duration: 3000,
           });
           setQuery("");
+          setParentName("");
+          setParentEmail("");
         } else {
           toast({
             title: "Submission Failed",
@@ -141,6 +147,28 @@ const ParentPortal = () => {
               </h3>
 
               <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">Your Name</label>
+                    <input
+                      type="text"
+                      value={parentName}
+                      onChange={(e) => setParentName(e.target.value)}
+                      placeholder="Enter your full name"
+                      className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-foreground mb-2 block">Your Email</label>
+                    <input
+                      type="email"
+                      value={parentEmail}
+                      onChange={(e) => setParentEmail(e.target.value)}
+                      placeholder="your@email.com"
+                      className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground"
+                    />
+                  </div>
+                </div>
                 <div>
                   <label className="text-sm font-medium text-foreground mb-2 block">
                     Your Question/Query

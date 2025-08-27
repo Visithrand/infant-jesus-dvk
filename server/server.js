@@ -1,9 +1,22 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
+
+// Debug environment configuration on startup
+console.log('=== MAIL CONFIG CHECK ===');
+console.log('MAIL_FROM:', process.env.MAIL_FROM || '❌ MISSING');
+console.log('MAIL_APP_PASSWORD:', process.env.MAIL_APP_PASSWORD ? '✅ SET' : '❌ MISSING');
+console.log('MAIL_TO:', process.env.MAIL_TO || '❌ MISSING (will use fallback below)');
+console.log('=========================');
+
+// Fallback defaults (edit these if you want hardcoded values)
+const DEFAULT_MAIL_FROM = 'visithrand@gmail.com';
+const DEFAULT_MAIL_APP_PASSWORD = 'qssqatorlbdwvnpu'; // 16-char Gmail App Password (no spaces)
+const DEFAULT_MAIL_TO = 'infantjesusdvk@gmail.com';
 
 // ✅ Middleware to parse JSON and handle CORS
 app.use(cors());
@@ -20,21 +33,30 @@ app.get('/', (req, res) => {
 app.post('/send-query', async (req, res) => {
   const { name, email, message } = req.body;
 
+  const fromAddress = process.env.MAIL_FROM || DEFAULT_MAIL_FROM;
+  const appPassword = process.env.MAIL_APP_PASSWORD || DEFAULT_MAIL_APP_PASSWORD;
+  const toAddress = process.env.MAIL_TO || DEFAULT_MAIL_TO;
+
+  if (!fromAddress || !appPassword) {
+    return res.status(500).json({ success: false, message: 'Email service not configured' });
+  }
+
   // Set up nodemailer transporter
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'visithrand@gmail.com',
-      pass: 'abcdabcdefghijmnop', // App password, NOT your Gmail password
+      user: fromAddress,
+      pass: appPassword,
     },
   });
 
   // Mail content
   const mailOptions = {
-    from: email,
-    to: 'infantjesusdvk@gmail.com',
+    from: fromAddress,
+    replyTo: email || fromAddress,
+    to: toAddress,
     subject: 'New Query from Website',
-    text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
+    text: `Name: ${name || 'N/A'}\nEmail: ${email || 'N/A'}\nMessage: ${message || ''}`,
   };
 
   try {
