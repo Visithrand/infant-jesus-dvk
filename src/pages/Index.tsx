@@ -12,6 +12,7 @@ import Footer from "@/components/Footer";
 import EventGallery from "@/components/EventGallery";
 import LiveNotification from "@/components/LiveNotification";
 import LiveClasses from "@/components/LiveClasses";
+import LiveClassesPopup from "@/components/LiveClassesPopup";
 import FacilitiesSection from "@/components/FacilitiesSection";
 
 const Index = () => {
@@ -48,6 +49,7 @@ const Index = () => {
       </div>
       <Footer />
       <LiveNotification />
+      <LiveClassesPopup />
     </div>
   );
 };
