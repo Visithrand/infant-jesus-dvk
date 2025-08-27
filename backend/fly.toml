@@ -1,0 +1,21 @@
+# Name of your app (must be globally unique)
+app = "infantjesus"
+
+# Primary region
+primary_region = "bom"
+
+# Build configuration (Dockerfile is used automatically)
+[build]
+  dockerfile = "Dockerfile"
+
+# Environment variables
+[env]
+  PORT = "8080"
+
+# Networking configuration
+[[services]]
+  internal_port = 8080
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 8080
