@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -211,6 +212,7 @@ public class AdminService {
 
     /**
      * Bootstrap or update the super admin with fixed credentials
+     * This method ensures the SUPER_ADMIN account always exists and cannot be deleted
      */
     public Map<String, Object> bootstrapSuperAdmin(String email, String password, String username) {
         Map<String, Object> response = new HashMap<>();
@@ -219,6 +221,7 @@ public class AdminService {
         Admin superAdmin;
         if (existingByEmail.isPresent()) {
             superAdmin = existingByEmail.get();
+            // Update credentials but preserve the SUPER_ADMIN role
             superAdmin.setUsername(username);
             superAdmin.setPassword(passwordEncoder.encode(password));
             superAdmin.setRole(Role.SUPER_ADMIN);
@@ -232,10 +235,28 @@ public class AdminService {
 
         Admin saved = adminRepository.save(superAdmin);
         response.put("success", true);
-        response.put("message", "Super admin bootstrapped");
+        response.put("message", "Super admin bootstrapped successfully");
         response.put("adminId", saved.getId());
         response.put("email", saved.getEmail());
         response.put("role", saved.getRole().name());
         return response;
+    }
+    
+    /**
+     * Check if a user can be deleted (SUPER_ADMIN cannot be deleted)
+     */
+    public boolean canDeleteAdmin(Long adminId) {
+        Optional<Admin> admin = adminRepository.findById(adminId);
+        if (admin.isPresent()) {
+            return admin.get().getRole() != Role.SUPER_ADMIN;
+        }
+        return false;
+    }
+    
+    /**
+     * Get all admins (for SUPER_ADMIN management)
+     */
+    public List<Admin> getAllAdmins() {
+        return adminRepository.findAll();
     }
 }

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Image as ImageIcon, ExternalLink } from "lucide-react";
+import EventDetailsModal from "./EventDetailsModal";
 
 interface Event {
   id: number;
@@ -15,6 +16,8 @@ const EventGallery = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchEvents();
@@ -120,82 +123,101 @@ const EventGallery = () => {
   }
 
   return (
-    <section id="events" className="py-20 bg-background">
-      <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
-          {/* Section Header */}
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-              School Events & Activities
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Stay updated with the latest events, celebrations, and activities happening at 
-              Infant Jesus School. From academic achievements to cultural celebrations.
-            </p>
-          </div>
-
-          {/* Events Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {events.map((event) => (
-              <Card 
-                key={event.id}
-                className="overflow-hidden hover:shadow-medium transition-all duration-300 hover:scale-105 bg-card-gradient"
-              >
-                {/* Event Image */}
-                {event.imageUrl ? (
-                  <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={`http://localhost:8080${event.imageUrl}`}
-                      alt={event.title}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                  </div>
-                ) : (
-                  <div className="h-48 bg-muted flex items-center justify-center">
-                    <ImageIcon className="h-16 w-16 text-muted-foreground" />
-                  </div>
-                )}
-
-                {/* Event Content */}
-                <div className="p-6">
-                  <div className="flex items-center text-sm text-muted-foreground mb-3">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    {formatDate(event.createdAt)}
-                  </div>
-                  
-                  <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2">
-                    {event.title}
-                  </h3>
-                  
-                  {event.description && (
-                    <p className="text-muted-foreground mb-4 line-clamp-3">
-                      {event.description}
-                    </p>
-                  )}
-                  
-                  <Button variant="outline" className="w-full">
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    View Details
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          {/* Load More Button */}
-          {events.length >= 6 && (
-            <div className="text-center mt-12">
-              <Button variant="accent" size="lg">
-                Load More Events
-              </Button>
+    <>
+      <section id="events" className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            {/* Section Header */}
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+                School Events & Activities
+              </h2>
+              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+                Stay updated with the latest events, celebrations, and activities happening at 
+                Infant Jesus School. From academic achievements to cultural celebrations.
+              </p>
             </div>
-          )}
+
+            {/* Events Grid */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {events.map((event) => (
+                <Card 
+                  key={event.id}
+                  className="overflow-hidden hover:shadow-medium transition-all duration-300 hover:scale-105 bg-card-gradient"
+                >
+                  {/* Event Image */}
+                  {event.imageUrl ? (
+                    <div className="relative h-48 overflow-hidden">
+                      <img
+                        src={`http://localhost:8080${event.imageUrl}`}
+                        alt={event.title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    </div>
+                  ) : (
+                    <div className="h-48 bg-muted flex items-center justify-center">
+                      <ImageIcon className="h-16 w-16 text-muted-foreground" />
+                    </div>
+                  )}
+
+                  {/* Event Content */}
+                  <div className="p-6">
+                    <div className="flex items-center text-sm text-muted-foreground mb-3">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      {formatDate(event.createdAt)}
+                    </div>
+                    
+                    <h3 className="text-xl font-bold text-foreground mb-3 line-clamp-2">
+                      {event.title}
+                    </h3>
+                    
+                    {event.description && (
+                      <p className="text-muted-foreground mb-4 line-clamp-3">
+                        {event.description}
+                      </p>
+                    )}
+                    
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => {
+                        setSelectedEvent(event);
+                        setIsModalOpen(true);
+                      }}
+                    >
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      View Details
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {/* Load More Button */}
+            {events.length >= 6 && (
+              <div className="text-center mt-12">
+                <Button variant="accent" size="lg">
+                  Load More Events
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Event Details Modal */}
+      <EventDetailsModal
+        event={selectedEvent}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedEvent(null);
+        }}
+      />
+    </>
   );
 };
 

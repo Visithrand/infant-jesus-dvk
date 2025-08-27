@@ -26,6 +26,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SuperAdminNav from "@/components/SuperAdminNav";
 import { getStoredAuth } from "@/utils/auth";
+import { useLocation } from "react-router-dom";
 
 interface Event {
   id: number;
@@ -74,13 +75,29 @@ const AdminDashboard = () => {
   const [editingClass, setEditingClass] = useState<ClassSchedule | null>(null);
   const [editingFacility, setEditingFacility] = useState<Facility | null>(null);
 
+  const location = useLocation();
+
   useEffect(() => {
-    // Check if user is already logged in
-    const savedToken = localStorage.getItem('adminToken');
-    if (savedToken) {
-      validateToken(savedToken);
+    // Get authentication from localStorage (set by AuthenticationPage)
+    const auth = JSON.parse(localStorage.getItem('auth') || '{}');
+    if (auth.token) {
+      setToken(auth.token);
+      setUsername(auth.username || '');
+      setRole(auth.role || '');
+      setIsLoggedIn(true);
+      fetchAllData();
     }
   }, []);
+
+  useEffect(() => {
+    // If SUPER_ADMIN clicked Create Admin from ribbon, open registration tab
+    if (role === 'SUPER_ADMIN') {
+      const params = new URLSearchParams(location.search);
+      if (params.get('action') === 'create-admin') {
+        setShowAuthForm('register');
+      }
+    }
+  }, [location.search, role]);
 
   const validateToken = async (tokenToValidate: string) => {
     try {
@@ -122,6 +139,9 @@ const AdminDashboard = () => {
     setToken(null);
     setUsername("");
     localStorage.removeItem('adminToken');
+    localStorage.removeItem('auth');
+    // Redirect back to auth page
+    window.location.href = '/admin';
   };
 
   const fetchAllData = async () => {

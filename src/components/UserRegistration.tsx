@@ -4,15 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
-import { getStoredAuth } from "@/utils/auth";
+import { Eye, EyeOff, Loader2, UserPlus } from "lucide-react";
 
-interface AdminRegistrationProps {
+interface UserRegistrationProps {
   onSwitchToLogin: () => void;
   onRegistrationSuccess: () => void;
 }
 
-const AdminRegistration = ({ onSwitchToLogin, onRegistrationSuccess }: AdminRegistrationProps) => {
+const UserRegistration = ({ onSwitchToLogin, onRegistrationSuccess }: UserRegistrationProps) => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -25,17 +24,15 @@ const AdminRegistration = ({ onSwitchToLogin, onRegistrationSuccess }: AdminRegi
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Note: do NOT cache auth on mount; read it right before submit to avoid staleness
-  const [currentRole, setCurrentRole] = useState<string | undefined>(() => (getStoredAuth() || {}).role);
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    // Clear error when user starts typing
+    // Clear messages when user starts typing
     if (error) setError(null);
+    if (success) setSuccess(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,26 +73,14 @@ const AdminRegistration = ({ onSwitchToLogin, onRegistrationSuccess }: AdminRegi
     }
 
     try {
-      const auth = getStoredAuth() || {};
-      const token = auth.token || localStorage.getItem('adminToken') || undefined;
-      const role = auth.role;
-      setCurrentRole(role);
-
-      if (!token || role !== 'SUPER_ADMIN') {
-        setError("Unauthorized: only Super Admin can create admins");
-        setLoading(false);
-        return;
-      }
-
-      const response = await fetch('http://localhost:8080/api/admin/create', {
+      const response = await fetch('http://localhost:8080/api/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
           username: formData.username.trim(),
-          email: formData.email.trim().toLowerCase(),
+          email: formData.email.trim(),
           password: formData.password,
           confirmPassword: formData.confirmPassword
         })
@@ -105,12 +90,7 @@ const AdminRegistration = ({ onSwitchToLogin, onRegistrationSuccess }: AdminRegi
 
       if (response.ok && data.success) {
         setSuccess("Registration successful! You can now log in.");
-        setFormData({
-          username: "",
-          email: "",
-          password: "",
-          confirmPassword: ""
-        });
+        setFormData({ username: "", email: "", password: "", confirmPassword: "" });
         // Auto-switch to login after 2 seconds
         setTimeout(() => {
           onRegistrationSuccess();
@@ -128,17 +108,15 @@ const AdminRegistration = ({ onSwitchToLogin, onRegistrationSuccess }: AdminRegi
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Admin Registration</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center flex items-center justify-center gap-2">
+          <UserPlus className="h-6 w-6" />
+          User Registration
+        </CardTitle>
         <CardDescription className="text-center">
-          Create a new admin account for the school website
+          Create a new account to access the school portal
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {currentRole !== 'SUPER_ADMIN' && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertDescription>Only Super Admin can create admins. Please log in as Super Admin.</AlertDescription>
-          </Alert>
-        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
             <Alert variant="destructive">
@@ -238,10 +216,10 @@ const AdminRegistration = ({ onSwitchToLogin, onRegistrationSuccess }: AdminRegi
             {loading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Registering...
+                Creating account...
               </>
             ) : (
-              "Register"
+              "Create Account"
             )}
           </Button>
         </form>
@@ -253,7 +231,7 @@ const AdminRegistration = ({ onSwitchToLogin, onRegistrationSuccess }: AdminRegi
             className="p-0 h-auto font-semibold"
             onClick={onSwitchToLogin}
           >
-            Login here
+            Sign in here
           </Button>
         </div>
       </CardContent>
@@ -261,4 +239,4 @@ const AdminRegistration = ({ onSwitchToLogin, onRegistrationSuccess }: AdminRegi
   );
 };
 
-export default AdminRegistration;
+export default UserRegistration;

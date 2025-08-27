@@ -3,6 +3,8 @@ package com.infantjesus.controller;
 import com.infantjesus.dto.AdminLoginDto;
 import com.infantjesus.dto.AdminRegistrationDto;
 import com.infantjesus.dto.AdminCreationDto;
+import com.infantjesus.entity.Admin;
+import com.infantjesus.repository.AdminRepository;
 import com.infantjesus.security.JwtUtil;
 import com.infantjesus.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -27,6 +30,9 @@ public class AdminController {
     
     @Autowired
     private AdminService adminService;
+    
+    @Autowired
+    private AdminRepository adminRepository;
     
     /**
      * Bootstrap super admin (idempotent): creates or updates the super admin
@@ -59,9 +65,10 @@ public class AdminController {
         
         if ((Boolean) authResult.get("success")) {
             try {
-                // Generate JWT token
+                // Generate JWT token with role information
                 final UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.getUsername());
-                final String jwt = jwtUtil.generateToken(userDetails.getUsername());
+                final String role = (String) authResult.get("role");
+                final String jwt = jwtUtil.generateToken(userDetails.getUsername(), role);
                 
                 Map<String, Object> response = new HashMap<>();
                 response.put("success", true);
@@ -69,7 +76,7 @@ public class AdminController {
                 response.put("message", "Login successful");
                 response.put("username", authResult.get("username"));
                 response.put("email", authResult.get("email"));
-                response.put("role", authResult.get("role"));
+                response.put("role", role);
                 
                 return ResponseEntity.ok(response);
                 
@@ -95,6 +102,53 @@ public class AdminController {
     }
     
     /**
+     * Get all admins (SUPER_ADMIN only)
+     */
+    @GetMapping("/list")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<Map<String, Object>> getAllAdmins() {
+        try {
+            List<Admin> admins = adminService.getAllAdmins();
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("admins", admins);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to fetch admins: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    /**
+     * Delete admin (SUPER_ADMIN only, cannot delete SUPER_ADMIN)
+     */
+    @DeleteMapping("/{adminId}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<Map<String, Object>> deleteAdmin(@PathVariable Long adminId) {
+        if (!adminService.canDeleteAdmin(adminId)) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Cannot delete SUPER_ADMIN account");
+            return ResponseEntity.badRequest().body(response);
+        }
+        
+        try {
+            adminRepository.deleteById(adminId);
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Admin deleted successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Failed to delete admin: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    /**
      * Validate token endpoint
      */
     @GetMapping("/validate")
@@ -112,7 +166,9 @@ public class AdminController {
                 Map<String, String> response = new HashMap<>();
                 response.put("valid", "true");
                 response.put("username", username);
-                adminService.findByUsername(username).ifPresent(a -> response.put("role", a.getRole() != null ? a.getRole().name() : ""));
+                // Extract role from token for better security
+                String role = jwtUtil.extractRole(token);
+                response.put("role", role != null ? role : "");
                 return ResponseEntity.ok(response);
             } else {
                 Map<String, String> response = new HashMap<>();

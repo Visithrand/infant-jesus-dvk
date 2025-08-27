@@ -16,7 +16,7 @@ import PrimaryEssay from "./pages/PrimaryEssay";
 import SeniorEssay from "./pages/SeniorEssay";
 import SecondaryEssay from "./pages/SecondaryEssay";
 import HigherSecondaryEssay from "./pages/HigherSecondaryEssay";
-import RequireAdmin from "./components/RequireAdmin";
+import AuthenticationPage from "./components/AuthenticationPage";
 
 const queryClient = new QueryClient();
 
@@ -38,7 +38,8 @@ const App = () => (
           <Route path="/senior-essay" element={<SeniorEssay />} />
           <Route path="/secondary-essay" element={<SecondaryEssay />} />
           <Route path="/higher-secondary-essay" element={<HigherSecondaryEssay />} />
-          <Route path="/admin" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
+          <Route path="/admin" element={<AuthenticationPage />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

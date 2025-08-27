@@ -32,14 +32,28 @@ public class SecurityConfig {
             .cors().and()
             .csrf().disable()
             .authorizeHttpRequests(authz -> authz
+                // Public endpoints
                 .requestMatchers("/admin/login").permitAll()
                 .requestMatchers("/admin/bootstrap-super-admin").permitAll()
+                .requestMatchers("/api/users/register").permitAll()
                 .requestMatchers("/events").permitAll()
                 .requestMatchers("/classes/live").permitAll()
                 .requestMatchers("/facilities").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
+                
+                // Admin-only endpoints
                 .requestMatchers("/admin/create").hasRole("SUPER_ADMIN")
+                .requestMatchers("/admin/list").hasRole("SUPER_ADMIN")
+                .requestMatchers("/admin/delete/**").hasRole("SUPER_ADMIN")
+                .requestMatchers("/admin/register").hasRole("SUPER_ADMIN")
+                .requestMatchers("/admin/validate").hasAnyRole("ADMIN", "SUPER_ADMIN")
                 .requestMatchers("/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                
+                // Protected endpoints
+                .requestMatchers("/events/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                .requestMatchers("/classes/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                .requestMatchers("/facilities/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+                
                 .anyRequest().authenticated()
             )
             .sessionManagement()

@@ -1,3 +1,6 @@
+com\infantjesus\config\WebMvcConfig.class
+com\infantjesus\repository\UserRepository.class
+com\infantjesus\entity\User.class
 com\infantjesus\security\JwtUtil.class
 com\infantjesus\service\EventService.class
 com\infantjesus\entity\ClassSchedule.class
@@ -5,8 +8,12 @@ com\infantjesus\repository\ClassScheduleRepository.class
 com\infantjesus\service\AdminService.class
 com\infantjesus\entity\Admin.class
 com\infantjesus\repository\FacilityRepository.class
+com\infantjesus\dto\AdminCreationDto.class
+com\infantjesus\security\SecurityAnnotationsConfig.class
+com\infantjesus\service\UserService.class
 com\infantjesus\controller\AdminController.class
 com\infantjesus\controller\ClassScheduleController.class
+com\infantjesus\controller\UserController.class
 com\infantjesus\dto\ClassScheduleDto.class
 com\infantjesus\security\JwtAuthenticationFilter.class
 com\infantjesus\dto\FacilityDto.class
@@ -21,6 +28,8 @@ com\infantjesus\dto\AdminLoginDto.class
 com\infantjesus\dto\EventDto.class
 com\infantjesus\security\AdminUserDetailsService.class
 com\infantjesus\config\SecurityConfig.class
+com\infantjesus\dto\UserRegistrationDto.class
 com\infantjesus\entity\Facility.class
 com\infantjesus\dto\AdminRegistrationDto.class
 com\infantjesus\SchoolWebsiteApplication.class
+com\infantjesus\entity\Role.class

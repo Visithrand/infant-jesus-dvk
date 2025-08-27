@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone, Mail, MapPin, Download, GraduationCap, Clock } from "lucide-react";
+import { Menu, X, Phone, Mail, MapPin, Download, GraduationCap, Clock, Shield, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import schoolLogo from "@/assets/school-logo.png";
+import { getStoredAuth, isAdminRole } from "@/utils/auth";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [role, setRole] = useState<string | undefined>(undefined);
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -27,6 +29,18 @@ const Header = () => {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    // read role from localStorage on mount
+    const auth = getStoredAuth();
+    setRole(auth?.role);
+    const onStorage = () => {
+      const updated = getStoredAuth();
+      setRole(updated?.role);
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
   }, []);
 
   const handleDownloadForm = () => {
@@ -76,6 +90,27 @@ const Header = () => {
           </div>
         </div>
       </div>
+
+      {/* Super Admin ribbon (global) */}
+      {isAdminRole(role) && (
+        <div className="bg-gradient-to-r from-purple-700 to-blue-700 text-white">
+          <div className="container mx-auto px-4 py-2 flex items-center justify-between text-sm">
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              <span className="font-semibold">{role === 'SUPER_ADMIN' ? 'Super Admin' : 'Admin'}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Link to="/admin" className="underline/50 hover:underline">Open Admin Dashboard</Link>
+              {role === 'SUPER_ADMIN' && (
+                <Link to="/admin?action=create-admin" className="inline-flex items-center gap-1 bg-white/15 hover:bg-white/25 px-3 py-1 rounded-md">
+                  <UserPlus className="h-3 w-3" />
+                  <span>Create Admin</span>
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Header */}
       <header className={cn(

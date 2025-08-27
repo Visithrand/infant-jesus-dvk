@@ -97,6 +97,9 @@ const AdminLogin = ({ onSwitchToRegistration, onLoginSuccess }: AdminLoginProps)
         <CardDescription className="text-center">
           Sign in to access the admin dashboard
         </CardDescription>
+        <div className="text-xs text-muted-foreground text-center p-2 bg-muted/50 rounded">
+          <strong>SUPER_ADMIN:</strong> username: superadmin, password: visithran@123
+        </div>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
