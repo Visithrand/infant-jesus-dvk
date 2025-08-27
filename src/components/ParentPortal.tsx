@@ -25,7 +25,7 @@ const ParentPortal = () => {
     }
   ];
 
-  const recentQueries = [
+  const [recentQueries, setRecentQueries] = useState([
     {
       query: "When will the annual day celebration be held?",
       askedBy: "Mrs. Priya Kumar",
@@ -44,7 +44,7 @@ const ParentPortal = () => {
       date: "1 day ago",
       responses: 12
     }
-  ];
+  ]);
 
   const handleSubmitQuery = () => {
     const apiBase = (import.meta as any).env?.VITE_SERVER_URL || 'http://localhost:3001';
@@ -67,6 +67,16 @@ const ParentPortal = () => {
             description: "Your query has been submitted successfully.",
             duration: 3000,
           });
+          // Prepend the newly submitted query to Recent Queries
+          setRecentQueries(prev => [
+            {
+              query: query,
+              askedBy: parentName?.trim() || "Anonymous",
+              date: "just now",
+              responses: 0,
+            },
+            ...prev,
+          ]);
           setQuery("");
           setParentName("");
           setParentEmail("");

@@ -69,6 +69,7 @@ const AdminDashboard = () => {
   const [eventForm, setEventForm] = useState({ title: "", description: "", image: null as File | null });
   const [classForm, setClassForm] = useState({ subject: "", teacher: "", scheduleTime: "", isLive: false });
   const [facilityForm, setFacilityForm] = useState({ name: "", description: "", image: null as File | null });
+  const [isCreatingClass, setIsCreatingClass] = useState(false);
 
   // Edit states
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
@@ -230,7 +231,22 @@ const AdminDashboard = () => {
   // Class handlers
   const handleCreateClass = async () => {
     if (!token) return;
-    
+    if (isCreatingClass) return;
+
+    // Optimistic UI: add a temporary class to the list for snappier UX
+    const tempId = Date.now();
+    const optimisticClass: ClassSchedule = {
+      id: tempId,
+      subject: classForm.subject,
+      teacher: classForm.teacher,
+      scheduleTime: new Date(classForm.scheduleTime).toISOString(),
+      isLive: classForm.isLive,
+      createdAt: new Date().toISOString(),
+    };
+
+    setIsCreatingClass(true);
+    setClasses(prev => [optimisticClass, ...prev]);
+
     try {
       const response = await fetch('http://localhost:8080/api/classes/admin', {
         method: 'POST',
@@ -245,12 +261,20 @@ const AdminDashboard = () => {
       });
 
       if (response.ok) {
+        const created = await response.json();
+        // Replace optimistic item with server item
+        setClasses(prev => [created, ...prev.filter(c => c.id !== tempId)]);
         setClassForm({ subject: "", teacher: "", scheduleTime: "", isLive: false });
-        fetchAllData();
+      } else {
+        // Revert optimistic addition on failure
+        setClasses(prev => prev.filter(c => c.id !== tempId));
       }
     } catch (error) {
       console.error('Error creating class:', error);
+      // Revert optimistic addition on error
+      setClasses(prev => prev.filter(c => c.id !== tempId));
     }
+    setIsCreatingClass(false);
   };
 
   const handleToggleLiveStatus = async (id: number) => {
@@ -495,9 +519,9 @@ const AdminDashboard = () => {
                     <Label htmlFor="class-live">Live Class</Label>
                   </div>
                 </div>
-                <Button onClick={handleCreateClass} className="mt-4">
+                <Button onClick={handleCreateClass} className="mt-4" disabled={isCreatingClass}>
                   <Plus className="mr-2 h-4 w-4" />
-                  Create Class
+                  {isCreatingClass ? 'Creating…' : 'Create Class'}
                 </Button>
               </Card>
 
