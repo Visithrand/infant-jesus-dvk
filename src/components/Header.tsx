@@ -68,22 +68,24 @@ const Header = () => {
       <div className="bg-gradient-to-r from-blue-900 via-blue-800 to-purple-900 text-white py-3 px-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="container mx-auto flex flex-wrap items-center justify-between text-sm relative z-10">
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-2 sm:space-x-6">
             <div className="flex items-center space-x-2 hover:text-blue-200 transition-colors">
               <Phone className="h-4 w-4" />
-              <span className="font-medium">+91 82200 92495</span>
+              <span className="font-medium hidden sm:inline">+91 82200 92495</span>
+              <span className="font-medium sm:hidden">+91 82200 92495</span>
             </div>
             <div className="flex items-center space-x-2 hover:text-blue-200 transition-colors">
               <Mail className="h-4 w-4" />
-              <span className="font-medium">info@infantjesusschool.ac.in</span>
+              <span className="font-medium hidden md:inline">info@infantjesusschool.ac.in</span>
+              <span className="font-medium md:hidden">info@infantjesusschool.ac.in</span>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            <div className="flex items-center space-x-2 hidden lg:flex">
               <MapPin className="h-4 w-4" />
               <span className="font-medium">Devakottai, Sivagangai - 630302</span>
             </div>
-            <div className="flex items-center space-x-2 bg-white/20 px-3 py-1 rounded-full">
+            <div className="flex items-center bg-white/20 px-2 sm:px-3 py-1 rounded-full">
               <Clock className="h-3 w-3" />
               <span className="text-xs font-medium">Admissions Open</span>
             </div>
@@ -122,24 +124,24 @@ const Header = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             {/* Logo and School Name */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <div className="relative">
                 <img 
                   src={schoolLogo} 
                   alt="Infant Jesus School Logo" 
-                  className="h-14 w-14 object-contain shadow-lg rounded-lg"
+                  className="h-10 w-10 sm:h-14 sm:w-14 object-contain shadow-lg rounded-lg"
                 />
-                <div className="absolute -bottom-1 -right-1 h-6 w-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
-                  <div className="h-2 w-2 bg-white rounded-full"></div>
+                <div className="absolute -bottom-1 -right-1 h-4 w-4 sm:h-6 sm:w-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                  <div className="h-1 w-1 sm:h-2 sm:w-2 bg-white rounded-full"></div>
                 </div>
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900 leading-tight">
+              <div className="hidden sm:block">
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900 leading-tight">
                   INFANT JESUS MATRIC
                   <br />
                   <span className="text-blue-600">HIGHER SECONDARY SCHOOL</span>
                 </h1>
-                <p className="text-sm text-gray-600 font-medium">
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">
                   Excellence in Education • Love • Service • Discipline
                 </p>
               </div>
@@ -162,10 +164,11 @@ const Header = () => {
                   variant="default" 
                   size="sm" 
                   onClick={handleDownloadForm}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold px-4 sm:px-6 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
                   <Download className="mr-2 h-4 w-4" />
-                  Apply Now
+                  <span className="hidden sm:inline">Apply Now</span>
+                  <span className="sm:hidden">Apply</span>
                 </Button>
               </div>
             </nav>

@@ -75,59 +75,59 @@ const Programs = () => {
   ];
 
   return (
-    <section id="academics" className="py-20 bg-background">
+    <section id="academics" className="py-16 sm:py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
               Academic Programs
             </h2>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Discover our comprehensive curriculum from primary to higher secondary education 
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
+              Discover our comprehensive curriculum from primary to higher secondary education{" "}
               designed to provide holistic development and academic excellence.
             </p>
           </div>
 
           {/* Programs Grid */}
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-12 sm:mb-16">
             {programs.map((program, index) => (
               <Card 
                 key={index}
-                className="p-6 hover:shadow-medium transition-all duration-300 hover:scale-105 bg-card-gradient border-l-4 border-l-primary"
+                className="p-4 sm:p-6 hover:shadow-medium transition-all duration-300 hover:scale-105 bg-card-gradient border-l-4 border-l-primary"
               >
                 <div className="mb-4">
-                  <h3 className="text-2xl font-bold text-foreground mb-2">
+                  <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
                     {program.title}
                   </h3>
-                  <p className="text-accent font-semibold">{program.level}</p>
+                  <p className="text-accent font-semibold text-sm sm:text-base">{program.level}</p>
                 </div>
 
-                <div className="flex flex-wrap gap-4 mb-4 text-sm text-muted-foreground">
+                <div className="flex flex-wrap gap-3 sm:gap-4 mb-4 text-xs sm:text-sm text-muted-foreground">
                   <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-2" />
+                    <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                     {program.duration}
                   </div>
                   <div className="flex items-center">
-                    <Users className="h-4 w-4 mr-2" />
+                    <Users className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                     {program.students}
                   </div>
                 </div>
 
-                <p className="text-muted-foreground mb-4">
+                <p className="text-muted-foreground mb-4 text-sm sm:text-base leading-relaxed">
                   {program.description}
                 </p>
 
-                <div className="mb-6">
-                  <h4 className="font-semibold text-foreground mb-2 flex items-center">
-                    <BookOpen className="h-4 w-4 mr-2" />
+                <div className="mb-4">
+                  <h4 className="font-semibold text-foreground mb-2 flex items-center text-sm sm:text-base">
+                    <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
                     Key Highlights
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {program.highlights.map((highlight, idx) => (
                       <span 
                         key={idx}
-                        className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium"
+                        className="bg-primary/10 text-primary px-2 sm:px-3 py-1 rounded-full text-xs font-medium"
                       >
                         {highlight}
                       </span>
@@ -136,9 +136,9 @@ const Programs = () => {
                 </div>
 
                 <a href={program.link} className="w-full">
-                  <Button variant="outline" className="w-full group">
+                  <Button variant="outline" className="w-full group text-sm sm:text-base">
                     Learn More
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="ml-2 h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </a>
               </Card>
@@ -146,17 +146,17 @@ const Programs = () => {
           </div>
 
           {/* Courses Section */}
-          <div className="mt-16 text-center">
-            <h3 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+          <div className="mt-12 sm:mt-16 text-center">
+            <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6">
               Available Courses
             </h3>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {courses.map((course, index) => (
-                <Card key={index} className="p-6 text-left bg-card-gradient border-t-4 border-t-accent">
-                  <h4 className="text-2xl font-bold text-foreground mb-2">
+                <Card key={index} className="p-4 sm:p-6 text-left bg-card-gradient border-t-4 border-t-accent">
+                  <h4 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
                     {course.name}
                   </h4>
-                  <p className="text-muted-foreground">
+                  <p className="text-muted-foreground text-sm sm:text-base">
                     {course.description}
                   </p>
                 </Card>
@@ -165,33 +165,33 @@ const Programs = () => {
           </div>
 
           {/* Additional Info */}
-          <div className="grid md:grid-cols-3 gap-8 mt-12">
-            <Card className="p-6 text-center bg-card-gradient">
-              <Award className="h-12 w-12 text-accent mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-foreground mb-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mt-12">
+            <Card className="p-4 sm:p-6 text-center bg-card-gradient">
+              <Award className="h-10 w-10 sm:h-12 sm:w-12 text-accent mx-auto mb-4" />
+              <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">
                 School Partnerships
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-sm sm:text-base">
                 Strong ties with educational institutions for academic excellence and growth
               </p>
             </Card>
 
-            <Card className="p-6 text-center bg-card-gradient">
-              <Users className="h-12 w-12 text-primary mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-foreground mb-2">
+            <Card className="p-4 sm:p-6 text-center bg-card-gradient">
+              <Users className="h-10 w-10 sm:h-12 sm:w-12 text-primary mx-auto mb-4" />
+              <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">
                 Expert Faculty
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-sm sm:text-base">
                 Experienced teachers with advanced qualifications and teaching expertise
               </p>
             </Card>
 
-            <Card className="p-6 text-center bg-card-gradient">
-              <BookOpen className="h-12 w-12 text-accent mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-foreground mb-2">
+            <Card className="p-4 sm:p-6 text-center bg-card-gradient">
+              <BookOpen className="h-10 w-10 sm:h-12 sm:w-12 text-accent mx-auto mb-4" />
+              <h3 className="text-lg sm:text-xl font-bold text-foreground mb-2">
                 Modern Curriculum
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-sm sm:text-base">
                 Updated syllabus aligned with current educational standards and requirements
               </p>
             </Card>
