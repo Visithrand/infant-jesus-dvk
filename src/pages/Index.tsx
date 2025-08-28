@@ -14,6 +14,7 @@ import LiveNotification from "@/components/LiveNotification";
 import LiveClasses from "@/components/LiveClasses";
 import LiveClassesPopup from "@/components/LiveClassesPopup";
 import FacilitiesSection from "@/components/FacilitiesSection";
+import DeveloperCard from "@/components/DeveloperCard";
 
 const Index = () => {
   const location = useLocation();
@@ -46,6 +47,7 @@ const Index = () => {
         <FacilitiesSection />
         <ParentPortal />
         <LeadershipSection />
+        <DeveloperCard />
       </div>
       <Footer />
       <LiveNotification />
