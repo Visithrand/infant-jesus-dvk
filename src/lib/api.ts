@@ -3,12 +3,16 @@
 
 // Environment variables for different backend services
 const API_CONFIG = {
-  // Spring Boot Backend (Main API)
-  SPRING_BACKEND: import.meta.env.VITE_SPRING_BACKEND_URL || 'http://localhost:8080',
-  
-  // Node.js Server (Email/Query service)
-  NODE_SERVER: import.meta.env.VITE_NODE_SERVER_URL || 'http://localhost:3001',
-  
+  // Spring Boot Backend (Main API) - Deployed to Render
+  // Default: https://infant-jesus-dvk-2.onrender.com
+  // Override with VITE_SPRING_BACKEND_URL environment variable
+  SPRING_BACKEND: import.meta.env.VITE_SPRING_BACKEND_URL || 'https://infant-jesus-dvk-2.onrender.com',
+
+  // Node.js Server (Email/Query service) - Deployed to Render
+  // Default: https://infant-jesus-dvk-2.onrender.com
+  // Override with VITE_NODE_SERVER_URL environment variable
+  NODE_SERVER: import.meta.env.VITE_NODE_SERVER_URL || 'https://infant-jesus-dvk-2.onrender.com',
+
   // API Context Paths
   SPRING_API_PATH: '/api',
   NODE_API_PATH: '/api',
@@ -43,6 +47,9 @@ export const springApiFetch = async (
   options: RequestInit = {}
 ): Promise<Response> => {
   const url = getSpringApiUrl(endpoint);
+  
+
+  
   return fetch(url, {
     ...options,
     headers: {
@@ -58,6 +65,9 @@ export const nodeApiFetch = async (
   options: RequestInit = {}
 ): Promise<Response> => {
   const url = getNodeApiUrl(endpoint);
+  
+
+  
   return fetch(url, {
     ...options,
     headers: {
@@ -85,3 +95,21 @@ export const apiFetch = async (
 
 // Export the config for direct access if needed
 export { API_CONFIG };
+
+// Debug function to show current configuration
+export const debugApiConfig = () => {
+  console.log('🔧 API Configuration Debug:', {
+    SPRING_BACKEND: API_CONFIG.SPRING_BACKEND,
+    NODE_SERVER: API_CONFIG.NODE_SERVER,
+    SPRING_API_PATH: API_CONFIG.SPRING_API_PATH,
+    NODE_API_PATH: API_CONFIG.NODE_API_PATH,
+    SPRING_FULL_URL: API_BASE_URLS.SPRING,
+    NODE_FULL_URL: API_BASE_URLS.NODE,
+    ENV_SPRING: import.meta.env.VITE_SPRING_BACKEND_URL,
+    ENV_NODE: import.meta.env.VITE_NODE_SERVER_URL,
+    STATUS: '🔧 Using environment variables with fallback to deployed URLs'
+  });
+};
+
+// Auto-debug on import
+debugApiConfig();
