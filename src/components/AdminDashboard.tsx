@@ -18,7 +18,9 @@ import {
   Image as ImageIcon,
   LogOut,
   Eye,
-  EyeOff
+  EyeOff,
+  CheckCircle,
+  AlertCircle
 } from "lucide-react";
 import AdminLogin from "./AdminLogin";
 import AdminRegistration from "./AdminRegistration";
@@ -27,6 +29,7 @@ import Footer from "@/components/Footer";
 import SuperAdminNav from "@/components/SuperAdminNav";
 import { getStoredAuth } from "@/utils/auth";
 import { useLocation } from "react-router-dom";
+import { springApiFetch, getImageUrl } from "@/lib/api";
 
 interface Event {
   id: number;
@@ -70,13 +73,24 @@ const AdminDashboard = () => {
   const [classForm, setClassForm] = useState({ subject: "", teacher: "", scheduleTime: "", isLive: false });
   const [facilityForm, setFacilityForm] = useState({ name: "", description: "", image: null as File | null });
   const [isCreatingClass, setIsCreatingClass] = useState(false);
+  const [isCreatingEvent, setIsCreatingEvent] = useState(false);
+  const [isCreatingFacility, setIsCreatingFacility] = useState(false);
 
   // Edit states
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [editingClass, setEditingClass] = useState<ClassSchedule | null>(null);
   const [editingFacility, setEditingFacility] = useState<Facility | null>(null);
+  
+  // Notification states
+  const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const location = useLocation();
+
+  // Notification helper function
+  const showNotification = (type: 'success' | 'error', message: string) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 3000);
+  };
 
   useEffect(() => {
     // Get authentication from localStorage (set by AuthenticationPage)
@@ -102,7 +116,7 @@ const AdminDashboard = () => {
 
   const validateToken = async (tokenToValidate: string) => {
     try {
-      const response = await fetch('http://localhost:8080/api/admin/validate', {
+      const response = await springApiFetch('/admin/validate', {
         headers: { 'Authorization': `Bearer ${tokenToValidate}` }
       });
       if (response.ok) {
@@ -152,21 +166,21 @@ const AdminDashboard = () => {
       const headers = { 'Authorization': `Bearer ${token}` };
       
       // Fetch events
-      const eventsResponse = await fetch('http://localhost:8080/api/events', { headers });
+      const eventsResponse = await springApiFetch('/events', { headers });
       if (eventsResponse.ok) {
         const eventsData = await eventsResponse.json();
         setEvents(eventsData);
       }
 
       // Fetch classes
-      const classesResponse = await fetch('http://localhost:8080/api/classes/admin', { headers });
+      const classesResponse = await springApiFetch('/classes/admin', { headers });
       if (classesResponse.ok) {
         const classesData = await classesResponse.json();
         setClasses(classesData);
       }
 
       // Fetch facilities
-      const facilitiesResponse = await fetch('http://localhost:8080/api/facilities', { headers });
+      const facilitiesResponse = await springApiFetch('/facilities', { headers });
       if (facilitiesResponse.ok) {
         const facilitiesData = await facilitiesResponse.json();
         setFacilities(facilitiesData);
@@ -178,61 +192,109 @@ const AdminDashboard = () => {
 
   // Event handlers
   const handleCreateEvent = async () => {
-    if (!token) return;
+    if (!token || isCreatingEvent) return;
+    
+    setIsCreatingEvent(true);
+    
+    // Optimistic UI: add a temporary event to the list for snappier UX
+    const tempId = Date.now();
+    const optimisticEvent: Event = {
+      id: tempId,
+      title: eventForm.title,
+      description: eventForm.description,
+      imageUrl: null, // Will be updated when server responds
+      createdAt: new Date().toISOString(),
+    };
+
+    // Immediately add to UI
+    setEvents(prev => [optimisticEvent, ...prev]);
+    
+    // Clear form immediately for better UX
+    setEventForm({ title: "", description: "", image: null });
     
     const formData = new FormData();
-    formData.append('title', eventForm.title);
-    formData.append('description', eventForm.description);
+    formData.append('title', optimisticEvent.title);
+    formData.append('description', optimisticEvent.description);
     if (eventForm.image) {
       formData.append('image', eventForm.image);
     }
 
     try {
-      const response = await fetch('http://localhost:8080/api/events/admin', {
+      const response = await springApiFetch('/events/admin', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
       });
 
-      if (response.ok) {
-        setEventForm({ title: "", description: "", image: null });
-        fetchAllData();
-        try {
-          localStorage.setItem('ij:lastUpdate', String(Date.now()));
-          window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'events' } }));
-        } catch {}
-      }
-    } catch (error) {
-      console.error('Error creating event:', error);
+             if (response.ok) {
+         const createdEvent = await response.json();
+         // Replace optimistic item with server item
+         setEvents(prev => [createdEvent, ...prev.filter(e => e.id !== tempId)]);
+         
+         // Show success notification
+         showNotification('success', 'Event created successfully!');
+         
+         // Update localStorage and dispatch event
+         try {
+           localStorage.setItem('ij:lastUpdate', String(Date.now()));
+           window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'events' } }));
+         } catch {}
+              } else {
+         // Revert optimistic addition on failure
+         setEvents(prev => prev.filter(e => e.id !== tempId));
+         // Restore form data
+         setEventForm({ title: optimisticEvent.title, description: optimisticEvent.description, image: null });
+         // Show error notification
+         showNotification('error', 'Failed to create event. Please try again.');
+       }
+         } catch (error) {
+       console.error('Error creating event:', error);
+       // Revert optimistic addition on error
+       setEvents(prev => prev.filter(e => e.id !== tempId));
+       // Restore form data
+       setEventForm({ title: optimisticEvent.title, description: optimisticEvent.description, image: null });
+       // Show error notification
+       showNotification('error', 'Network error. Please check your connection and try again.');
+     } finally {
+      setIsCreatingEvent(false);
     }
   };
 
   const handleDeleteEvent = async (id: number) => {
     if (!token) return;
     
+    // Optimistic UI: remove from list immediately
+    setEvents(prev => prev.filter(e => e.id !== id));
+    
     try {
-      const response = await fetch(`http://localhost:8080/api/events/admin/${id}`, {
+      const response = await springApiFetch(`/events/admin/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
       if (response.ok) {
-        fetchAllData();
+        // Success - item already removed from UI
         try {
           localStorage.setItem('ij:lastUpdate', String(Date.now()));
           window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'events' } }));
         } catch {}
+      } else {
+        // Revert optimistic removal on failure
+        fetchAllData();
       }
     } catch (error) {
       console.error('Error deleting event:', error);
+      // Revert optimistic removal on error
+      fetchAllData();
     }
   };
 
   // Class handlers
   const handleCreateClass = async () => {
-    if (!token) return;
-    if (isCreatingClass) return;
-
+    if (!token || isCreatingClass) return;
+    
+    setIsCreatingClass(true);
+    
     // Optimistic UI: add a temporary class to the list for snappier UX
     const tempId = Date.now();
     const optimisticClass: ClassSchedule = {
@@ -244,11 +306,14 @@ const AdminDashboard = () => {
       createdAt: new Date().toISOString(),
     };
 
-    setIsCreatingClass(true);
+    // Immediately add to UI
     setClasses(prev => [optimisticClass, ...prev]);
+    
+    // Clear form immediately for better UX
+    setClassForm({ subject: "", teacher: "", scheduleTime: "", isLive: false });
 
     try {
-      const response = await fetch('http://localhost:8080/api/classes/admin', {
+      const response = await springApiFetch('/classes/admin', {
         method: 'POST',
         headers: { 
           'Authorization': `Bearer ${token}`,
@@ -260,87 +325,169 @@ const AdminDashboard = () => {
         })
       });
 
-      if (response.ok) {
-        const created = await response.json();
-        // Replace optimistic item with server item
-        setClasses(prev => [created, ...prev.filter(c => c.id !== tempId)]);
-        setClassForm({ subject: "", teacher: "", scheduleTime: "", isLive: false });
-      } else {
-        // Revert optimistic addition on failure
-        setClasses(prev => prev.filter(c => c.id !== tempId));
-      }
-    } catch (error) {
-      console.error('Error creating class:', error);
-      // Revert optimistic addition on error
-      setClasses(prev => prev.filter(c => c.id !== tempId));
+             if (response.ok) {
+         const created = await response.json();
+         // Replace optimistic item with server item
+         setClasses(prev => [created, ...prev.filter(c => c.id !== tempId)]);
+         
+         // Show success notification
+         showNotification('success', 'Class created successfully!');
+         
+         // Update localStorage and dispatch event for real-time updates
+         try {
+           localStorage.setItem('ij:lastUpdate', String(Date.now()));
+           window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'classes' } }));
+         } catch {}
+              } else {
+         // Revert optimistic addition on failure
+         setClasses(prev => prev.filter(c => c.id !== tempId));
+         // Restore form data
+         setClassForm({ subject: optimisticClass.subject, teacher: optimisticClass.teacher, scheduleTime: classForm.scheduleTime, isLive: optimisticClass.isLive });
+         // Show error notification
+         showNotification('error', 'Failed to create class. Please try again.');
+       }
+         } catch (error) {
+       console.error('Error creating class:', error);
+       // Revert optimistic addition on error
+       setClasses(prev => prev.filter(c => c.id !== tempId));
+       // Restore form data
+       setClassForm({ subject: optimisticClass.subject, teacher: optimisticClass.teacher, scheduleTime: classForm.scheduleTime, isLive: optimisticClass.isLive });
+       // Show error notification
+       showNotification('error', 'Network error. Please check your connection and try again.');
+     } finally {
+      setIsCreatingClass(false);
     }
-    setIsCreatingClass(false);
   };
 
   const handleToggleLiveStatus = async (id: number) => {
     if (!token) return;
     
+    // Optimistic UI: toggle the live status immediately
+    setClasses(prev => prev.map(cls => 
+      cls.id === id ? { ...cls, isLive: !cls.isLive } : cls
+    ));
+    
     try {
-      const response = await fetch(`http://localhost:8080/api/classes/admin/${id}/toggle-live`, {
+      const response = await springApiFetch(`/classes/admin/${id}/toggle-live`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
       if (response.ok) {
-        fetchAllData();
+        // Success - status already updated in UI
+        try {
+          localStorage.setItem('ij:lastUpdate', String(Date.now()));
+          window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'classes' } }));
+        } catch {}
+      } else {
+        // Revert optimistic update on failure
+        setClasses(prev => prev.map(cls => 
+          cls.id === id ? { ...cls, isLive: !cls.isLive } : cls
+        ));
       }
     } catch (error) {
       console.error('Error toggling live status:', error);
+      // Revert optimistic update on error
+      setClasses(prev => prev.map(cls => 
+        cls.id === id ? { ...cls, isLive: !cls.isLive } : cls
+      ));
     }
   };
 
   // Facility handlers
   const handleCreateFacility = async () => {
-    if (!token) return;
+    if (!token || isCreatingFacility) return;
+    
+    setIsCreatingFacility(true);
+    
+    // Optimistic UI: add a temporary facility to the list for snappier UX
+    const tempId = Date.now();
+    const optimisticFacility: Facility = {
+      id: tempId,
+      name: facilityForm.name,
+      description: facilityForm.description,
+      imageUrl: null, // Will be updated when server responds
+      createdAt: new Date().toISOString(),
+    };
+
+    // Immediately add to UI
+    setFacilities(prev => [optimisticFacility, ...prev]);
+    
+    // Clear form immediately for better UX
+    setFacilityForm({ name: "", description: "", image: null });
     
     const formData = new FormData();
-    formData.append('name', facilityForm.name);
-    formData.append('description', facilityForm.description);
+    formData.append('name', optimisticFacility.name);
+    formData.append('description', optimisticFacility.description);
     if (facilityForm.image) {
       formData.append('image', facilityForm.image);
     }
 
     try {
-      const response = await fetch('http://localhost:8080/api/facilities/admin', {
+      const response = await springApiFetch('/facilities/admin', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` },
         body: formData
       });
 
-      if (response.ok) {
-        setFacilityForm({ name: "", description: "", image: null });
-        fetchAllData();
-        try {
-          localStorage.setItem('ij:lastUpdate', String(Date.now()));
-          window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'facilities' } }));
-        } catch {}
-      }
-    } catch (error) {
-      console.error('Error creating facility:', error);
+             if (response.ok) {
+         const createdFacility = await response.json();
+         // Replace optimistic item with server item
+         setFacilities(prev => [createdFacility, ...prev.filter(f => f.id !== tempId)]);
+         
+         // Show success notification
+         showNotification('success', 'Facility created successfully!');
+         
+         try {
+           localStorage.setItem('ij:lastUpdate', String(Date.now()));
+           window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'facilities' } }));
+         } catch {}
+              } else {
+         // Revert optimistic addition on failure
+         setFacilities(prev => prev.filter(f => f.id !== tempId));
+         // Restore form data
+         setFacilityForm({ name: optimisticFacility.name, description: optimisticFacility.description, image: null });
+         // Show error notification
+         showNotification('error', 'Failed to create facility. Please try again.');
+       }
+         } catch (error) {
+       console.error('Error creating facility:', error);
+       // Revert optimistic addition on error
+       setFacilities(prev => prev.filter(f => f.id !== tempId));
+       // Restore form data
+       setFacilityForm({ name: optimisticFacility.name, description: optimisticFacility.description, image: null });
+       // Show error notification
+       showNotification('error', 'Network error. Please check your connection and try again.');
+     } finally {
+      setIsCreatingFacility(false);
     }
   };
 
   const handleDeleteFacility = async (id: number) => {
     if (!token) return;
+    
+    // Optimistic UI: remove from list immediately
+    setFacilities(prev => prev.filter(f => f.id !== id));
+    
     try {
-      const response = await fetch(`http://localhost:8080/api/facilities/admin/${id}`, {
+      const response = await springApiFetch(`/facilities/admin/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
-        fetchAllData();
+        // Success - item already removed from UI
         try {
           localStorage.setItem('ij:lastUpdate', String(Date.now()));
           window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'facilities' } }));
         } catch {}
+      } else {
+        // Revert optimistic removal on failure
+        fetchAllData();
       }
     } catch (error) {
       console.error('Error deleting facility:', error);
+      // Revert optimistic removal on error
+      fetchAllData();
     }
   };
 
@@ -384,17 +531,33 @@ const AdminDashboard = () => {
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-3xl font-bold text-foreground">Admin Dashboard</h2>
-              <p className="text-muted-foreground">Welcome back, {username}</p>
-            </div>
-            <Button variant="outline" onClick={handleLogout}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Logout
-            </Button>
-          </div>
+                     {/* Header */}
+           <div className="flex items-center justify-between mb-8">
+             <div>
+               <h2 className="text-3xl font-bold text-foreground">Admin Dashboard</h2>
+               <p className="text-muted-foreground">Welcome back, {username}</p>
+             </div>
+             <Button variant="outline" onClick={handleLogout}>
+               <LogOut className="mr-2 h-4 w-4" />
+               Logout
+             </Button>
+           </div>
+
+           {/* Success/Error Notifications */}
+           {notification && (
+             <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg flex items-center space-x-2 ${
+               notification.type === 'success' 
+                 ? 'bg-green-500 text-white' 
+                 : 'bg-red-500 text-white'
+             }`}>
+               {notification.type === 'success' ? (
+                 <CheckCircle className="h-5 w-5" />
+               ) : (
+                 <AlertCircle className="h-5 w-5" />
+               )}
+               <span>{notification.message}</span>
+             </div>
+           )}
 
           {role === 'SUPER_ADMIN' && (
             <SuperAdminNav onCreateAdminClick={() => setShowAuthForm('register')} />
@@ -442,10 +605,10 @@ const AdminDashboard = () => {
                     rows={3}
                   />
                 </div>
-                <Button onClick={handleCreateEvent} className="mt-4">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Event
-                </Button>
+                                 <Button onClick={handleCreateEvent} className="mt-4" disabled={isCreatingEvent}>
+                   <Plus className="mr-2 h-4 w-4" />
+                   {isCreatingEvent ? 'Creating...' : 'Create Event'}
+                 </Button>
               </Card>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -453,7 +616,7 @@ const AdminDashboard = () => {
                   <Card key={event.id} className="p-4">
                     {event.imageUrl && (
                       <img
-                        src={`http://localhost:8080${event.imageUrl}`}
+                        src={getImageUrl(event.imageUrl)}
                         alt={event.title}
                         className="w-full h-32 object-cover rounded mb-3"
                       />
@@ -519,10 +682,10 @@ const AdminDashboard = () => {
                     <Label htmlFor="class-live">Live Class</Label>
                   </div>
                 </div>
-                <Button onClick={handleCreateClass} className="mt-4" disabled={isCreatingClass}>
-                  <Plus className="mr-2 h-4 w-4" />
-                  {isCreatingClass ? 'Creating…' : 'Create Class'}
-                </Button>
+                                 <Button onClick={handleCreateClass} className="mt-4" disabled={isCreatingClass}>
+                   <Plus className="mr-2 h-4 w-4" />
+                   {isCreatingClass ? 'Creating...' : 'Create Class'}
+                 </Button>
               </Card>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -584,10 +747,10 @@ const AdminDashboard = () => {
                     rows={3}
                   />
                 </div>
-                <Button onClick={handleCreateFacility} className="mt-4">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Facility
-                </Button>
+                                 <Button onClick={handleCreateFacility} className="mt-4" disabled={isCreatingFacility}>
+                   <Plus className="mr-2 h-4 w-4" />
+                   {isCreatingFacility ? 'Creating...' : 'Create Facility'}
+                 </Button>
               </Card>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -595,7 +758,7 @@ const AdminDashboard = () => {
                   <Card key={facility.id} className="p-4">
                     {facility.imageUrl && (
                       <img
-                        src={`http://localhost:8080${facility.imageUrl}`}
+                        src={getImageUrl(facility.imageUrl)}
                         alt={facility.name}
                         className="w-full h-32 object-cover rounded mb-3"
                       />

@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Image as ImageIcon, ExternalLink } from "lucide-react";
 import EventDetailsModal from "./EventDetailsModal";
+import { springApiFetch, getImageUrl } from "@/lib/api";
 
 interface Event {
   id: number;
@@ -45,7 +46,7 @@ const EventGallery = () => {
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8080/api/events', { cache: 'no-store' });
+      const response = await springApiFetch('/events', { cache: 'no-store' });
       if (!response.ok) {
         throw new Error('Failed to fetch events');
       }
@@ -149,7 +150,7 @@ const EventGallery = () => {
                   {event.imageUrl ? (
                     <div className="relative h-48 overflow-hidden">
                       <img
-                        src={`http://localhost:8080${event.imageUrl}`}
+                        src={getImageUrl(event.imageUrl)}
                         alt={event.title}
                         className="w-full h-full object-cover"
                         loading="lazy"

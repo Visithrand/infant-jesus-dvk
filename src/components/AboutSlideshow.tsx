@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
+import { springApiFetch, getImageUrl } from "@/lib/api";
 
 type EventItem = {
   id: number;
@@ -36,12 +37,12 @@ const AboutSlideshow = () => {
     const loadImages = async () => {
       let collected: string[] = [];
       try {
-        const res = await fetch('http://localhost:8080/api/events', { cache: 'no-store' });
+        const res = await springApiFetch('/events', { cache: 'no-store' });
         if (res.ok) {
           const data: EventItem[] = await res.json();
           const eventUrls = data
             .filter((e) => !!e.imageUrl)
-            .map((e) => `http://localhost:8080${e.imageUrl}`);
+            .map((e) => getImageUrl(e.imageUrl));
           collected = collected.concat(eventUrls);
         }
       } catch {}

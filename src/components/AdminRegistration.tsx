@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { springApiFetch } from "@/lib/api";
 import { getStoredAuth } from "@/utils/auth";
 
 interface AdminRegistrationProps {
@@ -87,7 +88,7 @@ const AdminRegistration = ({ onSwitchToLogin, onRegistrationSuccess }: AdminRegi
         return;
       }
 
-      const response = await fetch('http://localhost:8080/api/admin/create', {
+      const response = await springApiFetch('/admin/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, Radio } from "lucide-react";
+import { springApiFetch } from "@/lib/api";
 
 interface LiveClass {
   id: number;
@@ -17,7 +18,7 @@ const LiveClasses = () => {
 
   const fetchLive = async () => {
     try {
-      const resp = await fetch("http://localhost:8080/api/classes/live");
+      const resp = await springApiFetch("/classes/live");
       if (resp.ok) {
         const data = await resp.json();
         setLiveClasses(Array.isArray(data) ? data : []);

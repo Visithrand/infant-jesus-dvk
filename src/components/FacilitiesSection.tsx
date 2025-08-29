@@ -9,6 +9,7 @@ import {
   MapPin,
   ExternalLink
 } from "lucide-react";
+import { springApiFetch, getImageUrl } from "@/lib/api";
 
 interface Facility {
   id: number;
@@ -65,7 +66,7 @@ const FacilitiesSection = () => {
   const fetchFacilities = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8080/api/facilities', { cache: 'no-store' });
+      const response = await springApiFetch('/facilities', { cache: 'no-store' });
       if (!response.ok) {
         throw new Error('Failed to fetch facilities');
       }
@@ -181,13 +182,13 @@ const FacilitiesSection = () => {
                   {/* Facility Image */}
                   {facility.imageUrl ? (
                     <div className="relative h-48 overflow-hidden">
-                      <img
-                        src={`http://localhost:8080${facility.imageUrl}`}
-                        alt={facility.name}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                        decoding="async"
-                      />
+                                             <img
+                         src={getImageUrl(facility.imageUrl)}
+                         alt={facility.name}
+                         className="w-full h-full object-cover"
+                         loading="lazy"
+                         decoding="async"
+                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                     </div>
                   ) : (

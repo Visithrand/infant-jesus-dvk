@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { springApiFetch } from "@/lib/api";
 
 interface RequireAuthProps {
   children: React.ReactNode;
@@ -26,7 +27,7 @@ const RequireAuth = ({ children, requiredRoles = [], fallback }: RequireAuthProp
         }
 
         // Validate token with backend
-        const response = await fetch('http://localhost:8080/api/admin/validate', {
+        const response = await springApiFetch('/admin/validate', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 

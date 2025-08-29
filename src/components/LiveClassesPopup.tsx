@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Radio, X, Calendar, Clock, Users } from "lucide-react";
+import { springApiFetch } from "@/lib/api";
 
 interface LiveClass {
   id: number;
@@ -20,7 +21,7 @@ const LiveClassesPopup = () => {
 
   const fetchLive = async () => {
     try {
-      const resp = await fetch("http://localhost:8080/api/classes/live");
+      const resp = await springApiFetch("/classes/live");
       if (resp.ok) {
         const data = await resp.json();
         setLiveClasses(Array.isArray(data) ? data : []);

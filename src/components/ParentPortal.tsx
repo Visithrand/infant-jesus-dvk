@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { MessageSquare } from "lucide-react";
+import { nodeApiFetch } from "@/lib/api";
 
 const ParentPortal = () => {
   const [query, setQuery] = useState("");
@@ -47,15 +48,10 @@ const ParentPortal = () => {
   ]);
 
   const handleSubmitQuery = () => {
-    const apiBase = (import.meta as any).env?.VITE_SERVER_URL || 'http://localhost:3001';
-
     if (query.trim()) {
       // Sending the query to the backend for email
-      fetch(`${apiBase}/send-query`, {
+      nodeApiFetch('/send-query', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ name: parentName, email: parentEmail, message: query }),
       })
       .then(response => response.json())

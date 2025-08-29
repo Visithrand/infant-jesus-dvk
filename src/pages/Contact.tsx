@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
+import { nodeApiFetch } from "@/lib/api";
 
 const suggestedQuestions = [
   "What are the admission requirements?",
@@ -24,11 +25,8 @@ const Contact = () => {
   const handleSubmitQuery = () => {
     if (query.trim()) {
       // Sending the query to the backend for email
-      fetch('http://localhost:3001/api/send-query-email', { // Assuming backend runs on port 3001
+      nodeApiFetch('/send-query-email', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ query: query }),
       })
       .then(response => response.json())

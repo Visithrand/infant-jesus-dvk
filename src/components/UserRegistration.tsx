@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, Loader2, UserPlus } from "lucide-react";
+import { springApiFetch } from "@/lib/api";
 
 interface UserRegistrationProps {
   onSwitchToLogin: () => void;
@@ -73,7 +74,7 @@ const UserRegistration = ({ onSwitchToLogin, onRegistrationSuccess }: UserRegist
     }
 
     try {
-      const response = await fetch('http://localhost:8080/api/users/register', {
+      const response = await springApiFetch('/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
