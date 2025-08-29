@@ -28,7 +28,17 @@ const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button variant="accent" size="lg" className="text-base sm:text-lg px-6 sm:px-8">
+            <Button 
+              variant="accent" 
+              size="lg" 
+              className="text-base sm:text-lg px-6 sm:px-8"
+              onClick={() => {
+                const programsSection = document.getElementById('academics');
+                if (programsSection) {
+                  programsSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+            >
               Explore Programs
               <ArrowRight className="ml-2 h-4 w-4 sm:h-5 sm:w-5" />
             </Button>

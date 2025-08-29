@@ -19,6 +19,9 @@ import HigherSecondaryEssay from "./pages/HigherSecondaryEssay";
 import AuthenticationPage from "./components/AuthenticationPage";
 import ApiTest from "./components/ApiTest";
 import AuthDebug from "./components/AuthDebug";
+import Academics from "./pages/Academics";
+import Facilities from "./pages/Facilities";
+import Events from "./pages/Events";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +47,9 @@ const App = () => (
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/api-test" element={<ApiTest />} />
           <Route path="/auth-debug" element={<AuthDebug />} />
+          <Route path="/academics" element={<Academics />} />
+          <Route path="/facilities" element={<Facilities />} />
+          <Route path="/events" element={<Events />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

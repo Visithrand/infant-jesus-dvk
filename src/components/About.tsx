@@ -27,7 +27,7 @@ const About = () => {
 
   const achievements = [
     "Govt+ Accredited Institution",
-    "Top Matriculation School in Sivagangai , devakottai",
+    "Top Matriculation School in Sivagangai, Devakottai",
     "100% University Placement Record",
     "State-of-the-art Infrastructure",
     "Award-winning Faculty Team",
@@ -54,10 +54,10 @@ const About = () => {
             {/* About Text */}
             <div>
               <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-6">
-                Excellence in Education Since 1996
+                Excellence in Education Since 1994
               </h3>
               <p className="text-muted-foreground mb-6 leading-relaxed">
-                Located in the serene environment of devakottai,Sivagangai,{" "}
+                Located in the serene environment of Devakottai, Sivagangai,{" "}
                 our institution stands as a testament to quality education and{" "}
                 character building. We believe in nurturing not just academic{" "}
                 excellence but also the overall personality development of our students.
