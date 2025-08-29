@@ -48,12 +48,18 @@ export const springApiFetch = async (
 ): Promise<Response> => {
   const url = getSpringApiUrl(endpoint);
   
-
+  // Don't set Content-Type for FormData (let browser set it with boundary)
+  const headers: HeadersInit = {};
+  
+  // Only set Content-Type if it's not FormData and not already specified
+  if (!(options.body instanceof FormData) && !options.headers?.['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
+  }
   
   return fetch(url, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
+      ...headers,
       ...options.headers,
     },
   });
@@ -66,12 +72,18 @@ export const nodeApiFetch = async (
 ): Promise<Response> => {
   const url = getNodeApiUrl(endpoint);
   
-
+  // Don't set Content-Type for FormData (let browser set it with boundary)
+  const headers: HeadersInit = {};
+  
+  // Only set Content-Type if it's not FormData and not already specified
+  if (!(options.body instanceof FormData) && !options.headers?.['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
+  }
   
   return fetch(url, {
     ...options,
     headers: {
-      'Content-Type': 'application/json',
+      ...headers,
       ...options.headers,
     },
   });

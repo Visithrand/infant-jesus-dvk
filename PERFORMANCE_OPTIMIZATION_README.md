@@ -74,12 +74,9 @@ if (response.ok) {
   fetchAllData(); // Slow - fetches everything again
 }
 
-// After: Fast, optimistic UI + immediate removal
-// 1. Remove from UI immediately
+
 setEvents(prev => prev.filter(e => e.id !== id));
-// 2. Server operation happens in background
-// 3. Revert on failure if needed
-```
+
 
 ### Live Status Toggle
 ```typescript
