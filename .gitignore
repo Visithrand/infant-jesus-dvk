@@ -1,0 +1,16 @@
+# Node / React
+node_modules/
+.vite/
+dist/
+build/
+
+# Maven / Java
+backend/target/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / tooling
+.idx/

@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 214 27% 17%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 214 27% 17%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 214 27% 17%;
+
+    --primary: 214 84% 25%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 214 32% 91%;
+    --secondary-foreground: 214 27% 17%;
+
+    --muted: 214 32% 91%;
+    --muted-foreground: 214 16% 46%;
+
+    --accent: 42 87% 55%;
+    --accent-foreground: 214 27% 17%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 214 84% 25%;
+
+    --radius: 0.75rem;
+
+    /* Custom educational theme variables */
+    --hero-gradient: linear-gradient(135deg, hsl(214 84% 25%), hsl(214 74% 35%));
+    --card-gradient: linear-gradient(145deg, hsl(0 0% 100%), hsl(214 32% 97%));
+    --accent-gradient: linear-gradient(135deg, hsl(42 87% 55%), hsl(42 97% 65%));
+    --shadow-soft: 0 4px 12px hsl(214 25% 50% / 0.1);
+    --shadow-medium: 0 8px 25px hsl(214 25% 50% / 0.15);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 214 32% 8%;
+    --foreground: 214 32% 91%;
+
+    --card: 214 32% 8%;
+    --card-foreground: 214 32% 91%;
+
+    --popover: 214 32% 8%;
+    --popover-foreground: 214 32% 91%;
+
+    --primary: 214 84% 45%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 214 32% 15%;
+    --secondary-foreground: 214 32% 91%;
+
+    --muted: 214 32% 15%;
+    --muted-foreground: 214 16% 65%;
+
+    --accent: 42 87% 65%;
+    --accent-foreground: 214 32% 8%;
+
+    --destructive: 0 84% 55%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 214 32% 15%;
+    --input: 214 32% 15%;
+    --ring: 214 84% 45%;
+
+    /* Dark mode custom variables */
+    --hero-gradient: linear-gradient(135deg, hsl(214 84% 20%), hsl(214 74% 30%));
+    --card-gradient: linear-gradient(145deg, hsl(214 32% 8%), hsl(214 32% 12%));
+    --accent-gradient: linear-gradient(135deg, hsl(42 87% 65%), hsl(42 97% 75%));
+    --shadow-soft: 0 4px 12px hsl(214 84% 4% / 0.3);
+    --shadow-medium: 0 8px 25px hsl(214 84% 4% / 0.4);
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

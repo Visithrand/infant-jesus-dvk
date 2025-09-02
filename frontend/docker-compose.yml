@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: infant_jesus_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "Visithran@mysql#123"
+      MYSQL_DATABASE: "visithran_db"
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: "Visithran@mysql#123"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "no"
+      MYSQL_ROOT_HOST: "%"
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../backend/src/main/resources/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password --innodb-use-native-aio=0 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --innodb-buffer-pool-size=256M --innodb-log-file-size=64M --innodb-flush-log-at-trx-commit=2 --innodb-flush-method=O_DIRECT --max-connections=200 --query-cache-size=32M --query-cache-type=1 --tmp-table-size=64M --max-heap-table-size=64M --table-open-cache=2000 --thread-cache-size=8 --key-buffer-size=32M --sort-buffer-size=2M --read-buffer-size=2M --read-rnd-buffer-size=8M --myisam-sort-buffer-size=8M --bulk-insert-buffer-size=8M
+
+volumes:
+  mysql_data:

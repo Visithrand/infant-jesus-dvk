@@ -1,0 +1,882 @@
+import { useState, useEffect } from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// Remove complex API imports for now
+import { 
+  Lock, 
+  User, 
+  Plus, 
+  Edit, 
+  Trash2, 
+  Upload, 
+  Calendar,
+  Clock,
+  Building2,
+  Image as ImageIcon,
+  LogOut,
+  Eye,
+  EyeOff
+} from "lucide-react";
+import AdminLogin from "./AdminLogin";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SuperAdminNav from "@/components/SuperAdminNav";
+import { getStoredAuth } from "@/utils/auth";
+import { useLocation } from "react-router-dom";
+
+interface Event {
+  id: number;
+  title: string;
+  description: string;
+  imageUrl: string | null;
+  eventDateTime: string;
+  createdAt: string;
+}
+
+interface ClassSchedule {
+  id: number;
+  subject: string;
+  teacher: string;
+  description: string;
+  scheduleTime: string;
+  isLive: boolean;
+  createdAt: string;
+}
+
+interface Facility {
+  id: number;
+  name: string;
+  description: string;
+  imageUrl: string | null;
+  createdAt: string;
+}
+
+const AdminDashboard = () => {
+  console.log('🔄 AdminDashboard component rendering...');
+  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [username, setUsername] = useState("");
+  const [role, setRole] = useState<string | null>(null);
+  const [showAuthForm, setShowAuthForm] = useState<'login'>('login');
+
+  // Utility function to get base URL with fallback
+  const getBaseUrl = () => {
+    // Always return localhost:8080 for now to ensure it works
+    return 'http://localhost:8080';
+  };
+
+  // Image state to store file objects
+  const [imageFiles, setImageFiles] = useState<Map<string, File>>(new Map());
+
+  // Function to convert file to base64
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // Function to get image URL - handles both URLs and local files
+  const getImageUrl = (imagePath: string) => {
+    if (!imagePath) return '';
+    
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith('http')) {
+      return imagePath;
+    }
+    
+    // If it's a base64 data URL, return as is
+    if (imagePath.startsWith('data:')) {
+      return imagePath;
+    }
+    
+    // Check if we have the file in our imageFiles map
+    const file = imageFiles.get(imagePath);
+    if (file) {
+      return URL.createObjectURL(file);
+    }
+    
+    // Fallback to placeholder
+    return `https://via.placeholder.com/300x200?text=${imagePath}`;
+  };
+
+  // Data states
+  const [events, setEvents] = useState<Event[]>([]);
+  const [classes, setClasses] = useState<ClassSchedule[]>([]);
+  const [facilities, setFacilities] = useState<Facility[]>([]);
+  const [announcements, setAnnouncements] = useState<{ id: number; title: string; message: string; createdAt: string; }[]>([]);
+
+  // Form states
+  const [eventForm, setEventForm] = useState({ 
+    title: "", 
+    description: "", 
+    eventDateTime: "", 
+    imageUrl: "" 
+  });
+  const [classForm, setClassForm] = useState({ 
+    subject: "", 
+    teacher: "", 
+    description: "", 
+    scheduleTime: "", 
+    isLive: false 
+  });
+  const [facilityForm, setFacilityForm] = useState({ name: "", description: "", image: null as File | null });
+  const [announcementForm, setAnnouncementForm] = useState({ title: "", message: "" });
+  const [isCreatingClass, setIsCreatingClass] = useState(false);
+
+  // Edit states
+  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [editingClass, setEditingClass] = useState<ClassSchedule | null>(null);
+  const [editingFacility, setEditingFacility] = useState<Facility | null>(null);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    // Simple initialization - don't wait for API_CONFIG
+    console.log('🔄 AdminDashboard useEffect running...');
+    initializeAdmin();
+    
+    // Cleanup function to revoke blob URLs when component unmounts
+    return () => {
+      imageFiles.forEach((file, key) => {
+        const url = URL.createObjectURL(file);
+        URL.revokeObjectURL(url);
+      });
+    };
+  }, []);
+
+  const initializeAdmin = () => {
+    console.log('🔄 initializeAdmin function called...');
+    // Simple authentication - just check if user is on admin page
+    // For now, let's make it work without complex auth
+    const auth = JSON.parse(localStorage.getItem('auth') || '{}');
+    const adminToken = localStorage.getItem('adminToken');
+    
+    console.log('🔑 Auth from localStorage:', auth);
+    console.log('🔑 Admin token from localStorage:', adminToken);
+    
+    if (auth.token || adminToken) {
+      const token = auth.token || adminToken;
+      console.log('✅ Using existing token:', token);
+      setToken(token);
+      setUsername(auth.username || 'Admin User');
+      setRole(auth.role || 'ADMIN');
+      setIsLoggedIn(true);
+      fetchAllData();
+    } else {
+      // For testing - create a simple admin session
+      const testToken = 'test-admin-token-' + Date.now();
+      console.log('🆕 Creating test token:', testToken);
+      setToken(testToken);
+      setUsername('Admin User');
+      setRole('ADMIN');
+      setIsLoggedIn(true);
+      fetchAllData();
+    }
+  };
+
+  // Registration flow removed
+
+  const validateToken = async (tokenToValidate: string) => {
+    try {
+      // Simple validation - just check if token exists
+      if (tokenToValidate) {
+        setToken(tokenToValidate);
+        setUsername('Admin User'); // Default username
+        setRole('ADMIN'); // Default role
+        setIsLoggedIn(true);
+        fetchAllData();
+      }
+    } catch (error) {
+      console.error('Token validation error:', error);
+    }
+  };
+
+  const handleLoginSuccess = (token: string, username: string) => {
+    setToken(token);
+    setUsername(username || 'Admin User');
+    setRole('ADMIN'); // Default to admin role
+    setIsLoggedIn(true);
+    fetchAllData();
+  };
+
+  // Registration flow removed
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setToken(null);
+    setUsername("");
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('auth');
+    // Redirect back to auth page
+    window.location.href = '/admin';
+  };
+
+  const fetchAllData = async () => {
+    try {
+      console.log('🔄 fetchAllData function called...');
+      
+      // Load data from localStorage
+      const storedEvents = localStorage.getItem('schoolEvents');
+      const storedClasses = localStorage.getItem('schoolClasses');
+      const storedFacilities = localStorage.getItem('schoolFacilities');
+      const storedAnnouncements = localStorage.getItem('schoolAnnouncements');
+      
+      if (storedEvents) {
+        try {
+          const parsedEvents = JSON.parse(storedEvents);
+          setEvents(parsedEvents);
+          console.log('✅ Events loaded from localStorage:', parsedEvents.length);
+        } catch (error) {
+          console.error('❌ Error parsing events:', error);
+          setEvents([]);
+        }
+      } else {
+        setEvents([]);
+      }
+      
+      if (storedClasses) {
+        try {
+          const parsedClasses = JSON.parse(storedClasses);
+          setClasses(parsedClasses);
+          console.log('✅ Classes loaded from localStorage:', parsedClasses.length);
+        } catch (error) {
+          console.error('❌ Error parsing classes:', error);
+          setClasses([]);
+        }
+      } else {
+        setClasses([]);
+      }
+      
+      if (storedFacilities) {
+        try {
+          const parsedFacilities = JSON.parse(storedFacilities);
+          setFacilities(parsedFacilities);
+          console.log('✅ Facilities loaded from localStorage:', parsedFacilities.length);
+        } catch (error) {
+          console.error('❌ Error parsing facilities:', error);
+          setFacilities([]);
+        }
+      } else {
+        setFacilities([]);
+      }
+      if (storedAnnouncements) {
+        try {
+          const parsedAnns = JSON.parse(storedAnnouncements);
+          setAnnouncements(parsedAnns);
+        } catch (error) {
+          console.error('❌ Error parsing announcements:', error);
+          setAnnouncements([]);
+        }
+      } else {
+        setAnnouncements([]);
+      }
+      
+      console.log('✅ Data loaded from localStorage');
+    } catch (error) {
+      console.error('❌ Error in fetchAllData:', error);
+      // Set empty arrays as fallback
+      setEvents([]);
+      setClasses([]);
+      setFacilities([]);
+      setAnnouncements([]);
+    }
+  };
+
+  // Event handlers
+  const handleCreateEvent = async () => {
+    console.log('Creating event with data:', eventForm);
+    console.log('Image files in state:', imageFiles);
+    
+    try {
+      const selectedFiles = Array.from(imageFiles.values());
+      const base64Images: string[] = [];
+      for (const file of selectedFiles) {
+        const b64 = await convertFileToBase64(file);
+        base64Images.push(b64);
+      }
+
+      const nowIso = new Date().toISOString();
+      const newEvents = (base64Images.length > 0 ? base64Images : [null]).map((img, idx) => ({
+        id: Date.now() + idx,
+        title: eventForm.title,
+        description: eventForm.description,
+        imageUrl: img as string | null,
+        eventDateTime: eventForm.eventDateTime,
+        createdAt: nowIso
+      }));
+
+      setEvents(prev => [...newEvents, ...prev]);
+
+      const updatedEvents = [...newEvents, ...events];
+      localStorage.setItem('schoolEvents', JSON.stringify(updatedEvents));
+
+      window.dispatchEvent(new CustomEvent('eventCreated'));
+
+      setEventForm({ title: "", description: "", eventDateTime: "", imageUrl: "" });
+      setImageFiles(new Map());
+
+      alert(`${newEvents.length} event(s) created successfully!`);
+    } catch (error) {
+      console.error('Error creating event:', error);
+      alert('Error creating event: ' + (error as Error).message);
+    }
+  };
+
+  const handleDeleteEvent = async (id: number) => {
+    try {
+      // For now, just remove from local state
+      setEvents(prev => prev.filter(e => e.id !== id));
+      
+      // Update localStorage
+      const updatedEvents = events.filter(e => e.id !== id);
+      localStorage.setItem('schoolEvents', JSON.stringify(updatedEvents));
+      
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new CustomEvent('eventDeleted', { detail: { id } }));
+      
+      alert('Event deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting event:', error);
+    }
+  };
+
+  // Class handlers
+  const handleCreateClass = async () => {
+    if (isCreatingClass) return;
+
+    console.log('Creating class with data:', classForm);
+
+    setIsCreatingClass(true);
+
+    try {
+      // For now, just add to local state without API call
+      const newClass: ClassSchedule = {
+        id: Date.now(),
+        subject: classForm.subject,
+        teacher: classForm.teacher,
+        description: classForm.description,
+        scheduleTime: new Date(classForm.scheduleTime).toISOString(),
+        isLive: classForm.isLive,
+        createdAt: new Date().toISOString(),
+      };
+      
+      setClasses(prev => [newClass, ...prev]);
+      
+      // Store in localStorage for other components to access
+      const updatedClasses = [newClass, ...classes];
+      localStorage.setItem('schoolClasses', JSON.stringify(updatedClasses));
+      
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new CustomEvent('classCreated', { detail: newClass }));
+      
+      setClassForm({ subject: "", teacher: "", description: "", scheduleTime: "", isLive: false });
+      
+      // Show success message
+      alert('Class created successfully! It will appear on the homepage.');
+      
+    } catch (error) {
+      console.error('Error creating class:', error);
+      alert('Error creating class: ' + error.message);
+    }
+    setIsCreatingClass(false);
+  };
+
+  const handleToggleLiveStatus = async (id: number) => {
+    try {
+      // For now, just toggle in local state
+      setClasses(prev => prev.map(cls => 
+        cls.id === id ? { ...cls, isLive: !cls.isLive } : cls
+      ));
+      
+      // Update localStorage
+      const updatedClasses = classes.map(cls => 
+        cls.id === id ? { ...cls, isLive: !cls.isLive } : cls
+      );
+      localStorage.setItem('schoolClasses', JSON.stringify(updatedClasses));
+      
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new CustomEvent('classLiveStatusChanged', { detail: { id, isLive: !classes.find(c => c.id === id)?.isLive } }));
+      
+      alert('Live status toggled successfully!');
+    } catch (error) {
+      console.error('Error toggling live status:', error);
+    }
+  };
+
+  // Facility handlers
+  const handleCreateFacility = async () => {
+    try {
+      // Convert image file to base64 for storage
+      let imageData = null;
+      if (facilityForm.image) {
+        imageData = await convertFileToBase64(facilityForm.image);
+      }
+      
+      // For now, just add to local state without API call
+      const newFacility = {
+        id: Date.now(),
+        name: facilityForm.name,
+        description: facilityForm.description,
+        imageUrl: imageData,
+        createdAt: new Date().toISOString()
+      };
+      
+      setFacilities(prev => [newFacility, ...prev]);
+      
+      // Store in localStorage for other components to access
+      const updatedFacilities = [newFacility, ...facilities];
+      localStorage.setItem('schoolFacilities', JSON.stringify(updatedFacilities));
+      
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new CustomEvent('facilityCreated', { detail: newFacility }));
+      
+      setFacilityForm({ name: "", description: "", image: null });
+      
+      // Show success message
+      alert('Facility created successfully! It will appear on the homepage.');
+      
+    } catch (error) {
+      console.error('Error creating facility:', error);
+      alert('Error creating facility: ' + error.message);
+    }
+  };
+
+  const handleDeleteFacility = async (id: number) => {
+    try {
+      // For now, just remove from local state
+      setFacilities(prev => prev.filter(f => f.id !== id));
+      alert('Facility deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting facility:', error);
+    }
+  };
+
+  // Announcement handlers
+  const handleCreateAnnouncement = () => {
+    const newA = { id: Date.now(), title: announcementForm.title || 'Announcement', message: announcementForm.message, createdAt: new Date().toISOString() };
+    const updated = [newA, ...announcements];
+    setAnnouncements(updated);
+    localStorage.setItem('schoolAnnouncements', JSON.stringify(updated));
+    window.dispatchEvent(new CustomEvent('announcementCreated'));
+    setAnnouncementForm({ title: "", message: "" });
+    alert('Announcement posted!');
+  };
+
+  console.log('🔄 Render logic - isLoggedIn:', isLoggedIn);
+  
+  if (!isLoggedIn) {
+    console.log('🔒 Showing authentication form...');
+    return (
+      <>
+        <Header />
+        <section className="py-20 bg-background">
+          <div className="container mx-auto px-4">
+            <div className="max-w-md mx-auto">
+            <div className="text-center mb-8">
+              <div className="bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <Lock className="h-8 w-8 text-primary" />
+              </div>
+              <h2 className="text-2xl font-bold text-foreground">Admin Authentication</h2>
+              <p className="text-muted-foreground">Access the school management dashboard</p>
+            </div>
+
+              <AdminLogin onSwitchToRegistration={() => {}} onLoginSuccess={handleLoginSuccess} />
+            </div>
+          </div>
+        </section>
+        <Footer />
+      </>
+    );
+  }
+
+  console.log('🎯 Rendering main dashboard...');
+  
+  return (
+    <>
+      <Header />
+             <section className="py-8 sm:py-20 bg-background">
+         <div className="container mx-auto px-4">
+           <div className="max-w-6xl mx-auto">
+                      {/* Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 md:mb-8 gap-4">
+              <div>
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">Admin Dashboard</h2>
+                <p className="text-sm sm:text-base text-muted-foreground">Welcome back, {username}</p>
+              </div>
+              <Button variant="outline" onClick={handleLogout} className="w-full sm:w-auto">
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </Button>
+            </div>
+
+          {/* SuperAdminNav features retained; no registration action */}
+          {role === 'SUPER_ADMIN' && <SuperAdminNav onCreateAdminClick={() => undefined} />}
+
+                     {/* Dashboard Tabs */}
+                                               <Tabs defaultValue={new URLSearchParams(location.search).get('tab') || "events"} className="space-y-4 sm:space-y-6">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="events" className="text-xs sm:text-sm px-2 sm:px-3">Events</TabsTrigger>
+                <TabsTrigger value="announcements" className="text-xs sm:text-sm px-2 sm:px-3">Announcements</TabsTrigger>
+                <TabsTrigger value="classes" className="text-xs sm:text-sm px-2 sm:px-3">Classes</TabsTrigger>
+              </TabsList>
+
+                                                   {/* Events Tab */}
+              <TabsContent value="events" className="space-y-4 sm:space-y-6">
+                <Card className="p-3 sm:p-4 md:p-6">
+                                   <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4">Create New Event</h3>
+                 <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <Label htmlFor="event-title" className="text-sm sm:text-base">Title</Label>
+                    <Input
+                      id="event-title"
+                      value={eventForm.title}
+                      onChange={(e) => setEventForm({ ...eventForm, title: e.target.value })}
+                      placeholder="Event title"
+                      className="text-sm sm:text-base"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="event-datetime" className="text-sm sm:text-base">Event Date & Time</Label>
+                    <Input
+                      id="event-datetime"
+                      type="datetime-local"
+                      value={eventForm.eventDateTime}
+                      onChange={(e) => setEventForm({ ...eventForm, eventDateTime: e.target.value })}
+                      className="text-sm sm:text-base"
+                    />
+                  </div>
+                </div>
+                                 <div className="mt-4">
+                   <div>
+                     <Label htmlFor="event-image" className="text-sm sm:text-base">Event Images</Label>
+                                           <Input
+                        id="event-image"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={(e) => {
+                          const files = e.target.files ? Array.from(e.target.files) : [];
+                          const nextMap = new Map(imageFiles);
+                          files.forEach((f) => nextMap.set(f.name, f));
+                          setImageFiles(nextMap);
+                          if (files[0]) setEventForm({ ...eventForm, imageUrl: files[0].name });
+                        }}
+                        className="cursor-pointer text-sm sm:text-base"
+                      />
+                                           <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                        Choose one or more image files
+                      </p>
+                      {imageFiles.size > 0 && (
+                        <div className="mt-2 grid grid-cols-4 gap-2">
+                          {Array.from(imageFiles.values()).slice(0, 8).map((file) => (
+                            <img key={file.name} src={URL.createObjectURL(file)} alt={file.name} className="w-16 h-16 object-cover rounded border" />
+                          ))}
+                        </div>
+                      )}
+                   </div>
+                 </div>
+                <div className="mt-4">
+                  <Label htmlFor="event-description" className="text-sm sm:text-base">Description</Label>
+                  <Textarea
+                    id="event-description"
+                    value={eventForm.description}
+                    onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })}
+                    placeholder="Event description"
+                    rows={3}
+                    className="text-sm sm:text-base"
+                  />
+                </div>
+                                 <Button onClick={handleCreateEvent} className="mt-4 w-full sm:w-auto">
+                   <Plus className="mr-2 h-4 w-4" />
+                   Create Event
+                 </Button>
+               </Card>
+
+                                                          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                 {events.map((event) => (
+                   <Card key={event.id} className="p-3 sm:p-4">
+                                         {event.imageUrl && (
+                       <img
+                         src={event.imageUrl.startsWith('data:') ? event.imageUrl : getImageUrl(event.imageUrl)}
+                         alt={event.title}
+                         className="w-full h-24 sm:h-32 object-cover rounded mb-3"
+                       />
+                     )}
+                                          <h4 className="font-semibold mb-2 text-sm sm:text-base">{event.title}</h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-2">
+                        {event.description}
+                      </p>
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-3">
+                        Date: {new Date(event.eventDateTime).toLocaleString()}
+                      </p>
+                      <div className="flex flex-col gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => setEditingEvent(event)}
+                        >
+                          <Edit className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => handleDeleteEvent(event.id)}
+                        >
+                          <Trash2 className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                          Delete
+                        </Button>
+                      </div>
+                   </Card>
+                 ))}
+               </div>
+            </TabsContent>
+
+              {/* Announcements Tab */}
+              <TabsContent value="announcements" className="space-y-4 sm:space-y-6">
+                <Card className="p-3 sm:p-4 md:p-6">
+                  <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4">Post Announcement</h3>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div>
+                      <Label htmlFor="a-title" className="text-sm sm:text-base">Title</Label>
+                      <Input id="a-title" value={announcementForm.title} onChange={(e) => setAnnouncementForm({ ...announcementForm, title: e.target.value })} placeholder="Announcement title" />
+                    </div>
+                    <div>
+                      <Label htmlFor="a-message" className="text-sm sm:text-base">Message</Label>
+                      <Textarea id="a-message" value={announcementForm.message} onChange={(e) => setAnnouncementForm({ ...announcementForm, message: e.target.value })} placeholder="Write announcement details" rows={4} />
+                    </div>
+                  </div>
+                  <Button onClick={handleCreateAnnouncement} className="mt-4 w-full sm:w-auto">Post Announcement</Button>
+                </Card>
+
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {announcements.map((a) => (
+                    <Card key={a.id} className="p-3 sm:p-4">
+                      <h4 className="font-semibold mb-2 text-sm sm:text-base">{a.title}</h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-2 whitespace-pre-wrap">{a.message}</p>
+                      <p className="text-xs text-gray-500 mb-2">{new Date(a.createdAt).toLocaleString()}</p>
+                      <Button variant="destructive" size="sm" onClick={() => {
+                        const updated = announcements.filter(x => x.id !== a.id);
+                        setAnnouncements(updated);
+                        localStorage.setItem('schoolAnnouncements', JSON.stringify(updated));
+                        window.dispatchEvent(new CustomEvent('announcementDeleted'));
+                      }}>Delete</Button>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+
+              {/* Classes Tab */}
+              <TabsContent value="classes" className="space-y-4 sm:space-y-6">
+                <Card className="p-3 sm:p-4 md:p-6">
+                                   <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4">Create New Class</h3>
+                 <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <Label htmlFor="class-subject" className="text-sm sm:text-base">Subject</Label>
+                    <Input
+                      id="class-subject"
+                      value={classForm.subject}
+                      onChange={(e) => setClassForm({ ...classForm, subject: e.target.value })}
+                      placeholder="Subject name"
+                      className="text-sm sm:text-base"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="class-teacher" className="text-sm sm:text-base">Teacher</Label>
+                    <Input
+                      id="class-teacher"
+                      value={classForm.teacher}
+                      onChange={(e) => setClassForm({ ...classForm, teacher: e.target.value })}
+                      placeholder="Teacher name"
+                      className="text-sm sm:text-base"
+                    />
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <Label htmlFor="class-description" className="text-sm sm:text-base">Description</Label>
+                  <Textarea
+                    id="class-description"
+                    value={classForm.description}
+                    onChange={(e) => setClassForm({ ...classForm, description: e.target.value })}
+                    placeholder="Class description"
+                    rows={3}
+                    className="text-sm sm:text-base"
+                  />
+                </div>
+                                                                   <div className="mt-4 space-y-4">
+                    <div>
+                      <Label htmlFor="class-time" className="text-sm sm:text-base">Schedule Time</Label>
+                      <Input
+                        id="class-time"
+                        type="datetime-local"
+                        value={classForm.scheduleTime}
+                        onChange={(e) => setClassForm({ ...classForm, scheduleTime: e.target.value })}
+                        className="text-sm sm:text-base"
+                      />
+                    </div>
+                    
+                  </div>
+                                  <Button onClick={handleCreateClass} className="mt-4 w-full sm:w-auto" disabled={isCreatingClass}>
+                    <Plus className="mr-2 h-4 w-4" />
+                    {isCreatingClass ? 'Creating…' : 'Create Class'}
+                  </Button>
+               </Card>
+
+                                                           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                 {classes.map((cls) => (
+                   <Card key={cls.id} className="p-3 sm:p-4">
+                                          <div className="flex items-start justify-between mb-2 gap-2">
+                        <h4 className="font-semibold text-sm sm:text-base">{cls.subject}</h4>
+                        {cls.isLive && (
+                          <span className="bg-red-500 text-white text-xs px-2 py-1 rounded shrink-0">LIVE</span>
+                        )}
+                      </div>
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-2">Teacher: {cls.teacher}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-2 line-clamp-2">
+                        {cls.description}
+                      </p>
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-3">
+                        Time: {new Date(cls.scheduleTime).toLocaleString()}
+                      </p>
+                      <div className="flex flex-col gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => setEditingClass(cls)}
+                        >
+                          <Edit className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => handleToggleLiveStatus(cls.id)}
+                        >
+                          {cls.isLive ? "Stop Live" : "Go Live"}
+                        </Button>
+                      </div>
+                   </Card>
+                 ))}
+               </div>
+            </TabsContent>
+
+                                                   {/* Facilities Tab */}
+              <TabsContent value="facilities" className="space-y-4 sm:space-y-6">
+                <Card className="p-3 sm:p-4 md:p-6">
+                                   <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4">Create New Facility</h3>
+                                   <div className="grid grid-cols-1 gap-4">
+                   <div>
+                     <Label htmlFor="facility-name" className="text-sm sm:text-base">Name</Label>
+                     <Input
+                       id="facility-name"
+                       value={facilityForm.name}
+                       onChange={(e) => setFacilityForm({ ...facilityForm, name: e.target.value })}
+                       placeholder="Facility name"
+                       className="text-sm sm:text-base"
+                     />
+                   </div>
+                   <div>
+                     <Label htmlFor="facility-image" className="text-sm sm:text-base">Image</Label>
+                     <Input
+                       id="facility-image"
+                       type="file"
+                       accept="image/*"
+                                                                       onChange={(e) => {
+                           const file = e.target.files?.[0];
+                           if (file) {
+                             // Store the file object in our imageFiles map
+                             setImageFiles(prev => new Map(prev).set(file.name, file));
+                           }
+                           setFacilityForm({ ...facilityForm, image: file || null });
+                         }}
+                       className="text-sm sm:text-base"
+                       />
+                       {facilityForm.image && (
+                         <div className="mt-2">
+                           <p className="text-xs sm:text-sm text-muted-foreground mb-1">Selected: {facilityForm.image.name}</p>
+                           <img 
+                             src={URL.createObjectURL(facilityForm.image)} 
+                             alt="Preview" 
+                             className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded border"
+                           />
+                         </div>
+                       )}
+                     </div>
+                   </div>
+                                     <div className="mt-4">
+                   <Label htmlFor="facility-description" className="text-sm sm:text-base">Description</Label>
+                   <Textarea
+                     id="facility-description"
+                     value={facilityForm.description}
+                     onChange={(e) => setFacilityForm({ ...facilityForm, description: e.target.value })}
+                     placeholder="Facility description"
+                     rows={3}
+                     className="text-sm sm:text-base"
+                   />
+                 </div>
+                                  <Button onClick={handleCreateFacility} className="mt-4 w-full sm:w-auto">
+                    <Plus className="mr-2 h-4 w-4" />
+                    Create Facility
+                  </Button>
+               </Card>
+
+                                                           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                 {facilities.map((facility) => (
+                   <Card key={facility.id} className="p-3 sm:p-4">
+                                         {facility.imageUrl && (
+                       <img
+                         src={facility.imageUrl.startsWith('data:') ? facility.imageUrl : getImageUrl(facility.imageUrl)}
+                         alt={facility.name}
+                         className="w-full h-24 sm:h-32 object-cover rounded mb-3"
+                       />
+                     )}
+                                          <h4 className="font-semibold mb-2 text-sm sm:text-base">{facility.name}</h4>
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-3 line-clamp-2">
+                        {facility.description}
+                      </p>
+                      <div className="flex flex-col gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => setEditingFacility(facility)}
+                        >
+                          <Edit className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => handleDeleteFacility(facility.id)}
+                        >
+                          <Trash2 className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                          Delete
+                        </Button>
+                      </div>
+                   </Card>
+                 ))}
+               </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+      </section>
+      <Footer />
+    </>
+  );
+};
+
+export default AdminDashboard;

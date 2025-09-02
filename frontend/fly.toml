@@ -1,0 +1,15 @@
+app = "infantjesus"
+primary_region = "bom"
+
+[build]
+  image = "eclipse-temurin:17-jre"
+
+[env]
+  PORT = "8080"
+
+[[services]]
+  internal_port = 8080
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 8080
