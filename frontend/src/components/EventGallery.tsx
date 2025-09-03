@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Image as ImageIcon, ExternalLink, Edit, Trash2, Plus } from "lucide-react";
 import EventDetailsModal from "./EventDetailsModal";
-import { get, deleteMethod, getImageUrl, API_CONFIG } from '@/config/api';
+import { ApiService, API_CONFIG } from '@/config/api';
 import { getStoredAuth } from '@/utils/auth';
 
 interface Event {
@@ -52,7 +52,7 @@ const EventGallery = () => {
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const data = await get(API_CONFIG.ENDPOINTS.EVENTS);
+      const data = await ApiService.get(API_CONFIG.ENDPOINTS.EVENTS);
       
       if (Array.isArray(data)) {
         const sorted = [...data].sort((a: Event, b: Event) =>
@@ -102,7 +102,7 @@ const EventGallery = () => {
       const auth = getStoredAuth();
       if (!auth?.token) return;
 
-      await deleteMethod(`${API_CONFIG.ENDPOINTS.EVENTS_ADMIN}/${id}`, { 
+      await ApiService.delete(`${API_CONFIG.ENDPOINTS.EVENTS_ADMIN}/${id}`, { 
         'Authorization': `Bearer ${auth.token}` 
       });
       
@@ -209,7 +209,7 @@ const EventGallery = () => {
                    {event.imageUrl ? (
                      <div className="relative h-40 sm:h-48 overflow-hidden">
                        <img
-                         src={getImageUrl(event.imageUrl)}
+                         src={ApiService.getImageUrl(event.imageUrl)}
                          alt={event.title}
                          className="w-full h-full object-cover"
                          loading="lazy"

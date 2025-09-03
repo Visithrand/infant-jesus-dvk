@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Megaphone, Calendar, AlertTriangle, Info, CheckCircle, Clock, Edit, Trash2, Plus } from "lucide-react";
-import { get, deleteMethod, API_CONFIG } from '@/config/api';
+import { ApiService, API_CONFIG } from '@/config/api';
 import { getStoredAuth } from '@/utils/auth';
 import { useNavigate } from "react-router-dom";
 
@@ -58,7 +58,7 @@ const AnnouncementsDisplay = () => {
       setLoading(true);
       setError(null);
       
-      const data = await get(API_CONFIG.ENDPOINTS.ANNOUNCEMENTS);
+      const data = await ApiService.get(API_CONFIG.ENDPOINTS.ANNOUNCEMENTS);
       
       if (Array.isArray(data)) {
         const sorted = [...data].sort((a: Announcement, b: Announcement) =>
@@ -99,7 +99,7 @@ const AnnouncementsDisplay = () => {
       const auth = getStoredAuth();
       if (!auth?.token) return;
 
-      await deleteMethod(`${API_CONFIG.ENDPOINTS.ANNOUNCEMENTS_ADMIN}/${id}`, { 
+      await ApiService.delete(`${API_CONFIG.ENDPOINTS.ANNOUNCEMENTS_ADMIN}/${id}`, { 
         'Authorization': `Bearer ${auth.token}` 
       });
       

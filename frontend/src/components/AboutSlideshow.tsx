@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { API_CONFIG, get } from "@/config/api";
+import { API_CONFIG, ApiService } from "@/config/api";
 import { Card } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 
@@ -37,7 +37,7 @@ const AboutSlideshow = () => {
     const loadImages = async () => {
       let collected: string[] = [];
       try {
-        const data: EventItem[] = await get(`/events`, { 'Cache-Control': 'no-store' } as any);
+        const data: EventItem[] = await ApiService.get(`/events`, { 'Cache-Control': 'no-store' } as any);
         if (Array.isArray(data)) {
           const eventUrls = data
             .filter((e) => !!e.imageUrl)

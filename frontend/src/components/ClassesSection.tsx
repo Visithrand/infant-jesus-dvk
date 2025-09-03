@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, User, Edit, Trash2, Plus } from "lucide-react";
-import { get, deleteMethod, API_CONFIG } from '@/config/api';
+import { ApiService, API_CONFIG } from '@/config/api';
 import { getStoredAuth } from '@/utils/auth';
 import { useNavigate } from "react-router-dom";
 
@@ -70,7 +70,7 @@ const ClassesSection = () => {
       setLoading(true);
       setError(null);
       
-      const data = await get(API_CONFIG.ENDPOINTS.CLASSES_LIVE);
+      const data = await ApiService.get(API_CONFIG.ENDPOINTS.CLASSES_LIVE);
       
       if (Array.isArray(data)) {
         const sorted = [...data].sort((a: ClassSchedule, b: ClassSchedule) =>
@@ -111,7 +111,7 @@ const ClassesSection = () => {
       const auth = getStoredAuth();
       if (!auth?.token) return;
 
-      await deleteMethod(`${API_CONFIG.ENDPOINTS.CLASSES_ADMIN}/${id}`, { 
+      await ApiService.delete(`${API_CONFIG.ENDPOINTS.CLASSES_ADMIN}/${id}`, { 
         'Authorization': `Bearer ${auth.token}` 
       });
       

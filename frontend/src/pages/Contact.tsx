@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import { API_CONFIG, post } from "@/config/api";
+import { API_CONFIG, ApiService } from "@/config/api";
 
 const suggestedQuestions = [
   "What are the admission requirements?",
@@ -25,7 +25,7 @@ const Contact = () => {
   const handleSubmitQuery = () => {
     if (query.trim()) {
       // Sending the query to the backend for email (Spring endpoint)
-      post(`/send-query`, { message: query })
+      ApiService.post(`/send-query`, { message: query })
       .then(data => {
         console.log('Success:', data);
         if (data.success) {

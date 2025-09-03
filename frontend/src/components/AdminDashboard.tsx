@@ -22,7 +22,7 @@ import {
   EyeOff
 } from "lucide-react";
 import AdminLogin from "./AdminLogin";
-import { API_CONFIG, get, post, deleteMethod, getImageUrl as getImageUrlFromApi, put } from "@/config/api";
+import { API_CONFIG, ApiService } from "@/config/api";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SuperAdminNav from "@/components/SuperAdminNav";
@@ -103,7 +103,7 @@ const AdminDashboard = () => {
     
     // Build from API base if it's a server path
     try {
-      return getImageUrlFromApi(imagePath);
+      return ApiService.getImageUrl(imagePath);
     } catch {
       return `https://via.placeholder.com/300x200?text=${imagePath}`;
     }
@@ -161,7 +161,7 @@ const AdminDashboard = () => {
       return;
     }
     try {
-      const data = await get(`/admin/validate`, { Authorization: `Bearer ${storedToken}` });
+      const data = await ApiService.get(`/admin/validate`, { Authorization: `Bearer ${storedToken}` });
       setToken(storedToken);
       setUsername(data.username || 'Admin');
       setRole(data.role || 'ADMIN');
@@ -220,7 +220,7 @@ const AdminDashboard = () => {
       
       // Fetch events from backend API
       try {
-        const apiEvents = await get(API_CONFIG.ENDPOINTS.EVENTS);
+        const apiEvents = await ApiService.get(API_CONFIG.ENDPOINTS.EVENTS);
         if (Array.isArray(apiEvents)) {
           setEvents(apiEvents);
           // Also update localStorage for backward compatibility
@@ -247,7 +247,7 @@ const AdminDashboard = () => {
       
       // Fetch classes from backend API
       try {
-        const apiClasses = await get(API_CONFIG.ENDPOINTS.CLASSES_LIVE);
+        const apiClasses = await ApiService.get(API_CONFIG.ENDPOINTS.CLASSES_LIVE);
         if (Array.isArray(apiClasses)) {
           setClasses(apiClasses);
           // Also update localStorage for backward compatibility
@@ -274,7 +274,7 @@ const AdminDashboard = () => {
       
       // Fetch announcements from backend API
       try {
-        const apiAnnouncements = await get(API_CONFIG.ENDPOINTS.ANNOUNCEMENTS);
+        const apiAnnouncements = await ApiService.get(API_CONFIG.ENDPOINTS.ANNOUNCEMENTS);
         if (Array.isArray(apiAnnouncements)) {
           setAnnouncements(apiAnnouncements);
           // Also update localStorage for backward compatibility
@@ -348,7 +348,7 @@ const AdminDashboard = () => {
       };
 
       // Call backend API to create event
-      const createdEvent = await post(API_CONFIG.ENDPOINTS.EVENTS, eventData);
+      const createdEvent = await ApiService.post(API_CONFIG.ENDPOINTS.EVENTS, eventData);
       
       if (createdEvent && createdEvent.id) {
         // Add to local state
@@ -378,7 +378,7 @@ const AdminDashboard = () => {
   const handleDeleteEvent = async (id: number) => {
     try {
       // Call backend API to delete event
-      await deleteMethod(`${API_CONFIG.ENDPOINTS.EVENTS_ADMIN}/${id}`, { 
+      await ApiService.delete(`${API_CONFIG.ENDPOINTS.EVENTS_ADMIN}/${id}`, { 
         'Authorization': `Bearer ${token}` 
       });
       
@@ -418,7 +418,7 @@ const AdminDashboard = () => {
       };
 
       // Call backend API to create class
-      const createdClass = await post(API_CONFIG.ENDPOINTS.CLASSES, classData);
+      const createdClass = await ApiService.post(API_CONFIG.ENDPOINTS.CLASSES, classData);
       
       if (createdClass && createdClass.id) {
         // Add to local state
@@ -449,7 +449,7 @@ const AdminDashboard = () => {
   const handleToggleLiveStatus = async (id: number) => {
     try {
       // Call backend API to toggle live status
-      await put(`${API_CONFIG.ENDPOINTS.CLASSES_ADMIN}/${id}/toggle-live`, {});
+      await ApiService.put(`${API_CONFIG.ENDPOINTS.CLASSES_ADMIN}/${id}/toggle-live`, {});
       
       // Toggle in local state
       setClasses(prev => prev.map(cls => 
@@ -475,7 +475,7 @@ const AdminDashboard = () => {
   const handleDeleteClass = async (id: number) => {
     try {
       // Call backend API to delete class
-      await deleteMethod(`${API_CONFIG.ENDPOINTS.CLASSES_ADMIN}/${id}`, { 
+      await ApiService.delete(`${API_CONFIG.ENDPOINTS.CLASSES_ADMIN}/${id}`, { 
         'Authorization': `Bearer ${token}` 
       });
       
@@ -561,7 +561,7 @@ const AdminDashboard = () => {
       };
 
       // Call backend API to create announcement
-      const createdAnnouncement = await post(API_CONFIG.ENDPOINTS.ANNOUNCEMENTS, announcementData);
+      const createdAnnouncement = await ApiService.post(API_CONFIG.ENDPOINTS.ANNOUNCEMENTS, announcementData);
       
       if (createdAnnouncement && createdAnnouncement.id) {
         // Add to local state
@@ -589,7 +589,7 @@ const AdminDashboard = () => {
   const handleDeleteAnnouncement = async (id: number) => {
     try {
       // Call backend API to delete announcement
-      await deleteMethod(`${API_CONFIG.ENDPOINTS.ANNOUNCEMENTS_ADMIN}/${id}`, { 
+      await ApiService.delete(`${API_CONFIG.ENDPOINTS.ANNOUNCEMENTS_ADMIN}/${id}`, { 
         'Authorization': `Bearer ${token}` 
       });
       

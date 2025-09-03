@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Image as ImageIcon } from "lucide-react";
-import { get, API_CONFIG } from '@/config/api';
+import { ApiService, API_CONFIG } from '@/config/api';
 
 interface Event {
   id: number;
@@ -45,7 +45,7 @@ const EventsDisplay = () => {
       setLoading(true);
       setError(null);
       
-      const data = await get(API_CONFIG.ENDPOINTS.EVENTS);
+      const data = await ApiService.get(API_CONFIG.ENDPOINTS.EVENTS);
       
       if (Array.isArray(data)) {
         setEvents(data);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { API_CONFIG, get } from "@/config/api";
+import { API_CONFIG, ApiService } from "@/config/api";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 
@@ -27,7 +27,7 @@ const RequireAuth = ({ children, requiredRoles = [], fallback }: RequireAuthProp
         }
 
         // Validate token with backend
-        const data = await get(`/admin/validate`, { 'Authorization': `Bearer ${token}` });
+        const data = await ApiService.get(`/admin/validate`, { 'Authorization': `Bearer ${token}` });
         if (data) {
           setIsAuthenticated(true);
           setUserRole(data.role);
