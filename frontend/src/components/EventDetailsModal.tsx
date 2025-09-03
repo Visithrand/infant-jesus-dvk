@@ -1,4 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { API_CONFIG } from "@/config/api";
 import { Button } from "@/components/ui/button";
 import { Calendar, Image as ImageIcon, X } from "lucide-react";
 
@@ -52,7 +53,7 @@ const EventDetailsModal = ({ event, isOpen, onClose }: EventDetailsModalProps) =
           {event.imageUrl ? (
             <div className="relative h-64 overflow-hidden rounded-lg">
               <img
-                src={`http://localhost:8080${event.imageUrl}`}
+                src={`${API_CONFIG.BASE_URL}${event.imageUrl}`}
                 alt={event.title}
                 className="w-full h-full object-cover"
               />

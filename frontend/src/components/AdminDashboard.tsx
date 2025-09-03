@@ -22,6 +22,7 @@ import {
   EyeOff
 } from "lucide-react";
 import AdminLogin from "./AdminLogin";
+import { API_CONFIG, getImageUrl as getImageUrlFromApi } from "@/config/api";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SuperAdminNav from "@/components/SuperAdminNav";
@@ -65,10 +66,7 @@ const AdminDashboard = () => {
   const [showAuthForm, setShowAuthForm] = useState<'login'>('login');
 
   // Utility function to get base URL with fallback
-  const getBaseUrl = () => {
-    // Always return localhost:8080 for now to ensure it works
-    return 'http://localhost:8080';
-  };
+  const getBaseUrl = () => API_CONFIG.BASE_URL;
 
   // Image state to store file objects
   const [imageFiles, setImageFiles] = useState<Map<string, File>>(new Map());
@@ -103,8 +101,12 @@ const AdminDashboard = () => {
       return URL.createObjectURL(file);
     }
     
-    // Fallback to placeholder
-    return `https://via.placeholder.com/300x200?text=${imagePath}`;
+    // Build from API base if it's a server path
+    try {
+      return getImageUrlFromApi(imagePath);
+    } catch {
+      return `https://via.placeholder.com/300x200?text=${imagePath}`;
+    }
   };
 
   // Data states

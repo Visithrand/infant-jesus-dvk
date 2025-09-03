@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_CONFIG } from "@/config/api";
 import { Card } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 
@@ -36,12 +37,12 @@ const AboutSlideshow = () => {
     const loadImages = async () => {
       let collected: string[] = [];
       try {
-        const res = await fetch('http://localhost:8080/api/events', { cache: 'no-store' });
+        const res = await fetch(`${API_CONFIG.BASE_URL}/events`, { cache: 'no-store' });
         if (res.ok) {
           const data: EventItem[] = await res.json();
           const eventUrls = data
             .filter((e) => !!e.imageUrl)
-            .map((e) => `http://localhost:8080${e.imageUrl}`);
+            .map((e) => `${API_CONFIG.BASE_URL}${e.imageUrl}`);
           collected = collected.concat(eventUrls);
         }
       } catch {}

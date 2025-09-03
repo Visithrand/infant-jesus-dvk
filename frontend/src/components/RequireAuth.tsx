@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_CONFIG } from "@/config/api";
 import { useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 
@@ -26,7 +27,7 @@ const RequireAuth = ({ children, requiredRoles = [], fallback }: RequireAuthProp
         }
 
         // Validate token with backend
-        const response = await fetch('http://localhost:8080/api/admin/validate', {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/admin/validate`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { API_CONFIG } from "@/config/api";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -47,7 +48,7 @@ const ParentPortal = () => {
   ]);
 
   const handleSubmitQuery = () => {
-    const apiBase = (import.meta as any).env?.VITE_SERVER_URL || 'http://localhost:3001';
+    const apiBase = API_CONFIG.BASE_URL;
 
     if (query.trim()) {
       // Sending the query to the backend for email
