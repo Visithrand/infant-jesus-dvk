@@ -20,6 +20,9 @@ import HigherSecondaryEssay from "./pages/HigherSecondaryEssay";
 import AuthenticationPage from "./components/AuthenticationPage";
 
 const queryClient = new QueryClient();
+console.log('VITE_NODE_SERVER_URL =', import.meta.env.VITE_NODE_SERVER_URL);
+console.log('__BACKEND_URL__ =', (globalThis as any).__BACKEND_URL__);
+console.log('API_CONFIG.BASE_URL =', (globalThis as any).__BACKEND_URL__ || import.meta.env.VITE_BACKEND_URL || 'NOT SET');
 
 const App = () => (
   <ErrorBoundary>

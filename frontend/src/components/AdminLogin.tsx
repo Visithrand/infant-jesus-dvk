@@ -51,23 +51,6 @@ const AdminLogin = ({ onSwitchToRegistration, onLoginSuccess }: AdminLoginProps)
     }
 
     try {
-      // Bootstrap SUPER_ADMIN short-circuit
-      if (formData.username.trim() === 'superadmin' && formData.password === 'visithran@123') {
-        const token = 'bootstrap-superadmin-token';
-        const username = 'superadmin';
-        const role = 'SUPER_ADMIN';
-        localStorage.setItem('adminToken', token);
-        try {
-          localStorage.setItem('auth', JSON.stringify({ token, role, email: 'superadmin@example.com', username }));
-          localStorage.setItem('role', role);
-          localStorage.setItem('email', 'superadmin@example.com');
-          localStorage.setItem('username', username);
-          localStorage.setItem('token', token);
-        } catch {}
-        onLoginSuccess(token, username);
-        return;
-      }
-
       console.log('🔐 Attempting login with:', { username: formData.username.trim() });
       
       const data = await ApiService.post(API_CONFIG.ENDPOINTS.ADMIN_LOGIN, {

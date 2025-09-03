@@ -1,8 +1,8 @@
 // API Configuration and Constants
 export const API_CONFIG = {
   // Base URLs - using global constants from Vite config with reliable fallbacks
-  BASE_URL: (globalThis as any).__BACKEND_URL__ || 'http://localhost:8080' || window.location.origin,
-  NODE_SERVER_URL: (globalThis as any).__NODE_SERVER_URL__ || 'http://localhost:3001',
+  BASE_URL: (globalThis as any).__BACKEND_URL__ || (import.meta as any).env?.VITE_BACKEND_URL || "",
+  NODE_SERVER_URL: (globalThis as any).__NODE_SERVER_URL__ || (import.meta as any).env?.VITE_NODE_SERVER_URL || "",
   
   // API Endpoints
   ENDPOINTS: {
@@ -52,34 +52,41 @@ export class ApiService {
   private static baseUrl = API_CONFIG.BASE_URL;
   private static nodeServerUrl = API_CONFIG.NODE_SERVER_URL;
 
+  private static assertConfigured() {
+    if (!this.baseUrl || typeof this.baseUrl !== 'string' || this.baseUrl.trim() === '') {
+      throw new Error('Backend URL is not configured. Set VITE_BACKEND_URL and redeploy.');
+    }
+  }
+
   // Generic fetch method for Spring Boot backend
   static async fetch(endpoint: string, options: RequestInit = {}) {
+    this.assertConfigured();
     const url = `${this.baseUrl}${endpoint}`;
     const config: RequestInit = {
       headers: { ...DEFAULT_HEADERS, ...options.headers },
       ...options
     };
 
-    console.log(`🌐 Making API request to: ${url}`);
-    console.log(`📤 Request config:`, config);
+    console.log(`\ud83c\udf10 Making API request to: ${url}`);
+    console.log(`\ud83d\udce4 Request config:`, config);
 
     try {
       const response = await fetch(url, config);
       
-      console.log(`📥 Response status: ${response.status}`);
-      console.log(`📥 Response headers:`, response.headers);
+      console.log(`\ud83d\udce5 Response status: ${response.status}`);
+      console.log(`\ud83d\udce5 Response headers:`, response.headers);
       
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`❌ HTTP Error ${response.status}:`, errorText);
+        console.error(`\u274c HTTP Error ${response.status}:`, errorText);
         throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
       
       const data = await response.json();
-      console.log(`✅ Response data:`, data);
+      console.log(`\u2705 Response data:`, data);
       return data;
     } catch (error) {
-      console.error(`❌ API Error (${endpoint}):`, error);
+      console.error(`\u274c API Error (${endpoint}):`, error);
       throw error;
     }
   }
@@ -150,6 +157,7 @@ export class ApiService {
 
   // Utility method to build image URL
   static getImageUrl(imagePath: string): string {
+    this.assertConfigured();
     return `${this.baseUrl}${imagePath}`;
   }
 }

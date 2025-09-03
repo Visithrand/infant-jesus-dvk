@@ -141,46 +141,42 @@ const AdminDashboard = () => {
   const location = useLocation();
 
   useEffect(() => {
-    // Simple initialization - don't wait for API_CONFIG
     console.log('🔄 AdminDashboard useEffect running...');
     initializeAdmin();
-    
-    // Cleanup function to revoke blob URLs when component unmounts
     return () => {
-      imageFiles.forEach((file, key) => {
+      imageFiles.forEach((file) => {
         const url = URL.createObjectURL(file);
         URL.revokeObjectURL(url);
       });
     };
   }, []);
 
-  const initializeAdmin = () => {
+  const initializeAdmin = async () => {
     console.log('🔄 initializeAdmin function called...');
-    // Simple authentication - just check if user is on admin page
-    // For now, let's make it work without complex auth
-    const auth = JSON.parse(localStorage.getItem('auth') || '{}');
-    const adminToken = localStorage.getItem('adminToken');
-    
-    console.log('🔑 Auth from localStorage:', auth);
-    console.log('🔑 Admin token from localStorage:', adminToken);
-    
-    if (auth.token || adminToken) {
-      const token = auth.token || adminToken;
-      console.log('✅ Using existing token:', token);
-      setToken(token);
-      setUsername(auth.username || 'Admin User');
-      setRole(auth.role || 'ADMIN');
+    const stored = localStorage.getItem('auth');
+    const storedToken = localStorage.getItem('adminToken') || (stored ? JSON.parse(stored).token : null);
+    if (!storedToken) {
+      setIsLoggedIn(false);
+      return;
+    }
+    try {
+      const res = await fetch(`${getBaseUrl()}/admin/validate`, { headers: { Authorization: `Bearer ${storedToken}` } });
+      if (!res.ok) {
+        throw new Error('Invalid token');
+      }
+      const data = await res.json();
+      setToken(storedToken);
+      setUsername(data.username || 'Admin');
+      setRole(data.role || 'ADMIN');
       setIsLoggedIn(true);
       fetchAllData();
-    } else {
-      // For testing - create a simple admin session
-      const testToken = 'test-admin-token-' + Date.now();
-      console.log('🆕 Creating test token:', testToken);
-      setToken(testToken);
-      setUsername('Admin User');
-      setRole('ADMIN');
-      setIsLoggedIn(true);
-      fetchAllData();
+    } catch (e) {
+      setIsLoggedIn(false);
+      setToken(null);
+      setUsername('');
+      setRole(null);
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('auth');
     }
   };
 

@@ -81,8 +81,10 @@ public class AdminController {
         // Hardcoded credentials for testing - your actual credentials
         if ("superadmin".equals(loginDto.getUsername()) && "visithran@123".equals(loginDto.getPassword())) {
             Map<String, Object> response = new HashMap<>();
+            // Generate a REAL JWT so /admin/validate succeeds
+            final String jwt = jwtUtil.generateToken("superadmin", "ROLE_SUPER_ADMIN");
             response.put("success", true);
-            response.put("token", "demo-jwt-token-12345");
+            response.put("token", jwt);
             response.put("message", "Login successful with hardcoded credentials");
             response.put("username", "superadmin");
             response.put("email", "visithrand@gmail.com");
