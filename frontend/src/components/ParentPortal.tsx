@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { API_CONFIG } from "@/config/api";
+import { API_CONFIG, post } from "@/config/api";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -52,14 +52,7 @@ const ParentPortal = () => {
 
     if (query.trim()) {
       // Sending the query to the backend for email
-      fetch(`${apiBase}/send-query`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: parentName, email: parentEmail, message: query }),
-      })
-      .then(response => response.json())
+      post(`/send-query`, { name: parentName, email: parentEmail, message: query })
       .then(data => {
         console.log('Success:', data);
         if (data.success) {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { API_CONFIG } from "@/config/api";
+import { API_CONFIG, get } from "@/config/api";
 import { Card } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
 
@@ -37,14 +37,13 @@ const AboutSlideshow = () => {
     const loadImages = async () => {
       let collected: string[] = [];
       try {
-        const res = await fetch(`${API_CONFIG.BASE_URL}/events`, { cache: 'no-store' });
-        if (res.ok) {
-          const data: EventItem[] = await res.json();
+        try {
+          const data: EventItem[] = await get(`/events`, { 'Cache-Control': 'no-store' } as any);
           const eventUrls = data
             .filter((e) => !!e.imageUrl)
             .map((e) => `${API_CONFIG.BASE_URL}${e.imageUrl}`);
           collected = collected.concat(eventUrls);
-        }
+        } catch {}
       } catch {}
 
       // Probe public images to include any that actually exist

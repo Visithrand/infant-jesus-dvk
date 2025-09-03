@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Image as ImageIcon, ExternalLink, Edit, Trash2, Plus } from "lucide-react";
@@ -17,6 +18,7 @@ interface Event {
 
 const EventGallery = () => {
   const [events, setEvents] = useState<Event[]>([]);
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -236,7 +238,7 @@ const EventGallery = () => {
                              size="sm"
                              onClick={() => {
                                // Navigate to admin dashboard with edit mode
-                               window.location.href = `/admin?tab=events&edit=${event.id}`;
+                               navigate(`/admin?tab=events&edit=${event.id}`);
                              }}
                            >
                              <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -264,7 +266,7 @@ const EventGallery = () => {
                    size="lg"
                    className="w-full sm:w-auto"
                    onClick={() => {
-                     window.location.href = '/admin?tab=events';
+                     navigate('/admin?tab=events');
                    }}
                  >
                    <Plus className="mr-2 h-4 w-4 md:h-5 md:w-5" />

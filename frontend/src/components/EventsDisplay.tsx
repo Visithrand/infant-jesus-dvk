@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, MapPin } from "lucide-react";
@@ -14,6 +15,7 @@ interface Event {
 
 const EventsDisplay = () => {
   const [events, setEvents] = useState<Event[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Listen for custom events when new events are created
@@ -57,7 +59,7 @@ const EventsDisplay = () => {
         <p className="text-gray-400 text-sm mt-2">Check back soon for upcoming events!</p>
         <div className="mt-4">
           <button 
-            onClick={() => window.location.href = '/admin/dashboard?tab=events'}
+            onClick={() => navigate('/admin/dashboard?tab=events')}
             className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90"
           >
             Create Your First Event

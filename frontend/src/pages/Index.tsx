@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import AboutSlideshow from "@/components/AboutSlideshow";
 import LeadershipSection from "@/components/LeadershipSection";
 import Hero from "@/components/Hero";
@@ -18,6 +18,7 @@ import AnnouncementPopup from "@/components/AnnouncementPopup";
 
 const Index = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (location.pathname !== '/') return;
@@ -48,13 +49,13 @@ const Index = () => {
           <div className="text-center py-8 space-y-4">
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button 
-                onClick={() => window.location.href = '/admin/dashboard?tab=events'}
+                onClick={() => navigate('/admin/dashboard?tab=events')}
                 className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors"
               >
                 View All Events
               </button>
               <button 
-                onClick={() => window.location.href = '/admin/dashboard?tab=classes'}
+                onClick={() => navigate('/admin/dashboard?tab=classes')}
                 className="bg-secondary text-white px-6 py-3 rounded-lg hover:bg-secondary/90 transition-colors"
               >
                 View All Classes
@@ -110,13 +111,13 @@ const Index = () => {
             <EventsDisplay />
             <div className="text-center mt-8 space-y-4">
               <button 
-                onClick={() => window.location.href = '/admin/dashboard?tab=events'}
+                onClick={() => navigate('/admin/dashboard?tab=events')}
                 className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors mr-4"
               >
                 View All Events
               </button>
               <button 
-                onClick={() => window.location.href = '/admin/dashboard?tab=events'}
+                onClick={() => navigate('/admin/dashboard?tab=events')}
                 className="bg-secondary text-white px-6 py-3 rounded-lg hover:bg-secondary/90 transition-colors"
               >
                 Create New Event

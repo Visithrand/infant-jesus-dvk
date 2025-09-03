@@ -160,11 +160,7 @@ const AdminDashboard = () => {
       return;
     }
     try {
-      const res = await fetch(`${getBaseUrl()}/admin/validate`, { headers: { Authorization: `Bearer ${storedToken}` } });
-      if (!res.ok) {
-        throw new Error('Invalid token');
-      }
-      const data = await res.json();
+      const data = await get(`/admin/validate`, { Authorization: `Bearer ${storedToken}` });
       setToken(storedToken);
       setUsername(data.username || 'Admin');
       setRole(data.role || 'ADMIN');
@@ -214,7 +210,7 @@ const AdminDashboard = () => {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('auth');
     // Redirect back to auth page
-    window.location.href = '/admin';
+    navigate('/admin');
   };
 
   const fetchAllData = async () => {
