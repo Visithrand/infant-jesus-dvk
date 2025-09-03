@@ -40,12 +40,19 @@ public class SecurityConfig {
                 // Public API endpoints
                 .requestMatchers("/events").permitAll()
                 .requestMatchers("/events/{id}").permitAll()
+                .requestMatchers("/classes").permitAll()
                 .requestMatchers("/classes/live").permitAll()
+                .requestMatchers("/classes/{id}").permitAll()
+                .requestMatchers("/announcements").permitAll()
+                .requestMatchers("/announcements/{id}").permitAll()
+                .requestMatchers("/announcements/search").permitAll()
+                .requestMatchers("/announcements/priority/{priority}").permitAll()
                 .requestMatchers("/facilities").permitAll()
                 .requestMatchers("/facilities/{id}").permitAll()
                 // Admin endpoints - require authentication
                 .requestMatchers("/events/admin/**").authenticated()
                 .requestMatchers("/classes/admin/**").authenticated()
+                .requestMatchers("/announcements/admin/**").authenticated()
                 .requestMatchers("/facilities/admin/**").authenticated()
                 .requestMatchers("/admin/**").authenticated()
                 // Allow everything else for testing

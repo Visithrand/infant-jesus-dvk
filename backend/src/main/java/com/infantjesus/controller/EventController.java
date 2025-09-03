@@ -44,12 +44,31 @@ public class EventController {
     }
     
     /**
+     * Create new event (public endpoint for frontend integration)
+     */
+    @PostMapping
+    public ResponseEntity<EventDto> createEventPublic(@RequestBody EventDto eventDto) {
+        try {
+            logger.info("Creating new event via public endpoint: title={}, description={}, eventDateTime={}", 
+                       eventDto.getTitle(), eventDto.getDescription(), eventDto.getEventDateTime());
+            
+            EventDto createdEvent = eventService.createEvent(eventDto);
+            logger.info("Event created successfully with ID: {}", createdEvent.getId());
+            
+            return ResponseEntity.ok(createdEvent);
+        } catch (Exception e) {
+            logger.error("Error creating event: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
      * Create new event (admin only)
      */
     @PostMapping("/admin")
     public ResponseEntity<EventDto> createEvent(@RequestBody EventDto eventDto) {
         try {
-            logger.info("Creating new event: title={}, description={}, eventDateTime={}", 
+            logger.info("Creating new event via admin endpoint: title={}, description={}, eventDateTime={}", 
                        eventDto.getTitle(), eventDto.getDescription(), eventDto.getEventDateTime());
             
             EventDto createdEvent = eventService.createEvent(eventDto);

@@ -17,8 +17,13 @@ export const API_CONFIG = {
     EVENTS_ADMIN: '/events/admin',
     
     // Classes endpoints
+    CLASSES: '/classes',
     CLASSES_LIVE: '/classes/live',
     CLASSES_ADMIN: '/classes/admin',
+    
+    // Announcements endpoints
+    ANNOUNCEMENTS: '/announcements',
+    ANNOUNCEMENTS_ADMIN: '/announcements/admin',
     
     // Facilities endpoints
     FACILITIES: '/facilities',

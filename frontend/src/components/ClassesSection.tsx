@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, BookOpen, Edit, Trash2, Plus } from "lucide-react";
-import { get, deleteMethod, getImageUrl, API_CONFIG } from '@/config/api';
+import { Calendar, Clock, User, Edit, Trash2, Plus } from "lucide-react";
+import { get, deleteMethod, API_CONFIG } from '@/config/api';
 import { getStoredAuth } from '@/utils/auth';
+import { useNavigate } from "react-router-dom";
 
 interface ClassSchedule {
   id: number;
@@ -21,6 +21,7 @@ const ClassesSection = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchClasses();
@@ -38,11 +39,20 @@ const ClassesSection = () => {
     });
     window.addEventListener('ij:data-updated' as any, revalidate);
     window.addEventListener('storage', onStorage);
+    
+    // Listen for custom events
+    window.addEventListener('classCreated', revalidate);
+    window.addEventListener('classDeleted', revalidate);
+    window.addEventListener('classLiveStatusChanged', revalidate);
+    
     return () => {
       window.removeEventListener('focus', revalidate);
       document.removeEventListener('visibilitychange', () => {});
       window.removeEventListener('ij:data-updated' as any, revalidate);
       window.removeEventListener('storage', onStorage);
+      window.removeEventListener('classCreated', revalidate);
+      window.removeEventListener('classDeleted', revalidate);
+      window.removeEventListener('classLiveStatusChanged', revalidate);
     };
   }, []);
 
@@ -58,13 +68,37 @@ const ClassesSection = () => {
   const fetchClasses = async () => {
     try {
       setLoading(true);
+      setError(null);
+      
       const data = await get(API_CONFIG.ENDPOINTS.CLASSES_LIVE);
-      const sorted = [...data].sort((a: ClassSchedule, b: ClassSchedule) =>
-        new Date(a.scheduleTime).getTime() - new Date(b.scheduleTime).getTime()
-      );
-      setClasses(sorted);
+      
+      if (Array.isArray(data)) {
+        const sorted = [...data].sort((a: ClassSchedule, b: ClassSchedule) =>
+          new Date(a.scheduleTime).getTime() - new Date(b.scheduleTime).getTime()
+        );
+        setClasses(sorted);
+        
+        // Also update localStorage for backward compatibility
+        localStorage.setItem('schoolClasses', JSON.stringify(sorted));
+      } else {
+        console.error('Invalid classes data format:', data);
+        setError('Invalid data format received from server');
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Error fetching classes:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred while fetching classes');
+      
+      // Fallback to localStorage if API fails
+      try {
+        const storedClasses = localStorage.getItem('schoolClasses');
+        if (storedClasses) {
+          const parsedClasses = JSON.parse(storedClasses);
+          setClasses(parsedClasses);
+          setError(null); // Clear error if fallback works
+        }
+      } catch (localStorageError) {
+        console.error('Error reading from localStorage:', localStorageError);
+      }
     } finally {
       setLoading(false);
     }
@@ -96,6 +130,11 @@ const ClassesSection = () => {
     }
   };
 
+  const handleClassClick = (classItem: ClassSchedule) => {
+    // Navigate to admin dashboard with class details for editing
+    navigate(`/admin/dashboard?tab=classes&edit=${classItem.id}`);
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -105,15 +144,15 @@ const ClassesSection = () => {
   };
 
   const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return new Date(dateString).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
   if (loading) {
     return (
-      <section id="classes" className="py-20 bg-muted/30">
+      <section id="classes" className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
@@ -126,7 +165,7 @@ const ClassesSection = () => {
 
   if (error) {
     return (
-      <section id="classes" className="py-20 bg-muted/30">
+      <section id="classes" className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <div className="bg-destructive/10 text-destructive p-4 rounded-lg max-w-md mx-auto">
@@ -148,14 +187,14 @@ const ClassesSection = () => {
 
   if (classes.length === 0) {
     return (
-      <section id="classes" className="py-20 bg-muted/30">
+      <section id="classes" className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <div className="bg-muted/50 p-8 rounded-lg max-w-md mx-auto">
-              <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-medium text-muted-foreground mb-2">No Classes Scheduled</h3>
               <p className="text-sm text-muted-foreground">
-                Check back later for upcoming class schedules.
+                Check back later for upcoming classes and schedules.
               </p>
             </div>
           </div>
@@ -166,108 +205,112 @@ const ClassesSection = () => {
 
   return (
     <>
-      <section id="classes" className="py-20 bg-muted/30">
+      <section id="classes" className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-                         {/* Section Header */}
-             <div className="text-center mb-8 md:mb-16">
-               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 md:mb-6">
-                 Class Schedules
-               </h2>
-               <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
-                 Stay updated with the latest class schedules and live sessions at 
-                 Infant Jesus School. Join our interactive learning experiences.
-               </p>
-             </div>
+            {/* Section Header */}
+            <div className="text-center mb-8 md:mb-16">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 md:mb-6">
+                Live Classes & Schedules
+              </h2>
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
+                Join our interactive live classes and stay updated with the latest schedules. 
+                Experience real-time learning with our experienced teachers.
+              </p>
+            </div>
 
-                         {/* Classes Grid */}
-             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+            {/* Classes Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
               {classes.map((cls) => (
                 <Card 
                   key={cls.id}
-                  className="overflow-hidden hover:shadow-medium transition-all duration-300 hover:scale-105 bg-card-gradient"
+                  className="overflow-hidden hover:shadow-medium transition-all duration-300 hover:scale-105 bg-card-gradient cursor-pointer"
+                  onClick={() => handleClassClick(cls)}
                 >
-                                     {/* Class Header */}
-                   <div className="p-4 md:p-6">
-                     <div className="flex items-start justify-between mb-3 gap-2">
-                       <h3 className="text-lg md:text-xl font-bold text-foreground line-clamp-2 flex-1">
-                         {cls.subject}
-                       </h3>
-                       {cls.isLive && (
-                         <Badge variant="destructive" className="animate-pulse text-xs md:text-sm shrink-0">
-                           LIVE
-                         </Badge>
-                       )}
-                     </div>
-                    
-                                         <p className="text-sm md:text-base text-muted-foreground mb-3">
-                       <strong>Teacher:</strong> {cls.teacher}
-                     </p>
-                     
-                     {cls.description && (
-                       <p className="text-sm md:text-base text-muted-foreground mb-4 line-clamp-3">
-                         {cls.description}
-                       </p>
-                     )}
-                     
-                     <div className="flex flex-col sm:flex-row sm:items-center text-xs md:text-sm text-muted-foreground space-y-2 sm:space-y-0 sm:space-x-4 mb-4">
-                      <span className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        {formatDate(cls.scheduleTime)}
-                      </span>
-                      <span className="flex items-center">
-                        <Clock className="h-4 w-4 mr-2" />
-                        {formatTime(cls.scheduleTime)}
-                      </span>
+                  {/* Class Header */}
+                  <div className="p-4 md:p-6 border-b border-border/50">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-lg sm:text-xl font-bold text-foreground line-clamp-2">
+                        {cls.subject}
+                      </h3>
+                      {cls.isLive && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                          LIVE
+                        </span>
+                      )}
                     </div>
+                    
+                    <div className="flex items-center text-sm text-muted-foreground mb-2">
+                      <User className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                      {cls.teacher}
+                    </div>
+                  </div>
 
-                                         {/* Admin Actions */}
-                     {isAdmin && (
-                       <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 pt-3 border-t">
-                         <Button 
-                           variant="outline" 
-                           size="sm"
-                           className="flex-1"
-                           onClick={() => {
-                             // Navigate to admin dashboard with edit mode
-                             window.location.href = `/admin?tab=classes&edit=${cls.id}`;
-                           }}
-                         >
-                           <Edit className="mr-2 h-4 w-4" />
-                           Edit
-                         </Button>
-                         <Button 
-                           variant="destructive" 
-                           size="sm"
-                           className="flex-1"
-                           onClick={() => handleDeleteClass(cls.id)}
-                         >
-                           <Trash2 className="mr-2 h-4 w-4" />
-                           Delete
-                         </Button>
-                       </div>
-                     )}
+                  {/* Class Content */}
+                  <div className="p-4 md:p-6">
+                    {cls.description && (
+                      <p className="text-sm sm:text-base text-muted-foreground mb-4 line-clamp-3">
+                        {cls.description}
+                      </p>
+                    )}
+                    
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
+                        <Calendar className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                        {formatDate(cls.scheduleTime)}
+                      </div>
+                      <div className="flex items-center text-xs sm:text-sm text-muted-foreground">
+                        <Clock className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                        {formatTime(cls.scheduleTime)}
+                      </div>
+                    </div>
+                    
+                    {/* Admin Actions */}
+                    {isAdmin && (
+                      <div className="flex flex-col space-y-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/admin/dashboard?tab=classes&edit=${cls.id}`);
+                          }}
+                        >
+                          <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClass(cls.id);
+                          }}
+                        >
+                          <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                          Delete
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </Card>
               ))}
             </div>
 
-                         {/* Admin Add Button */}
-             {isAdmin && (
-               <div className="text-center mt-8 md:mt-12">
-                 <Button 
-                   variant="accent" 
-                   size="lg"
-                   className="w-full sm:w-auto"
-                   onClick={() => {
-                     window.location.href = '/admin?tab=classes';
-                   }}
-                 >
-                   <Plus className="mr-2 h-4 w-4 md:h-5 md:w-5" />
-                   Add New Class
-                 </Button>
-               </div>
-             )}
+            {/* Admin Add Button */}
+            {isAdmin && (
+              <div className="text-center mt-8 md:mt-12">
+                <Button 
+                  variant="accent" 
+                  size="lg"
+                  className="w-full sm:w-auto"
+                  onClick={() => navigate('/admin/dashboard?tab=classes')}
+                >
+                  <Plus className="mr-2 h-4 w-4 md:h-5 md:w-5" />
+                  Add New Class
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </section>

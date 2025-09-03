@@ -22,12 +22,12 @@ import {
   EyeOff
 } from "lucide-react";
 import AdminLogin from "./AdminLogin";
-import { API_CONFIG, getImageUrl as getImageUrlFromApi } from "@/config/api";
+import { API_CONFIG, get, post, deleteMethod, getImageUrl as getImageUrlFromApi, put } from "@/config/api";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SuperAdminNav from "@/components/SuperAdminNav";
 import { getStoredAuth } from "@/utils/auth";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface Event {
   id: number;
@@ -139,6 +139,7 @@ const AdminDashboard = () => {
   const [editingFacility, setEditingFacility] = useState<Facility | null>(null);
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log('🔄 AdminDashboard useEffect running...');
@@ -217,37 +218,89 @@ const AdminDashboard = () => {
     try {
       console.log('🔄 fetchAllData function called...');
       
-      // Load data from localStorage
-      const storedEvents = localStorage.getItem('schoolEvents');
-      const storedClasses = localStorage.getItem('schoolClasses');
-      const storedFacilities = localStorage.getItem('schoolFacilities');
-      const storedAnnouncements = localStorage.getItem('schoolAnnouncements');
-      
-      if (storedEvents) {
-        try {
-          const parsedEvents = JSON.parse(storedEvents);
-          setEvents(parsedEvents);
-          console.log('✅ Events loaded from localStorage:', parsedEvents.length);
-        } catch (error) {
-          console.error('❌ Error parsing events:', error);
+      // Fetch events from backend API
+      try {
+        const apiEvents = await get(API_CONFIG.ENDPOINTS.EVENTS);
+        if (Array.isArray(apiEvents)) {
+          setEvents(apiEvents);
+          // Also update localStorage for backward compatibility
+          localStorage.setItem('schoolEvents', JSON.stringify(apiEvents));
+          console.log('✅ Events loaded from API:', apiEvents.length);
+        }
+      } catch (error) {
+        console.error('❌ Error fetching events from API:', error);
+        // Fallback to localStorage
+        const storedEvents = localStorage.getItem('schoolEvents');
+        if (storedEvents) {
+          try {
+            const parsedEvents = JSON.parse(storedEvents);
+            setEvents(parsedEvents);
+            console.log('✅ Events loaded from localStorage fallback:', parsedEvents.length);
+          } catch (error) {
+            console.error('❌ Error parsing events from localStorage:', error);
+            setEvents([]);
+          }
+        } else {
           setEvents([]);
         }
-      } else {
-        setEvents([]);
       }
       
-      if (storedClasses) {
-        try {
-          const parsedClasses = JSON.parse(storedClasses);
-          setClasses(parsedClasses);
-          console.log('✅ Classes loaded from localStorage:', parsedClasses.length);
-        } catch (error) {
-          console.error('❌ Error parsing classes:', error);
+      // Fetch classes from backend API
+      try {
+        const apiClasses = await get(API_CONFIG.ENDPOINTS.CLASSES_LIVE);
+        if (Array.isArray(apiClasses)) {
+          setClasses(apiClasses);
+          // Also update localStorage for backward compatibility
+          localStorage.setItem('schoolClasses', JSON.stringify(apiClasses));
+          console.log('✅ Classes loaded from API:', apiClasses.length);
+        }
+      } catch (error) {
+        console.error('❌ Error fetching classes from API:', error);
+        // Fallback to localStorage
+        const storedClasses = localStorage.getItem('schoolClasses');
+        if (storedClasses) {
+          try {
+            const parsedClasses = JSON.parse(storedClasses);
+            setClasses(parsedClasses);
+            console.log('✅ Classes loaded from localStorage fallback:', parsedClasses.length);
+          } catch (error) {
+            console.error('❌ Error parsing classes:', error);
+            setClasses([]);
+          }
+        } else {
           setClasses([]);
         }
-      } else {
-        setClasses([]);
       }
+      
+      // Fetch announcements from backend API
+      try {
+        const apiAnnouncements = await get(API_CONFIG.ENDPOINTS.ANNOUNCEMENTS);
+        if (Array.isArray(apiAnnouncements)) {
+          setAnnouncements(apiAnnouncements);
+          // Also update localStorage for backward compatibility
+          localStorage.setItem('schoolAnnouncements', JSON.stringify(apiAnnouncements));
+          console.log('✅ Announcements loaded from API:', apiAnnouncements.length);
+        }
+      } catch (error) {
+        console.error('❌ Error fetching announcements from API:', error);
+        // Fallback to localStorage
+        const storedAnnouncements = localStorage.getItem('schoolAnnouncements');
+        if (storedAnnouncements) {
+          try {
+            const parsedAnnouncements = JSON.parse(storedAnnouncements);
+            setAnnouncements(parsedAnnouncements);
+            console.log('✅ Announcements loaded from localStorage fallback:', parsedAnnouncements.length);
+          } catch (error) {
+            console.error('❌ Error parsing announcements from localStorage:', error);
+            setAnnouncements([]);
+          }
+        } else {
+          setAnnouncements([]);
+        }
+      }
+      
+      // Load data from localStorage for other entities
+      const storedFacilities = localStorage.getItem('schoolFacilities');
       
       if (storedFacilities) {
         try {
@@ -261,19 +314,8 @@ const AdminDashboard = () => {
       } else {
         setFacilities([]);
       }
-      if (storedAnnouncements) {
-        try {
-          const parsedAnns = JSON.parse(storedAnnouncements);
-          setAnnouncements(parsedAnns);
-        } catch (error) {
-          console.error('❌ Error parsing announcements:', error);
-          setAnnouncements([]);
-        }
-      } else {
-        setAnnouncements([]);
-      }
       
-      console.log('✅ Data loaded from localStorage');
+      console.log('✅ Data loaded from API and localStorage');
     } catch (error) {
       console.error('❌ Error in fetchAllData:', error);
       // Set empty arrays as fallback
@@ -297,27 +339,36 @@ const AdminDashboard = () => {
         base64Images.push(b64);
       }
 
-      const nowIso = new Date().toISOString();
-      const newEvents = (base64Images.length > 0 ? base64Images : [null]).map((img, idx) => ({
-        id: Date.now() + idx,
+      // Create event data for API
+      const eventData = {
         title: eventForm.title,
         description: eventForm.description,
-        imageUrl: img as string | null,
-        eventDateTime: eventForm.eventDateTime,
-        createdAt: nowIso
-      }));
+        imageUrl: base64Images.length > 0 ? base64Images[0] : null,
+        eventDateTime: eventForm.eventDateTime || new Date().toISOString()
+      };
 
-      setEvents(prev => [...newEvents, ...prev]);
-
-      const updatedEvents = [...newEvents, ...events];
-      localStorage.setItem('schoolEvents', JSON.stringify(updatedEvents));
-
-      window.dispatchEvent(new CustomEvent('eventCreated'));
-
-      setEventForm({ title: "", description: "", eventDateTime: "", imageUrl: "" });
-      setImageFiles(new Map());
-
-      alert(`${newEvents.length} event(s) created successfully!`);
+      // Call backend API to create event
+      const createdEvent = await post(API_CONFIG.ENDPOINTS.EVENTS, eventData);
+      
+      if (createdEvent && createdEvent.id) {
+        // Add to local state
+        setEvents(prev => [createdEvent, ...prev]);
+        
+        // Update localStorage for backward compatibility
+        const updatedEvents = [createdEvent, ...events];
+        localStorage.setItem('schoolEvents', JSON.stringify(updatedEvents));
+        
+        // Notify other components
+        window.dispatchEvent(new CustomEvent('eventCreated'));
+        
+        // Reset form
+        setEventForm({ title: "", description: "", eventDateTime: "", imageUrl: "" });
+        setImageFiles(new Map());
+        
+        alert('Event created successfully and saved to database!');
+      } else {
+        throw new Error('Failed to create event - no ID returned');
+      }
     } catch (error) {
       console.error('Error creating event:', error);
       alert('Error creating event: ' + (error as Error).message);
@@ -326,7 +377,12 @@ const AdminDashboard = () => {
 
   const handleDeleteEvent = async (id: number) => {
     try {
-      // For now, just remove from local state
+      // Call backend API to delete event
+      await deleteMethod(`${API_CONFIG.ENDPOINTS.EVENTS_ADMIN}/${id}`, { 
+        'Authorization': `Bearer ${token}` 
+      });
+      
+      // Remove from local state
       setEvents(prev => prev.filter(e => e.id !== id));
       
       // Update localStorage
@@ -336,9 +392,10 @@ const AdminDashboard = () => {
       // Dispatch custom event to notify other components
       window.dispatchEvent(new CustomEvent('eventDeleted', { detail: { id } }));
       
-      alert('Event deleted successfully!');
+      alert('Event deleted successfully from database!');
     } catch (error) {
       console.error('Error deleting event:', error);
+      alert('Error deleting event: ' + (error as Error).message);
     }
   };
 
@@ -351,41 +408,50 @@ const AdminDashboard = () => {
     setIsCreatingClass(true);
 
     try {
-      // For now, just add to local state without API call
-      const newClass: ClassSchedule = {
-        id: Date.now(),
+      // Create class data for API
+      const classData = {
         subject: classForm.subject,
         teacher: classForm.teacher,
         description: classForm.description,
-        scheduleTime: new Date(classForm.scheduleTime).toISOString(),
-        isLive: classForm.isLive,
-        createdAt: new Date().toISOString(),
+        scheduleTime: classForm.scheduleTime || new Date().toISOString(),
+        isLive: classForm.isLive
       };
+
+      // Call backend API to create class
+      const createdClass = await post(API_CONFIG.ENDPOINTS.CLASSES, classData);
       
-      setClasses(prev => [newClass, ...prev]);
-      
-      // Store in localStorage for other components to access
-      const updatedClasses = [newClass, ...classes];
-      localStorage.setItem('schoolClasses', JSON.stringify(updatedClasses));
-      
-      // Dispatch custom event to notify other components
-      window.dispatchEvent(new CustomEvent('classCreated', { detail: newClass }));
-      
-      setClassForm({ subject: "", teacher: "", description: "", scheduleTime: "", isLive: false });
-      
-      // Show success message
-      alert('Class created successfully! It will appear on the homepage.');
+      if (createdClass && createdClass.id) {
+        // Add to local state
+        setClasses(prev => [createdClass, ...prev]);
+        
+        // Store in localStorage for other components to access
+        const updatedClasses = [createdClass, ...classes];
+        localStorage.setItem('schoolClasses', JSON.stringify(updatedClasses));
+        
+        // Dispatch custom event to notify other components
+        window.dispatchEvent(new CustomEvent('classCreated', { detail: createdClass }));
+        
+        setClassForm({ subject: "", teacher: "", description: "", scheduleTime: "", isLive: false });
+        
+        // Show success message
+        alert('Class created successfully and saved to database!');
+      } else {
+        throw new Error('Failed to create class - no ID returned');
+      }
       
     } catch (error) {
       console.error('Error creating class:', error);
-      alert('Error creating class: ' + error.message);
+      alert('Error creating class: ' + (error as Error).message);
     }
     setIsCreatingClass(false);
   };
 
   const handleToggleLiveStatus = async (id: number) => {
     try {
-      // For now, just toggle in local state
+      // Call backend API to toggle live status
+      await put(`${API_CONFIG.ENDPOINTS.CLASSES_ADMIN}/${id}/toggle-live`, {});
+      
+      // Toggle in local state
       setClasses(prev => prev.map(cls => 
         cls.id === id ? { ...cls, isLive: !cls.isLive } : cls
       ));
@@ -399,9 +465,34 @@ const AdminDashboard = () => {
       // Dispatch custom event to notify other components
       window.dispatchEvent(new CustomEvent('classLiveStatusChanged', { detail: { id, isLive: !classes.find(c => c.id === id)?.isLive } }));
       
-      alert('Live status toggled successfully!');
+      alert('Class live status updated successfully in database!');
     } catch (error) {
       console.error('Error toggling live status:', error);
+      alert('Error updating class live status: ' + (error as Error).message);
+    }
+  };
+
+  const handleDeleteClass = async (id: number) => {
+    try {
+      // Call backend API to delete class
+      await deleteMethod(`${API_CONFIG.ENDPOINTS.CLASSES_ADMIN}/${id}`, { 
+        'Authorization': `Bearer ${token}` 
+      });
+      
+      // Remove from local state
+      setClasses(prev => prev.filter(cls => cls.id !== id));
+      
+      // Update localStorage
+      const updatedClasses = classes.filter(cls => cls.id !== id);
+      localStorage.setItem('schoolClasses', JSON.stringify(updatedClasses));
+      
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new CustomEvent('classDeleted', { detail: { id } }));
+      
+      alert('Class deleted successfully from database!');
+    } catch (error) {
+      console.error('Error deleting class:', error);
+      alert('Error deleting class: ' + (error as Error).message);
     }
   };
 
@@ -454,14 +545,69 @@ const AdminDashboard = () => {
   };
 
   // Announcement handlers
-  const handleCreateAnnouncement = () => {
-    const newA = { id: Date.now(), title: announcementForm.title || 'Announcement', message: announcementForm.message, createdAt: new Date().toISOString() };
-    const updated = [newA, ...announcements];
-    setAnnouncements(updated);
-    localStorage.setItem('schoolAnnouncements', JSON.stringify(updated));
-    window.dispatchEvent(new CustomEvent('announcementCreated'));
-    setAnnouncementForm({ title: "", message: "" });
-    alert('Announcement posted!');
+  const handleCreateAnnouncement = async () => {
+    if (!announcementForm.title.trim() || !announcementForm.message.trim()) {
+      alert('Please fill in both title and message');
+      return;
+    }
+
+    try {
+      // Create announcement data for API
+      const announcementData = {
+        title: announcementForm.title,
+        message: announcementForm.message,
+        priority: 'NORMAL',
+        isActive: true
+      };
+
+      // Call backend API to create announcement
+      const createdAnnouncement = await post(API_CONFIG.ENDPOINTS.ANNOUNCEMENTS, announcementData);
+      
+      if (createdAnnouncement && createdAnnouncement.id) {
+        // Add to local state
+        setAnnouncements(prev => [createdAnnouncement, ...prev]);
+        
+        // Update localStorage
+        const updatedAnnouncements = [createdAnnouncement, ...announcements];
+        localStorage.setItem('schoolAnnouncements', JSON.stringify(updatedAnnouncements));
+        
+        // Dispatch custom event to notify other components
+        window.dispatchEvent(new CustomEvent('announcementCreated', { detail: createdAnnouncement }));
+        
+        setAnnouncementForm({ title: "", message: "" });
+        
+        alert('Announcement created successfully and saved to database!');
+      } else {
+        throw new Error('Failed to create announcement - no ID returned');
+      }
+    } catch (error) {
+      console.error('Error creating announcement:', error);
+      alert('Error creating announcement: ' + (error as Error).message);
+    }
+  };
+
+  const handleDeleteAnnouncement = async (id: number) => {
+    try {
+      // Call backend API to delete announcement
+      await deleteMethod(`${API_CONFIG.ENDPOINTS.ANNOUNCEMENTS_ADMIN}/${id}`, { 
+        'Authorization': `Bearer ${token}` 
+      });
+      
+      // Remove from local state
+      setAnnouncements(prev => prev.filter(ann => ann.id !== id));
+      
+      // Update localStorage
+      const updatedAnnouncements = announcements.filter(ann => ann.id !== id);
+      localStorage.setItem('schoolAnnouncements', JSON.stringify(updatedAnnouncements));
+      
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new CustomEvent('announcementDeleted', { detail: { id } }));
+      
+      alert('Announcement deleted successfully from database!');
+    } catch (error) {
+      console.error('Error deleting announcement:', error);
+      alert('Error deleting announcement: ' + (error as Error).message);
+    }
   };
 
   console.log('🔄 Render logic - isLoggedIn:', isLoggedIn);
@@ -659,12 +805,7 @@ const AdminDashboard = () => {
                       <h4 className="font-semibold mb-2 text-sm sm:text-base">{a.title}</h4>
                       <p className="text-xs sm:text-sm text-muted-foreground mb-2 whitespace-pre-wrap">{a.message}</p>
                       <p className="text-xs text-gray-500 mb-2">{new Date(a.createdAt).toLocaleString()}</p>
-                      <Button variant="destructive" size="sm" onClick={() => {
-                        const updated = announcements.filter(x => x.id !== a.id);
-                        setAnnouncements(updated);
-                        localStorage.setItem('schoolAnnouncements', JSON.stringify(updated));
-                        window.dispatchEvent(new CustomEvent('announcementDeleted'));
-                      }}>Delete</Button>
+                      <Button variant="destructive" size="sm" onClick={() => handleDeleteAnnouncement(a.id)}>Delete</Button>
                     </Card>
                   ))}
                 </div>
@@ -759,6 +900,15 @@ const AdminDashboard = () => {
                           onClick={() => handleToggleLiveStatus(cls.id)}
                         >
                           {cls.isLive ? "Stop Live" : "Go Live"}
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => handleDeleteClass(cls.id)}
+                        >
+                          <Trash2 className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                          Delete
                         </Button>
                       </div>
                    </Card>

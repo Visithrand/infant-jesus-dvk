@@ -29,6 +29,25 @@ public class ClassScheduleController {
     }
     
     /**
+     * Create new class schedule (public endpoint for frontend integration)
+     */
+    @PostMapping
+    public ResponseEntity<ClassScheduleDto> createClassSchedulePublic(@RequestBody ClassScheduleDto classScheduleDto) {
+        try {
+            logger.info("Creating new class schedule via public endpoint: subject={}, teacher={}", 
+                       classScheduleDto.getSubject(), classScheduleDto.getTeacher());
+            
+            ClassScheduleDto createdClass = classScheduleService.createClassSchedule(classScheduleDto);
+            logger.info("Class schedule created successfully with ID: {}", createdClass.getId());
+            
+            return ResponseEntity.ok(createdClass);
+        } catch (Exception e) {
+            logger.error("Error creating class schedule: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
      * Get all class schedules (admin only)
      */
     @GetMapping("/admin")
@@ -56,7 +75,8 @@ public class ClassScheduleController {
     @PostMapping("/admin")
     public ResponseEntity<ClassScheduleDto> createClassSchedule(@RequestBody ClassScheduleDto classScheduleDto) {
         try {
-            logger.info("Creating new class schedule: {}", classScheduleDto);
+            logger.info("Creating new class schedule via admin endpoint: subject={}, teacher={}", 
+                       classScheduleDto.getSubject(), classScheduleDto.getTeacher());
             
             ClassScheduleDto createdClass = classScheduleService.createClassSchedule(classScheduleDto);
             logger.info("Class schedule created successfully with ID: {}", createdClass.getId());

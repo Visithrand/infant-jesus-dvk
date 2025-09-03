@@ -53,12 +53,34 @@ const EventGallery = () => {
     try {
       setLoading(true);
       const data = await get(API_CONFIG.ENDPOINTS.EVENTS);
-      const sorted = [...data].sort((a: Event, b: Event) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-      setEvents(sorted);
+      
+      if (Array.isArray(data)) {
+        const sorted = [...data].sort((a: Event, b: Event) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+        setEvents(sorted);
+        
+        // Also update localStorage for backward compatibility
+        localStorage.setItem('schoolEvents', JSON.stringify(sorted));
+      } else {
+        console.error('Invalid events data format:', data);
+        setError('Invalid data format received from server');
+      }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error('Error fetching events:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred while fetching events');
+      
+      // Fallback to localStorage if API fails
+      try {
+        const storedEvents = localStorage.getItem('schoolEvents');
+        if (storedEvents) {
+          const parsedEvents = JSON.parse(storedEvents);
+          setEvents(parsedEvents);
+          setError(null); // Clear error if fallback works
+        }
+      } catch (localStorageError) {
+        console.error('Error reading from localStorage:', localStorageError);
+      }
     } finally {
       setLoading(false);
     }

@@ -37,14 +37,17 @@ const AboutSlideshow = () => {
     const loadImages = async () => {
       let collected: string[] = [];
       try {
-        try {
-          const data: EventItem[] = await get(`/events`, { 'Cache-Control': 'no-store' } as any);
+        const data: EventItem[] = await get(`/events`, { 'Cache-Control': 'no-store' } as any);
+        if (Array.isArray(data)) {
           const eventUrls = data
             .filter((e) => !!e.imageUrl)
             .map((e) => `${API_CONFIG.BASE_URL}${e.imageUrl}`);
           collected = collected.concat(eventUrls);
-        } catch {}
-      } catch {}
+        }
+      } catch (error) {
+        console.error('Error loading event images:', error);
+        // Continue with fallback images
+      }
 
       // Probe public images to include any that actually exist
       const existingPublic: string[] = await new Promise((resolve) => {
