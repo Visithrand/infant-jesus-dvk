@@ -216,16 +216,49 @@ public class AdminService {
      */
     public Map<String, Object> bootstrapSuperAdmin(String email, String password, String username) {
         Map<String, Object> response = new HashMap<>();
+        
+        // First check if a super admin already exists by role
+        List<Admin> existingSuperAdmins = adminRepository.findByRole(Role.ROLE_SUPER_ADMIN);
+        
+        if (!existingSuperAdmins.isEmpty()) {
+            // If multiple super admins exist, keep only the first one and remove others
+            if (existingSuperAdmins.size() > 1) {
+                // Keep the first one, remove the rest
+                for (int i = 1; i < existingSuperAdmins.size(); i++) {
+                    adminRepository.delete(existingSuperAdmins.get(i));
+                }
+            }
+            
+            // Update the existing super admin
+            Admin existingSuperAdmin = existingSuperAdmins.get(0);
+            
+            // Update credentials but preserve the SUPER_ADMIN role
+            existingSuperAdmin.setUsername(username);
+            existingSuperAdmin.setEmail(email.toLowerCase());
+            existingSuperAdmin.setPassword(passwordEncoder.encode(password));
+            existingSuperAdmin.setRole(Role.ROLE_SUPER_ADMIN);
+            
+            Admin saved = adminRepository.save(existingSuperAdmin);
+            response.put("success", true);
+            response.put("message", "Existing super admin updated successfully");
+            response.put("adminId", saved.getId());
+            response.put("email", saved.getEmail());
+            response.put("role", saved.getRole().name());
+            return response;
+        }
+        
+        // Check if admin exists by email
         Optional<Admin> existingByEmail = adminRepository.findByEmail(email.toLowerCase());
-
+        
         Admin superAdmin;
         if (existingByEmail.isPresent()) {
+            // Update existing admin to super admin
             superAdmin = existingByEmail.get();
-            // Update credentials but preserve the SUPER_ADMIN role
             superAdmin.setUsername(username);
             superAdmin.setPassword(passwordEncoder.encode(password));
             superAdmin.setRole(Role.ROLE_SUPER_ADMIN);
         } else {
+            // Create new super admin
             superAdmin = new Admin();
             superAdmin.setUsername(username);
             superAdmin.setEmail(email.toLowerCase());
@@ -239,6 +272,54 @@ public class AdminService {
         response.put("adminId", saved.getId());
         response.put("email", saved.getEmail());
         response.put("role", saved.getRole().name());
+        return response;
+    }
+    
+    /**
+     * Clean up duplicate admin entries and ensure data consistency
+     * This method should be called after bootstrap to clean up any inconsistencies
+     */
+    public Map<String, Object> cleanupDuplicateAdmins() {
+        Map<String, Object> response = new HashMap<>();
+        int cleanedCount = 0;
+        
+        try {
+            // Get all admins
+            List<Admin> allAdmins = adminRepository.findAll();
+            
+            // Check for duplicate emails (keep the one with SUPER_ADMIN role if exists)
+            for (Admin admin : allAdmins) {
+                // Find all admins with the same email
+                List<Admin> duplicatesByEmail = allAdmins.stream()
+                    .filter(a -> a.getEmail().equals(admin.getEmail()))
+                    .collect(java.util.stream.Collectors.toList());
+                
+                if (duplicatesByEmail.size() > 1) {
+                    // Find the one with SUPER_ADMIN role
+                    Admin superAdmin = duplicatesByEmail.stream()
+                        .filter(a -> a.getRole() == Role.ROLE_SUPER_ADMIN)
+                        .findFirst()
+                        .orElse(duplicatesByEmail.get(0));
+                    
+                    // Remove duplicates, keep the super admin or first one
+                    for (Admin duplicate : duplicatesByEmail) {
+                        if (!duplicate.getId().equals(superAdmin.getId())) {
+                            adminRepository.delete(duplicate);
+                            cleanedCount++;
+                        }
+                    }
+                }
+            }
+            
+            response.put("success", true);
+            response.put("message", "Cleanup completed successfully");
+            response.put("cleanedCount", cleanedCount);
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Cleanup failed: " + e.getMessage());
+        }
+        
         return response;
     }
     

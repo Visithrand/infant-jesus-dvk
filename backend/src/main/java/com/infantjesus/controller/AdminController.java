@@ -57,6 +57,15 @@ public class AdminController {
         );
         return (Boolean) result.get("success") ? ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
     }
+    
+    /**
+     * Clean up duplicate admin entries (for maintenance)
+     */
+    @PostMapping("/cleanup-duplicates")
+    public ResponseEntity<Map<String, Object>> cleanupDuplicates() {
+        Map<String, Object> result = adminService.cleanupDuplicateAdmins();
+        return (Boolean) result.get("success") ? ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
+    }
 
     /**
      * Admin registration (regular) — will still be inaccessible to portal unless SUPER_ADMIN grants access.
@@ -78,35 +87,21 @@ public class AdminController {
         System.out.println("   Username: " + loginDto.getUsername());
         System.out.println("   Password: " + (loginDto.getPassword() != null ? "***" : "NULL"));
         
-        // Hardcoded credentials for testing - your actual credentials
-        if ("superadmin".equals(loginDto.getUsername()) && "visithran@123".equals(loginDto.getPassword())) {
-            Map<String, Object> response = new HashMap<>();
-            // Generate a REAL JWT so /admin/validate succeeds
-            final String jwt = jwtUtil.generateToken("superadmin", "ROLE_SUPER_ADMIN");
-            response.put("success", true);
-            response.put("token", jwt);
-            response.put("message", "Login successful with hardcoded credentials");
-            response.put("username", "superadmin");
-            response.put("email", "visithrand@gmail.com");
-            response.put("role", "ROLE_SUPER_ADMIN");
-            return ResponseEntity.ok(response);
-        }
-        
-        // Original login logic
+        // Use the proper authentication service instead of hardcoded credentials
         Map<String, Object> authResult = adminService.authenticateAdmin(loginDto);
         
         if ((Boolean) authResult.get("success")) {
             try {
                 // Generate JWT token with role information
-                final UserDetails userDetails = userDetailsService.loadUserByUsername(loginDto.getUsername());
+                final String username = (String) authResult.get("username");
                 final String role = (String) authResult.get("role");
-                final String jwt = jwtUtil.generateToken(userDetails.getUsername(), role);
+                final String jwt = jwtUtil.generateToken(username, role);
                 
                 Map<String, Object> response = new HashMap<>();
                 response.put("success", true);
                 response.put("token", jwt);
                 response.put("message", "Login successful");
-                response.put("username", authResult.get("username"));
+                response.put("username", username);
                 response.put("email", authResult.get("email"));
                 response.put("role", role);
                 
