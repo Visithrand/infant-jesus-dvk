@@ -47,27 +47,6 @@ public class AdminController {
     }
     
     /**
-     * Bootstrap super admin (idempotent): creates or updates the super admin
-     * with the fixed credentials requested. Exposed to allow first-time setup.
-     */
-    @PostMapping("/bootstrap-super-admin")
-    public ResponseEntity<Map<String, Object>> bootstrapSuperAdmin() {
-        Map<String, Object> result = adminService.bootstrapSuperAdmin(
-            "visithrand@gmail.com", "visithran@123", "superadmin"
-        );
-        return (Boolean) result.get("success") ? ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
-    }
-    
-    /**
-     * Clean up duplicate admin entries (for maintenance)
-     */
-    @PostMapping("/cleanup-duplicates")
-    public ResponseEntity<Map<String, Object>> cleanupDuplicates() {
-        Map<String, Object> result = adminService.cleanupDuplicateAdmins();
-        return (Boolean) result.get("success") ? ResponseEntity.ok(result) : ResponseEntity.badRequest().body(result);
-    }
-
-    /**
      * Admin registration (regular) — will still be inaccessible to portal unless SUPER_ADMIN grants access.
      */
     @PostMapping("/register")

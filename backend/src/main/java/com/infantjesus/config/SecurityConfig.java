@@ -36,8 +36,6 @@ public class SecurityConfig {
                 // Public endpoints - explicitly allow login
                 .requestMatchers("/admin/login").permitAll()
                 .requestMatchers("/admin/test").permitAll()
-                .requestMatchers("/admin/bootstrap-super-admin").permitAll()
-                .requestMatchers("/admin/cleanup-duplicates").permitAll()
                 // Public API endpoints
                 .requestMatchers("/events").permitAll()
                 .requestMatchers("/events/{id}").permitAll()
