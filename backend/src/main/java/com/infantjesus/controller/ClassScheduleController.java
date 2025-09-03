@@ -78,6 +78,12 @@ public class ClassScheduleController {
             logger.info("Creating new class schedule via admin endpoint: subject={}, teacher={}", 
                        classScheduleDto.getSubject(), classScheduleDto.getTeacher());
             
+            // Set default scheduleTime if not provided
+            if (classScheduleDto.getScheduleTime() == null) {
+                classScheduleDto.setScheduleTime(java.time.LocalDateTime.now());
+                logger.info("Set default scheduleTime to current time");
+            }
+            
             ClassScheduleDto createdClass = classScheduleService.createClassSchedule(classScheduleDto);
             logger.info("Class schedule created successfully with ID: {}", createdClass.getId());
             

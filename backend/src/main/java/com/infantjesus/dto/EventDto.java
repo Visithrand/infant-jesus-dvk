@@ -3,6 +3,9 @@ package com.infantjesus.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import java.time.LocalDateTime;
 
 public class EventDto {
@@ -17,7 +20,7 @@ public class EventDto {
     
     private String imageUrl;
     
-    @NotNull(message = "Event date and time is required")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime eventDateTime;
     
     private LocalDateTime createdAt;

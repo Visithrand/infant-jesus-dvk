@@ -71,6 +71,12 @@ public class EventController {
             logger.info("Creating new event via admin endpoint: title={}, description={}, eventDateTime={}", 
                        eventDto.getTitle(), eventDto.getDescription(), eventDto.getEventDateTime());
             
+            // Set default eventDateTime if not provided
+            if (eventDto.getEventDateTime() == null) {
+                eventDto.setEventDateTime(java.time.LocalDateTime.now());
+                logger.info("Set default eventDateTime to current time");
+            }
+            
             EventDto createdEvent = eventService.createEvent(eventDto);
             logger.info("Event created successfully with ID: {}", createdEvent.getId());
             

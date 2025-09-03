@@ -50,6 +50,16 @@ public class AnnouncementController {
             logger.info("Creating new announcement via public endpoint: title={}, priority={}", 
                        announcementDto.getTitle(), announcementDto.getPriority());
             
+            // Set default dates if not provided
+            if (announcementDto.getCreatedAt() == null) {
+                announcementDto.setCreatedAt(java.time.LocalDateTime.now());
+                logger.info("Set default createdAt to current time");
+            }
+            if (announcementDto.getUpdatedAt() == null) {
+                announcementDto.setUpdatedAt(java.time.LocalDateTime.now());
+                logger.info("Set default updatedAt to current time");
+            }
+            
             AnnouncementDto createdAnnouncement = announcementService.createAnnouncement(announcementDto);
             logger.info("Announcement created successfully with ID: {}", createdAnnouncement.getId());
             
@@ -77,6 +87,16 @@ public class AnnouncementController {
         try {
             logger.info("Creating new announcement via admin endpoint: title={}, priority={}", 
                        announcementDto.getTitle(), announcementDto.getPriority());
+            
+            // Set default dates if not provided
+            if (announcementDto.getCreatedAt() == null) {
+                announcementDto.setCreatedAt(java.time.LocalDateTime.now());
+                logger.info("Set default createdAt to current time");
+            }
+            if (announcementDto.getUpdatedAt() == null) {
+                announcementDto.setUpdatedAt(java.time.LocalDateTime.now());
+                logger.info("Set default updatedAt to current time");
+            }
             
             AnnouncementDto createdAnnouncement = announcementService.createAnnouncement(announcementDto);
             logger.info("Announcement created successfully with ID: {}", createdAnnouncement.getId());
