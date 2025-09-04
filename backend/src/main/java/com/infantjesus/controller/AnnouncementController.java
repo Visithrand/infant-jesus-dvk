@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class AnnouncementController {
     /**
      * Create new announcement (public endpoint for frontend integration)
      */
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AnnouncementDto> createAnnouncementPublic(@RequestBody AnnouncementDto announcementDto) {
         try {
             logger.info("Creating new announcement via public endpoint: title={}, priority={}", 
@@ -82,7 +83,7 @@ public class AnnouncementController {
     /**
      * Create new announcement (admin only)
      */
-    @PostMapping("/admin")
+    @PostMapping(value = "/admin", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AnnouncementDto> createAnnouncement(@RequestBody AnnouncementDto announcementDto) {
         try {
             logger.info("Creating new announcement via admin endpoint: title={}, priority={}", 

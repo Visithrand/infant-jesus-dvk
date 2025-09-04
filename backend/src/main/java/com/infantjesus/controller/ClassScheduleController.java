@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class ClassScheduleController {
     /**
      * Create new class schedule (public endpoint for frontend integration)
      */
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ClassScheduleDto> createClassSchedulePublic(@RequestBody ClassScheduleDto classScheduleDto) {
         try {
             logger.info("Creating new class schedule via public endpoint: subject={}, teacher={}", 
@@ -72,7 +73,7 @@ public class ClassScheduleController {
     /**
      * Create new class schedule (admin only)
      */
-    @PostMapping("/admin")
+    @PostMapping(value = "/admin", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ClassScheduleDto> createClassSchedule(@RequestBody ClassScheduleDto classScheduleDto) {
         try {
             logger.info("Creating new class schedule via admin endpoint: subject={}, teacher={}", 
