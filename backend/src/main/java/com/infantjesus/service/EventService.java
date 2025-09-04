@@ -49,6 +49,32 @@ public class EventService {
         Event savedEvent = eventRepository.save(event);
         return convertToDto(savedEvent);
     }
+
+    /**
+     * Create a new event with optional image upload (multipart/form-data)
+     */
+    public EventDto createEvent(String title,
+                                String description,
+                                LocalDateTime eventDateTime,
+                                MultipartFile imageFile) {
+        try {
+            Event event = new Event();
+            event.setTitle(title);
+            event.setDescription(description);
+            event.setEventDateTime(eventDateTime != null ? eventDateTime : LocalDateTime.now());
+            event.setCreatedAt(LocalDateTime.now());
+
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String imageUrl = saveImage(imageFile);
+                event.setImageUrl(imageUrl);
+            }
+
+            Event savedEvent = eventRepository.save(event);
+            return convertToDto(savedEvent);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to save event image", e);
+        }
+    }
     
     /**
      * Get all events ordered by creation date (latest first)

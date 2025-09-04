@@ -5,10 +5,11 @@ import com.infantjesus.service.EventService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
+ 
 import java.util.List;
 
 @RestController
@@ -46,7 +47,7 @@ public class EventController {
     /**
      * Create new event (public endpoint for frontend integration)
      */
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<EventDto> createEventPublic(@RequestBody EventDto eventDto) {
         try {
             logger.info("Creating new event via public endpoint: title={}, description={}, eventDateTime={}", 
@@ -65,7 +66,7 @@ public class EventController {
     /**
      * Create new event (admin only)
      */
-    @PostMapping("/admin")
+    @PostMapping(value = "/admin", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<EventDto> createEvent(@RequestBody EventDto eventDto) {
         try {
             logger.info("Creating new event via admin endpoint: title={}, description={}, eventDateTime={}", 
@@ -83,6 +84,27 @@ public class EventController {
             return ResponseEntity.ok(createdEvent);
         } catch (Exception e) {
             logger.error("Error creating event: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Create new event with optional image upload (multipart/form-data)
+     */
+    @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<EventDto> createEventWithImage(
+            @RequestParam("title") String title,
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "eventDateTime", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime eventDateTime,
+            @RequestParam(value = "image", required = false) org.springframework.web.multipart.MultipartFile image
+    ) {
+        try {
+            logger.info("Creating new event via multipart upload: title={}, eventDateTime={}", title, eventDateTime);
+            EventDto created = eventService.createEvent(title, description, eventDateTime, image);
+            return ResponseEntity.ok(created);
+        } catch (Exception e) {
+            logger.error("Error creating multipart event: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }

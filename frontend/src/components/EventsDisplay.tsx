@@ -22,6 +22,15 @@ const EventsDisplay = () => {
 
   useEffect(() => {
     fetchEvents();
+    // Refresh on focus
+    const onFocus = () => fetchEvents();
+    window.addEventListener('focus', onFocus);
+    // Poll every 30s
+    const interval = setInterval(fetchEvents, 30000);
+    return () => {
+      window.removeEventListener('focus', onFocus);
+      clearInterval(interval);
+    };
   }, []);
 
   useEffect(() => {

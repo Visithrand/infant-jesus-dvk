@@ -81,6 +81,13 @@ const AdminDashboard = () => {
     });
   };
 
+  // Normalize date to yyyy-MM-ddTHH:mm:ss (no milliseconds, no timezone)
+  const formatToSecondPrecision = (value: string | Date): string => {
+    const d = typeof value === 'string' ? new Date(value) : value;
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  };
+
   // Function to get image URL - handles both URLs and local files
   const getImageUrl = (imagePath: string) => {
     if (!imagePath) return '';
@@ -144,11 +151,18 @@ const AdminDashboard = () => {
   useEffect(() => {
     console.log('🔄 AdminDashboard useEffect running...');
     initializeAdmin();
+    // Auto-refresh on window focus
+    const onFocus = () => fetchAllData();
+    window.addEventListener('focus', onFocus);
+    // Poll every 30s for updates
+    const interval = setInterval(fetchAllData, 30000);
     return () => {
       imageFiles.forEach((file) => {
         const url = URL.createObjectURL(file);
         URL.revokeObjectURL(url);
       });
+      window.removeEventListener('focus', onFocus);
+      clearInterval(interval);
     };
   }, []);
 
@@ -333,23 +347,38 @@ const AdminDashboard = () => {
     
     try {
       const selectedFiles = Array.from(imageFiles.values());
-      const base64Images: string[] = [];
-      for (const file of selectedFiles) {
-        const b64 = await convertFileToBase64(file);
-        base64Images.push(b64);
+      const hasFile = selectedFiles.length > 0;
+
+      let createdEvent: any;
+
+      if (hasFile) {
+        // Use multipart/form-data when an image is present
+        const formData = new FormData();
+        formData.append('title', eventForm.title);
+        formData.append('description', eventForm.description);
+        formData.append('eventDateTime', formatToSecondPrecision(eventForm.eventDateTime || new Date()));
+        formData.append('image', selectedFiles[0]);
+
+        const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.EVENTS}/upload`;
+        const resp = await fetch(url, { method: 'POST', body: formData });
+        if (!resp.ok) {
+          const t = await resp.text();
+          throw new Error(`HTTP error! status: ${resp.status} - ${t}`);
+        }
+        createdEvent = await resp.json();
+      } else {
+        // Fallback to JSON when there is no image
+        const eventData = {
+          title: eventForm.title,
+          description: eventForm.description,
+          imageUrl: null,
+          eventDateTime: eventForm.eventDateTime
+            ? formatToSecondPrecision(eventForm.eventDateTime)
+            : formatToSecondPrecision(new Date())
+        };
+        createdEvent = await ApiService.post(API_CONFIG.ENDPOINTS.EVENTS, eventData);
       }
 
-      // Create event data for API
-      const eventData = {
-        title: eventForm.title,
-        description: eventForm.description,
-        imageUrl: base64Images.length > 0 ? base64Images[0] : null,
-        eventDateTime: eventForm.eventDateTime || new Date().toISOString()
-      };
-
-      // Call backend API to create event
-      const createdEvent = await ApiService.post(API_CONFIG.ENDPOINTS.EVENTS, eventData);
-      
       if (createdEvent && createdEvent.id) {
         // Add to local state
         setEvents(prev => [createdEvent, ...prev]);
