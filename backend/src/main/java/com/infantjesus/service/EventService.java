@@ -141,7 +141,7 @@ public class EventService {
         String fileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
         Path filePath = Paths.get(uploadDir + fileName);
         Files.copy(imageFile.getInputStream(), filePath);
-        return "/api/uploads/events/" + fileName;
+        return "/uploads/events/" + fileName;
     }
     
     /**

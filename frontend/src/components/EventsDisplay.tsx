@@ -131,7 +131,11 @@ const EventsDisplay = () => {
           {event.imageUrl ? (
             <div className="relative h-48 overflow-hidden">
               <img
-                src={event.imageUrl.startsWith('http') || event.imageUrl.startsWith('data:') ? event.imageUrl : `https://via.placeholder.com/400x250?text=${event.title}`}
+                src={
+                  event.imageUrl.startsWith('http') || event.imageUrl.startsWith('data:')
+                    ? event.imageUrl
+                    : ApiService.getImageUrl(event.imageUrl)
+                }
                 alt={event.title}
                 className="w-full h-full object-cover"
                 loading="lazy"

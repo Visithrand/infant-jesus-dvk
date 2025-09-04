@@ -131,7 +131,7 @@ public class FacilityService {
         String fileName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
         Path filePath = Paths.get(uploadDir + fileName);
         Files.copy(imageFile.getInputStream(), filePath);
-        return "/api/uploads/facilities/" + fileName;
+        return "/uploads/facilities/" + fileName;
     }
     
     /**
