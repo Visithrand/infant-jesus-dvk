@@ -87,6 +87,16 @@ export class ApiService {
         throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
       }
       
+      // Gracefully handle empty or non-JSON bodies (e.g., 200/204 on DELETE)
+      if (response.status === 204) {
+        return null;
+      }
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const text = await response.text();
+        return text && text.trim().length > 0 ? text : null;
+      }
+      
       const data = await response.json();
       console.log(`\u2705 Response data:`, data);
       return data;
