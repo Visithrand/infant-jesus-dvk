@@ -27,9 +27,15 @@ const EventsDisplay = () => {
     window.addEventListener('focus', onFocus);
     // Poll every 30s
     const interval = setInterval(fetchEvents, 30000);
+    // Cross-tab/data update listener
+    const onDataUpdated = (e: Event) => {
+      fetchEvents();
+    };
+    window.addEventListener('ij:data-updated', onDataUpdated as EventListener);
     return () => {
       window.removeEventListener('focus', onFocus);
       clearInterval(interval);
+      window.removeEventListener('ij:data-updated', onDataUpdated as EventListener);
     };
   }, []);
 

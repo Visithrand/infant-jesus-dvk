@@ -38,9 +38,13 @@ const AnnouncementsDisplay = () => {
     window.addEventListener('announcementCreated', handleAnnouncementUpdate);
     window.addEventListener('announcementDeleted', handleAnnouncementUpdate);
 
+    const onDataUpdated = (e: Event) => fetchAnnouncements();
+    window.addEventListener('ij:data-updated', onDataUpdated as EventListener);
+
     return () => {
       window.removeEventListener('announcementCreated', handleAnnouncementUpdate);
       window.removeEventListener('announcementDeleted', handleAnnouncementUpdate);
+      window.removeEventListener('ij:data-updated', onDataUpdated as EventListener);
     };
   }, []);
 

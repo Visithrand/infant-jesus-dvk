@@ -119,7 +119,9 @@ public class ClassScheduleController {
             classScheduleService.deleteClassSchedule(id);
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            // Idempotent delete semantics
+            logger.warn("Delete class: ID {} not found, treating as success", id);
+            return ResponseEntity.ok().build();
         }
     }
     

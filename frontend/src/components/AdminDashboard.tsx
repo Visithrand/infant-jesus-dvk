@@ -389,6 +389,10 @@ const AdminDashboard = () => {
         
         // Notify other components
         window.dispatchEvent(new CustomEvent('eventCreated'));
+        try {
+          localStorage.setItem('ij:lastUpdate', String(Date.now()));
+          window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'events' } }));
+        } catch {}
         
         // Reset form
         setEventForm({ title: "", description: "", eventDateTime: "", imageUrl: "" });
@@ -420,6 +424,10 @@ const AdminDashboard = () => {
       
       // Dispatch custom event to notify other components
       window.dispatchEvent(new CustomEvent('eventDeleted', { detail: { id } }));
+      try {
+        localStorage.setItem('ij:lastUpdate', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'events' } }));
+      } catch {}
       
       alert('Event deleted successfully from database!');
     } catch (error) {
@@ -517,6 +525,10 @@ const AdminDashboard = () => {
       
       // Dispatch custom event to notify other components
       window.dispatchEvent(new CustomEvent('classDeleted', { detail: { id } }));
+      try {
+        localStorage.setItem('ij:lastUpdate', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'classes' } }));
+      } catch {}
       
       alert('Class deleted successfully from database!');
     } catch (error) {
@@ -602,6 +614,10 @@ const AdminDashboard = () => {
         
         // Dispatch custom event to notify other components
         window.dispatchEvent(new CustomEvent('announcementCreated', { detail: createdAnnouncement }));
+        try {
+          localStorage.setItem('ij:lastUpdate', String(Date.now()));
+          window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'announcements' } }));
+        } catch {}
         
         setAnnouncementForm({ title: "", message: "" });
         
@@ -631,6 +647,10 @@ const AdminDashboard = () => {
       
       // Dispatch custom event to notify other components
       window.dispatchEvent(new CustomEvent('announcementDeleted', { detail: { id } }));
+      try {
+        localStorage.setItem('ij:lastUpdate', String(Date.now()));
+        window.dispatchEvent(new CustomEvent('ij:data-updated', { detail: { type: 'announcements' } }));
+      } catch {}
       
       alert('Announcement deleted successfully from database!');
     } catch (error) {

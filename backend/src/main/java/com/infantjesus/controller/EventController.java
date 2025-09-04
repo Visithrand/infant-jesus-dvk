@@ -139,7 +139,9 @@ public class EventController {
             eventService.deleteEvent(id);
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            // If not found, treat as idempotent delete
+            logger.warn("Delete event: ID {} not found, treating as success", id);
+            return ResponseEntity.ok().build();
         }
     }
 }
