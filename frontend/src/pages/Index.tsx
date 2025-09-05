@@ -9,6 +9,7 @@ import Programs from "@/components/Programs";
 import Admissions from "@/components/Admissions";
 import ParentPortal from "@/components/ParentPortal";
 import Footer from "@/components/Footer";
+import LiveClassesPopup from "@/components/LiveClassesPopup";
 import AnnouncementsDisplay from "@/components/AnnouncementsDisplay";
 import DeveloperCard from "@/components/DeveloperCard";
 import EventsDisplay from "@/components/EventsDisplay";
@@ -132,6 +133,7 @@ const Index = () => {
         <DeveloperCard />
       </div>
       <Footer />
+      <LiveClassesPopup />
       <AnnouncementPopup />
       <FloatingQuickNav />
       <BackToTop />

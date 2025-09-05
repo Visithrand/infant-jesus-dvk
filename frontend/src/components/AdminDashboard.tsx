@@ -148,14 +148,110 @@ const AdminDashboard = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const fetchAllData = async () => {
+    try {
+      console.log('🔄 fetchAllData function called...');
+      // Fetch events from backend API
+      try {
+        const apiEvents = await ApiService.get(API_CONFIG.ENDPOINTS.EVENTS);
+        if (Array.isArray(apiEvents)) {
+          setEvents(apiEvents);
+          localStorage.setItem('schoolEvents', JSON.stringify(apiEvents));
+          console.log('✅ Events loaded from API:', apiEvents.length);
+        }
+      } catch (error) {
+        console.error('❌ Error fetching events from API:', error);
+        const storedEvents = localStorage.getItem('schoolEvents');
+        if (storedEvents) {
+          try {
+            const parsedEvents = JSON.parse(storedEvents);
+            setEvents(parsedEvents);
+            console.log('✅ Events loaded from localStorage fallback:', parsedEvents.length);
+          } catch (error) {
+            console.error('❌ Error parsing events from localStorage:', error);
+            setEvents([]);
+          }
+        } else {
+          setEvents([]);
+        }
+      }
+      // Fetch classes from backend API
+      try {
+        const apiClasses = isLoggedIn && token
+          ? await ApiService.get(API_CONFIG.ENDPOINTS.CLASSES_ADMIN, { Authorization: `Bearer ${token}` })
+          : await ApiService.get(API_CONFIG.ENDPOINTS.CLASSES_LIVE);
+        if (Array.isArray(apiClasses)) {
+          setClasses(apiClasses);
+          localStorage.setItem('schoolClasses', JSON.stringify(apiClasses));
+          console.log('✅ Classes loaded from API:', apiClasses.length);
+        }
+      } catch (error) {
+        console.error('❌ Error fetching classes from API:', error);
+        const storedClasses = localStorage.getItem('schoolClasses');
+        if (storedClasses) {
+          try {
+            const parsedClasses = JSON.parse(storedClasses);
+            setClasses(parsedClasses);
+            console.log('✅ Classes loaded from localStorage fallback:', parsedClasses.length);
+          } catch (error) {
+            console.error('❌ Error parsing classes:', error);
+            setClasses([]);
+          }
+        } else {
+          setClasses([]);
+        }
+      }
+      // Fetch announcements from backend API
+      try {
+        const apiAnnouncements = isLoggedIn && token
+          ? await ApiService.get(API_CONFIG.ENDPOINTS.ANNOUNCEMENTS_ADMIN, { Authorization: `Bearer ${token}` })
+          : await ApiService.get(API_CONFIG.ENDPOINTS.ANNOUNCEMENTS);
+        if (Array.isArray(apiAnnouncements)) {
+          setAnnouncements(apiAnnouncements);
+          localStorage.setItem('schoolAnnouncements', JSON.stringify(apiAnnouncements));
+          console.log('✅ Announcements loaded from API:', apiAnnouncements.length);
+        }
+      } catch (error) {
+        console.error('❌ Error fetching announcements from API:', error);
+        const storedAnnouncements = localStorage.getItem('schoolAnnouncements');
+        if (storedAnnouncements) {
+          try {
+            const parsedAnnouncements = JSON.parse(storedAnnouncements);
+            setAnnouncements(parsedAnnouncements);
+            console.log('✅ Announcements loaded from localStorage fallback:', parsedAnnouncements.length);
+          } catch (error) {
+            console.error('❌ Error parsing announcements from localStorage:', error);
+            setAnnouncements([]);
+          }
+        } else {
+          setAnnouncements([]);
+        }
+      }
+      const storedFacilities = localStorage.getItem('schoolFacilities');
+      if (storedFacilities) {
+        try {
+          const parsedFacilities = JSON.parse(storedFacilities);
+          setFacilities(parsedFacilities);
+          console.log('✅ Facilities loaded from localStorage:', parsedFacilities.length);
+        } catch (error) {
+          console.error('❌ Error parsing facilities:', error);
+          setFacilities([]);
+        }
+      } else {
+        setFacilities([]);
+      }
+    } catch {}
+  };
+
   useEffect(() => {
     console.log('🔄 AdminDashboard useEffect running...');
     initializeAdmin();
-    // Auto-refresh on window focus
+  }, []);
+
+  useEffect(() => {
     const onFocus = () => fetchAllData();
     window.addEventListener('focus', onFocus);
-    // Poll every 30s for updates
-    const interval = setInterval(fetchAllData, 30000);
+    const interval = setInterval(() => fetchAllData(), 30000);
     return () => {
       imageFiles.forEach((file) => {
         const url = URL.createObjectURL(file);
@@ -164,7 +260,7 @@ const AdminDashboard = () => {
       window.removeEventListener('focus', onFocus);
       clearInterval(interval);
     };
-  }, []);
+  }, [isLoggedIn, token]);
 
   const initializeAdmin = async () => {
     console.log('🔄 initializeAdmin function called...');
