@@ -67,8 +67,14 @@ export class ApiService {
   static async fetch(endpoint: string, options: RequestInit = {}) {
     this.assertConfigured();
     const url = `${this.baseUrl}${endpoint}`;
+    // Only set Content-Type for requests that include a body. Some endpoints (e.g., DELETE)
+    // may fail with 415 if Content-Type is set without a body.
+    const hasBody = options.body !== undefined && options.body !== null;
+    const computedHeaders = hasBody
+      ? { ...DEFAULT_HEADERS, ...options.headers }
+      : { ...(options.headers || {}) };
     const config: RequestInit = {
-      headers: { ...DEFAULT_HEADERS, ...options.headers },
+      headers: computedHeaders,
       ...options
     };
 

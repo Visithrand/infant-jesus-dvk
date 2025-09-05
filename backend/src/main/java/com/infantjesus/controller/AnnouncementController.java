@@ -45,7 +45,7 @@ public class AnnouncementController {
     /**
      * Create new announcement (public endpoint for frontend integration)
      */
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE, MediaType.ALL_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AnnouncementDto> createAnnouncementPublic(@RequestBody AnnouncementDto announcementDto) {
         try {
             logger.info("Creating new announcement via public endpoint: title={}, priority={}", 
@@ -83,7 +83,7 @@ public class AnnouncementController {
     /**
      * Create new announcement (admin only)
      */
-    @PostMapping(value = "/admin", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/admin", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_PLAIN_VALUE, MediaType.ALL_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AnnouncementDto> createAnnouncement(@RequestBody AnnouncementDto announcementDto) {
         try {
             logger.info("Creating new announcement via admin endpoint: title={}, priority={}", 
