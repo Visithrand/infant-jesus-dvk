@@ -446,11 +446,15 @@ const AdminDashboard = () => {
 
     try {
       // Create class data for API
+      // Ensure scheduleTime matches backend JSON pattern yyyy-MM-dd'T'HH:mm:ss
+      const scheduleIso = classForm.scheduleTime
+        ? new Date(classForm.scheduleTime).toISOString().slice(0, 19)
+        : new Date().toISOString().slice(0, 19);
       const classData = {
         subject: classForm.subject,
         teacher: classForm.teacher,
         description: classForm.description,
-        scheduleTime: classForm.scheduleTime || new Date().toISOString(),
+        scheduleTime: scheduleIso,
         isLive: classForm.isLive
       };
 

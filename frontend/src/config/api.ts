@@ -1,8 +1,14 @@
 // API Configuration and Constants
 export const API_CONFIG = {
-  // Base URLs - using global constants from Vite config with reliable fallbacks
-  BASE_URL: (globalThis as any).__BACKEND_URL__ || (import.meta as any).env?.VITE_BACKEND_URL || "",
-  NODE_SERVER_URL: (globalThis as any).__NODE_SERVER_URL__ || (import.meta as any).env?.VITE_NODE_SERVER_URL || "",
+  // Base URLs - prefer env vars; allow global overrides; final fallback to known production URL
+  BASE_URL:
+    (import.meta as any).env?.VITE_BACKEND_URL ||
+    (globalThis as any).__BACKEND_URL__ ||
+    "https://infant-jesus-dvk-4.onrender.com",
+  NODE_SERVER_URL:
+    (import.meta as any).env?.VITE_NODE_SERVER_URL ||
+    (globalThis as any).__NODE_SERVER_URL__ ||
+    "",
   
   // API Endpoints
   ENDPOINTS: {

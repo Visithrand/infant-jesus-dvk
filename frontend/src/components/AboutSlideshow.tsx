@@ -10,15 +10,11 @@ type EventItem = {
 };
 
 const candidatePublicImages = [
-  "/slides1.png",
+  // Only include files that exist in public/
   "/slides2.png",
-  "/slides3.png",
   "/slides4.png",
   "/slides5.png",
   "/slides6.png",
-  "/slide-1.png",
-  "/slide-2.png",
-  "/image1.png",
   "/alumini.png",
   "/lab-che.png",
 ];
@@ -26,7 +22,6 @@ const candidatePublicImages = [
 const localFallbacks = [
   "/src/assets/slide-1.png",
   "/src/assets/slide-2.png",
-  "/src/image1.png",
 ];
 
 const AboutSlideshow = () => {
