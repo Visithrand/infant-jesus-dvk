@@ -73,9 +73,10 @@ export class ApiService {
     const computedHeaders = hasBody
       ? { ...DEFAULT_HEADERS, ...options.headers }
       : { ...(options.headers || {}) };
+    // Important: spread options FIRST, then set headers so they are not overwritten by undefined
     const config: RequestInit = {
-      headers: computedHeaders,
-      ...options
+      ...options,
+      headers: computedHeaders
     };
 
     console.log(`\ud83c\udf10 Making API request to: ${url}`);
@@ -115,9 +116,13 @@ export class ApiService {
   // Generic fetch method for Node.js server
   static async fetchNode(endpoint: string, options: RequestInit = {}) {
     const url = `${this.nodeServerUrl}${endpoint}`;
+    const hasBody = options.body !== undefined && options.body !== null;
+    const computedHeaders = hasBody
+      ? { ...DEFAULT_HEADERS, ...options.headers }
+      : { ...(options.headers || {}) };
     const config: RequestInit = {
-      headers: { ...DEFAULT_HEADERS, ...options.headers },
-      ...options
+      ...options,
+      headers: computedHeaders
     };
 
     try {
