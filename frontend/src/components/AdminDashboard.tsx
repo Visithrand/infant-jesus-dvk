@@ -261,7 +261,9 @@ const AdminDashboard = () => {
       
       // Fetch classes from backend API
       try {
-        const apiClasses = await ApiService.get(API_CONFIG.ENDPOINTS.CLASSES_LIVE);
+        const apiClasses = isLoggedIn && token
+          ? await ApiService.get(API_CONFIG.ENDPOINTS.CLASSES_ADMIN, { Authorization: `Bearer ${token}` })
+          : await ApiService.get(API_CONFIG.ENDPOINTS.CLASSES_LIVE);
         if (Array.isArray(apiClasses)) {
           setClasses(apiClasses);
           // Also update localStorage for backward compatibility
@@ -288,7 +290,9 @@ const AdminDashboard = () => {
       
       // Fetch announcements from backend API
       try {
-        const apiAnnouncements = await ApiService.get(API_CONFIG.ENDPOINTS.ANNOUNCEMENTS);
+        const apiAnnouncements = isLoggedIn && token
+          ? await ApiService.get(API_CONFIG.ENDPOINTS.ANNOUNCEMENTS_ADMIN, { Authorization: `Bearer ${token}` })
+          : await ApiService.get(API_CONFIG.ENDPOINTS.ANNOUNCEMENTS);
         if (Array.isArray(apiAnnouncements)) {
           setAnnouncements(apiAnnouncements);
           // Also update localStorage for backward compatibility
