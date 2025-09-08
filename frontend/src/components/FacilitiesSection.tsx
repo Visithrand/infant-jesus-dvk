@@ -8,7 +8,6 @@ import {
   Bus, 
   Utensils, 
   Shield, 
-  Wifi, 
   Camera,
   Music,
   Palette,
@@ -117,15 +116,6 @@ const FacilitiesSection = () => {
     },
     {
       id: 8,
-      title: "Wi-Fi Campus",
-      icon: Wifi,
-      description: "High-speed internet connectivity throughout the campus for research, online learning, and digital resources access.",
-      features: ["High-Speed Internet", "Campus Coverage", "Filtered Content", "IT Support"],
-      category: "technology",
-      image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop&crop=center"
-    },
-    {
-      id: 9,
       title: "Sports Facilities",
       icon: Trophy,
       description: "Comprehensive sports infrastructure including playgrounds, indoor games, and equipment for physical development.",
@@ -134,7 +124,7 @@ const FacilitiesSection = () => {
       image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop&crop=center"
     },
     {
-      id: 10,
+      id: 9,
       title: "Music Room",
       icon: Music,
       description: "Dedicated space for music education with various instruments and practice areas for vocal and instrumental training.",
@@ -143,7 +133,7 @@ const FacilitiesSection = () => {
       image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop&crop=center"
     },
     {
-      id: 11,
+      id: 10,
       title: "Art & Craft Studio",
       icon: Palette,
       description: "Creative space for artistic expression with art supplies, craft materials, and display areas for student artwork.",
@@ -152,7 +142,7 @@ const FacilitiesSection = () => {
       image: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=600&fit=crop&crop=center"
     },
     {
-      id: 12,
+      id: 11,
       title: "Medical Room",
       icon: Shield,
       description: "On-campus medical facility with first-aid equipment and trained staff for immediate health care support.",

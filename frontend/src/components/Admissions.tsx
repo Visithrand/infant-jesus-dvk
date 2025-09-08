@@ -34,7 +34,6 @@ const Admissions = () => {
       title: "Kindergarten",
       description: "Early childhood education focusing on foundational skills and social development.",
       age: "3-5 years",
-      fees: "₹18,000/year",
       duration: "2 years",
       requirements: ["Birth Certificate", "Immunization Record", "Parent Interview"],
       features: ["Play-based Learning", "Social Skills Development", "Basic Literacy", "Creative Arts"]
@@ -42,8 +41,7 @@ const Admissions = () => {
     {
       title: "Primary School",
       description: "Comprehensive primary education with strong academic foundations.",
-      age: "6-10 years",
-      fees: "₹22,000/year",
+      age: "6-10 years",  
       duration: "5 years",
       requirements: ["Transfer Certificate", "Previous School Records", "Age Proof", "Address Proof"],
       features: ["Core Subjects", "Computer Skills", "Physical Education", "Extra-curricular Activities"]
@@ -51,8 +49,7 @@ const Admissions = () => {
     {
       title: "Matriculation",
       description: "Advanced secondary education preparing students for higher studies.",
-      age: "11-15 years",
-      fees: "₹30,000/year",
+      age: "11-15 years", 
       duration: "4 years",
       requirements: ["Primary School Completion", "Transfer Certificate", "Academic Records", "Character Certificate"],
       features: ["Advanced Mathematics", "Science Labs", "Language Skills", "Career Guidance"]
@@ -61,7 +58,6 @@ const Admissions = () => {
       title: "Higher Secondary",
       description: "Specialized education with focus on career preparation and specialization.",
       age: "16-17 years",
-      fees: "₹32,000/year",
       duration: "2 years",
       requirements: ["Matriculation Completion", "Transfer Certificate", "Academic Excellence", "Interview"],
       features: ["Subject Specialization", "College Preparation", "Leadership Skills", "Industry Exposure"]
@@ -70,7 +66,6 @@ const Admissions = () => {
       title: "Senior Secondary",
       description: "Final stage of school education with advanced academic and life skills.",
       age: "17-18 years",
-      fees: "₹35,000/year",
       duration: "1 year",
       requirements: ["Higher Secondary Completion", "Academic Records", "Character Certificate", "Parent Meeting"],
       features: ["University Preparation", "Career Counseling", "Advanced Studies", "Life Skills Training"]
@@ -149,7 +144,7 @@ const Admissions = () => {
                   <p className="text-gray-600 mb-4">{info.description}</p>
                   <div className="flex items-center justify-between text-sm text-gray-500">
                     <span>Age: {info.age}</span>
-                    <span className="text-green-600 font-semibold">{info.fees}</span>
+                    <span className="text-green-600 font-semibold"></span>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -231,7 +226,7 @@ const Admissions = () => {
                 Class Size
               </h3>
               <p className="text-muted-foreground text-sm">
-                Maximum 30 students per class for personalized attention
+                Maximum 50 students per class for personalized attention
               </p>
             </Card>
 
@@ -240,10 +235,55 @@ const Admissions = () => {
                 <Award className="h-8 w-8 text-purple-600" />
               </div>
               <h3 className="text-lg font-semibold text-foreground mb-2">
-                Scholarships
+                Academic Excellence
               </h3>
               <p className="text-muted-foreground text-sm">
-                Merit-based scholarships available for deserving students
+                Recognized for outstanding academic performance and student achievements
+              </p>
+            </Card>
+
+            <Card className="p-6 text-center hover:shadow-lg transition-shadow duration-300">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Clock className="h-8 w-8 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                School Hours
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                8:00 AM - 3:00 PM
+              </p>
+            </Card>
+            <Card className="p-6 text-center hover:shadow-lg transition-shadow duration-300">
+              <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <MapPin className="h-8 w-8 text-orange-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                School Location
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                E.B. Road Extn., Devakottai
+              </p>
+            </Card>
+            <Card className="p-6 text-center hover:shadow-lg transition-shadow duration-300">
+              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Mail className="h-8 w-8 text-yellow-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                School Email
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                info@infantjesus.org
+              </p>
+            </Card>
+            <Card className="p-6 text-center hover:shadow-lg transition-shadow duration-300">
+              <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Phone className="h-8 w-8 text-pink-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                School Phone
+              </h3>
+              <p className="text-muted-foreground text-sm">
+                +91 8220092495
               </p>
             </Card>
           </div>
