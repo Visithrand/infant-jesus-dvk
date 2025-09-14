@@ -5,7 +5,6 @@ import { Menu, X, Phone, Mail, MapPin, Download, GraduationCap, Clock, Shield, U
 import { cn } from "@/lib/utils";
 import schoolLogo from "@/assets/school-logo.png";
 import { getStoredAuth, isAdminRole } from "@/utils/auth";
-import ThemeToggle from "./ThemeToggle";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -177,7 +176,6 @@ const Header = () => {
                 </Link>
               ))}
               <div className="ml-4 flex items-center gap-2">
-                <ThemeToggle />
                 <Button 
                   variant="default" 
                   size="sm" 
@@ -192,7 +190,6 @@ const Header = () => {
 
             {/* Mobile Menu Button */}
             <div className="lg:hidden flex items-center gap-2">
-              <ThemeToggle />
             <Button
               variant="ghost"
               size="sm"

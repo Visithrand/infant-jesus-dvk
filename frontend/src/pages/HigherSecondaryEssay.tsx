@@ -10,7 +10,7 @@ const HigherSecondaryEssay = () => {
       <Header />
       <main className="flex flex-col min-h-screen bg-background">
         <section className="flex-1 py-16 px-4">
-          <div className="max-w-4xl mx-auto bg-card shadow-lg rounded-2xl p-8 md:p-12 prose prose-slate dark:prose-invert">
+          <div className="max-w-4xl mx-auto bg-card shadow-lg rounded-2xl p-8 md:p-12 prose prose-slate">
             <h1 className="!mb-4">Higher Secondary (Standards 11 to 12)</h1>
             <p className="lead !mt-0">
               The plus-two years are a launchpad. With focused pathways and mentoring,
