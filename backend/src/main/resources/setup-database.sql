@@ -2,12 +2,12 @@
 -- Run this script to set up the database properly
 
 -- Create database if it doesn't exist
-CREATE DATABASE IF NOT EXISTS `visithran_db` 
+CREATE DATABASE IF NOT EXISTS `school-db` 
 CHARACTER SET utf8mb4 
 COLLATE utf8mb4_unicode_ci;
 
 -- Use the database
-USE `visithran_db`;
+USE `school-db`;
 
 -- Create admins table
 CREATE TABLE IF NOT EXISTS `admins` (

@@ -2,7 +2,7 @@
 -- This script runs when the MySQL container starts
 
 -- Create database if it doesn't exist
-CREATE DATABASE IF NOT EXISTS `visithran_db` 
+CREATE DATABASE IF NOT EXISTS `school-db` 
 CHARACTER SET utf8mb4 
 COLLATE utf8mb4_unicode_ci;
 
@@ -12,11 +12,10 @@ SET CHARACTER SET utf8mb4;
 SET character_set_connection=utf8mb4;
 
 -- Use the database
-USE `visithran_db`;
+USE `school-db`;
 
 -- Grant all privileges to root user
-GRANT ALL PRIVILEGES ON `visithran_db`.* TO 'root'@'%';
-GRANT ALL PRIVILEGES ON `visithran_db`.* TO 'root'@'localhost';
+GRANT ALL PRIVILEGES ON `school-db`.* TO 'root'@'%';
 
 -- Flush privileges to apply changes
 FLUSH PRIVILEGES;

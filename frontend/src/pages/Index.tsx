@@ -7,7 +7,6 @@ import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Programs from "@/components/Programs";
 import Admissions from "@/components/Admissions";
-import ParentPortal from "@/components/ParentPortal";
 import Footer from "@/components/Footer";
 import LiveClassesPopup from "@/components/LiveClassesPopup";
 import AnnouncementsDisplay from "@/components/AnnouncementsDisplay";
@@ -16,6 +15,9 @@ import EventsDisplay from "@/components/EventsDisplay";
 import FloatingQuickNav from "@/components/FloatingQuickNav";
 import BackToTop from "@/components/BackToTop";
 import AnnouncementPopup from "@/components/AnnouncementPopup";
+import StatsDashboard from "@/components/StatsDashboard";
+import VirtualTour from "@/components/VirtualTour";
+import EnhancedContact from "@/components/EnhancedContact";
 
 const Index = () => {
   const location = useLocation();
@@ -76,6 +78,17 @@ const Index = () => {
         <div id="admissions">
           <Admissions />
         </div>
+        
+        {/* Statistics Dashboard */}
+        <div id="statistics">
+          <StatsDashboard />
+        </div>
+        
+        {/* Virtual Tour Section */}
+        <div id="virtual-tour">
+          <VirtualTour />
+        </div>
+        
         {/* Events Section */}
         <div id="events" className="py-16 bg-gray-50">
           <div className="container mx-auto px-4">
@@ -106,7 +119,6 @@ const Index = () => {
               >
                 Admissions
               </button>
-              
             </div>
             
             <EventsDisplay />
@@ -127,8 +139,11 @@ const Index = () => {
           </div>
         </div>
         
+        {/* Contact Section */}
+        <div id="contact">
+          <EnhancedContact />
+        </div>
         
-        <ParentPortal />
         <LeadershipSection />
         <DeveloperCard />
       </div>

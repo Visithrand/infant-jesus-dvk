@@ -8,7 +8,7 @@ services:
       - key: PORT
         value: 8080
       - key: DATABASE_URL
-        value: jdbc:mysql://34.56.9.172:3306/marksly?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true&allowMultiQueries=true&cachePrepStmts=true&useServerPrepStmts=true&rewriteBatchedStatements=true&useLocalSessionState=true&useLocalTransactionState=true&cacheResultSetMetadata=true&cacheServerConfiguration=true&elideSetAutoCommits=true&maintainTimeStats=false
+        value: jdbc:mysql://34.55.213.131:3306/school-db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true&allowMultiQueries=true&cachePrepStmts=true&useServerPrepStmts=true&rewriteBatchedStatements=true&useLocalSessionState=true&useLocalTransactionState=true&cacheResultSetMetadata=true&cacheServerConfiguration=true&elideSetAutoCommits=true&maintainTimeStats=false
       - key: DB_USERNAME
         value: root
       - key: DB_PASSWORD
