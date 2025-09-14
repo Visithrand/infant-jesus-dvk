@@ -19,6 +19,7 @@ const Header = () => {
     { name: "Statistics", href: "/#statistics", type: "hash" },
     { name: "Virtual Tour", href: "/#virtual-tour", type: "hash" },
     { name: "Events", href: "/#events", type: "hash" },
+    { name: "Announcements", href: "/announcements", type: "page" },
     { name: "Contact", href: "/#contact", type: "hash" },
     { name: "Admin", href: "/admin", type: "page" },
   ];

@@ -87,21 +87,46 @@ const EventGallery = () => {
   };
 
   const checkAdminStatus = () => {
+    // Always start with false for security
+    setIsAdmin(false);
+    
     try {
       const auth = getStoredAuth();
-      setIsAdmin(!!auth?.token);
-    } catch {
+      console.log('🔐 EventGallery - Auth data:', auth);
+      
+      // Strict checks - must have token AND correct role
+      if (!auth || !auth.token || !auth.role) {
+        console.log('🔐 EventGallery - Missing auth data');
+        return;
+      }
+      
+      // Only allow SUPER_ADMIN role
+      const isSuperAdmin = auth.role === 'SUPER_ADMIN';
+      console.log('🔐 EventGallery - Role check:', { role: auth.role, isSuperAdmin });
+      
+      if (isSuperAdmin) {
+        setIsAdmin(true);
+        console.log('🔐 EventGallery - ADMIN ACCESS GRANTED');
+      } else {
+        console.log('🔐 EventGallery - ADMIN ACCESS DENIED');
+      }
+    } catch (error) {
+      console.log('🔐 EventGallery - Admin check error:', error);
       setIsAdmin(false);
     }
   };
 
   const handleDeleteEvent = async (id: number) => {
+    // Double-check admin status before allowing delete
+    const auth = getStoredAuth();
+    if (!auth?.token || auth.role !== 'SUPER_ADMIN') {
+      alert('Access denied. Only super admins can delete events.');
+      return;
+    }
+    
     if (!confirm('Are you sure you want to delete this event?')) return;
     
     try {
-      const auth = getStoredAuth();
-      if (!auth?.token) return;
-
       await ApiService.delete(`${API_CONFIG.ENDPOINTS.EVENTS_ADMIN}/${id}`, { 
         'Authorization': `Bearer ${auth.token}` 
       });

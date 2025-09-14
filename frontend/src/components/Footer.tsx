@@ -10,9 +10,10 @@ const Footer = () => {
     { name: "Academic Programs", href: "/#academics" },
     { name: "Admissions", href: "/#admissions" },
     { name: "Events", href: "/#events" },
+    { name: "Announcements", href: "/announcements" },
     { name: "Facilities", href: "/#facilities" },
     { name: "Contact", href: "/contact" },
-    { name: "Admin Dashboard", href: "/admin/dashboard" }
+    { name: "Admin Dashboard", href: "/admin" }
   ];
 
   const programs = [
@@ -113,7 +114,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/admin/dashboard?tab=classes"
+                  to="/admin?tab=classes"
                   className="text-primary-foreground/80 hover:text-accent transition-colors duration-300"
                 >
                   Live Classes
@@ -121,7 +122,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/admin/dashboard?tab=events"
+                  to="/admin?tab=events"
                   className="text-primary-foreground/80 hover:text-accent transition-colors duration-300"
                 >
                   Event Management
@@ -129,7 +130,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/admin/dashboard?tab=facilities"
+                  to="/admin?tab=facilities"
                   className="text-primary-foreground/80 hover:text-accent transition-colors duration-300"
                 >
                   Facility Management

@@ -19,7 +19,7 @@ const AuthenticationPage = ({}: AuthenticationPageProps) => {
     localStorage.setItem('auth', JSON.stringify({ token, username, role: 'SUPER_ADMIN' }));
     
     // Redirect to admin dashboard
-    navigate('/admin/dashboard');
+    navigate('/admin');
   };
 
   const handleAdminRegistrationSuccess = () => {

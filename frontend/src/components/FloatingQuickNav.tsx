@@ -10,7 +10,8 @@ import {
   MessageCircle, 
   Settings,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
+  Megaphone
 } from "lucide-react";
 
 const FloatingQuickNav = () => {
@@ -22,9 +23,10 @@ const FloatingQuickNav = () => {
     { name: "Academics", href: "/#academics", icon: GraduationCap, color: "bg-purple-500" },
     { name: "Admissions", href: "/#admissions", icon: UserPlus, color: "bg-orange-500" },
     { name: "Events", href: "/#events", icon: Calendar, color: "bg-red-500" },
+    { name: "Announcements", href: "/announcements", icon: Megaphone, color: "bg-yellow-500" },
     { name: "Facilities", href: "/#facilities", icon: Building2, color: "bg-indigo-500" },
     { name: "Contact", href: "/contact", icon: MessageCircle, color: "bg-pink-500" },
-    { name: "Admin", href: "/admin/dashboard", icon: Settings, color: "bg-gray-600" },
+    { name: "Admin", href: "/admin", icon: Settings, color: "bg-gray-600" },
   ];
 
   const scrollToSection = (href: string) => {

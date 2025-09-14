@@ -57,10 +57,31 @@ const ClassesSection = () => {
   }, []);
 
   const checkAdminStatus = () => {
+    // Always start with false for security
+    setIsAdmin(false);
+    
     try {
       const auth = getStoredAuth();
-      setIsAdmin(!!auth?.token);
-    } catch {
+      console.log('🔐 ClassesSection - Auth data:', auth);
+      
+      // Strict checks - must have token AND correct role
+      if (!auth || !auth.token || !auth.role) {
+        console.log('🔐 ClassesSection - Missing auth data');
+        return;
+      }
+      
+      // Only allow SUPER_ADMIN role
+      const isSuperAdmin = auth.role === 'SUPER_ADMIN';
+      console.log('🔐 ClassesSection - Role check:', { role: auth.role, isSuperAdmin });
+      
+      if (isSuperAdmin) {
+        setIsAdmin(true);
+        console.log('🔐 ClassesSection - ADMIN ACCESS GRANTED');
+      } else {
+        console.log('🔐 ClassesSection - ADMIN ACCESS DENIED');
+      }
+    } catch (error) {
+      console.log('🔐 ClassesSection - Admin check error:', error);
       setIsAdmin(false);
     }
   };
@@ -105,12 +126,16 @@ const ClassesSection = () => {
   };
 
   const handleDeleteClass = async (id: number) => {
+    // Double-check admin status before allowing delete
+    const auth = getStoredAuth();
+    if (!auth?.token || auth.role !== 'SUPER_ADMIN') {
+      alert('Access denied. Only super admins can delete classes.');
+      return;
+    }
+    
     if (!confirm('Are you sure you want to delete this class?')) return;
     
     try {
-      const auth = getStoredAuth();
-      if (!auth?.token) return;
-
       await ApiService.delete(`${API_CONFIG.ENDPOINTS.CLASSES_ADMIN}/${id}`, { 
         'Authorization': `Bearer ${auth.token}` 
       });
@@ -132,7 +157,7 @@ const ClassesSection = () => {
 
   const handleClassClick = (classItem: ClassSchedule) => {
     // Navigate to admin dashboard with class details for editing
-    navigate(`/admin/dashboard?tab=classes&edit=${classItem.id}`);
+    navigate(`/admin?tab=classes&edit=${classItem.id}`);
   };
 
   const formatDate = (dateString: string) => {
@@ -273,7 +298,7 @@ const ClassesSection = () => {
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/admin/dashboard?tab=classes&edit=${cls.id}`);
+                            navigate(`/admin?tab=classes&edit=${cls.id}`);
                           }}
                         >
                           <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -304,7 +329,7 @@ const ClassesSection = () => {
                   variant="accent" 
                   size="lg"
                   className="w-full sm:w-auto"
-                  onClick={() => navigate('/admin/dashboard?tab=classes')}
+                  onClick={() => navigate('/admin?tab=classes')}
                 >
                   <Plus className="mr-2 h-4 w-4 md:h-5 md:w-5" />
                   Add New Class

@@ -58,6 +58,7 @@ interface Facility {
 
 const AdminDashboard = () => {
   console.log('🔄 AdminDashboard component rendering...');
+  const navigate = useNavigate();
   
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [token, setToken] = useState<string | null>(null);
@@ -146,21 +147,26 @@ const AdminDashboard = () => {
   const [editingFacility, setEditingFacility] = useState<Facility | null>(null);
 
   const location = useLocation();
-  const navigate = useNavigate();
 
   const fetchAllData = async () => {
     try {
       console.log('🔄 fetchAllData function called...');
-      // Fetch events from backend API
-      try {
-        const apiEvents = await ApiService.get(API_CONFIG.ENDPOINTS.EVENTS);
-        if (Array.isArray(apiEvents)) {
-          setEvents(apiEvents);
-          localStorage.setItem('schoolEvents', JSON.stringify(apiEvents));
-          console.log('✅ Events loaded from API:', apiEvents.length);
-        }
-      } catch (error) {
-        console.error('❌ Error fetching events from API:', error);
+      
+      // Fetch all data in parallel for better performance
+      const [eventsResult, classesResult, announcementsResult, facilitiesResult] = await Promise.allSettled([
+        ApiService.get(API_CONFIG.ENDPOINTS.EVENTS),
+        ApiService.get(API_CONFIG.ENDPOINTS.CLASSES),
+        ApiService.get(API_CONFIG.ENDPOINTS.ANNOUNCEMENTS),
+        ApiService.get(API_CONFIG.ENDPOINTS.FACILITIES)
+      ]);
+
+      // Handle events
+      if (eventsResult.status === 'fulfilled' && Array.isArray(eventsResult.value)) {
+        setEvents(eventsResult.value);
+        localStorage.setItem('schoolEvents', JSON.stringify(eventsResult.value));
+        console.log('✅ Events loaded from API:', eventsResult.value.length);
+      } else {
+        console.error('❌ Error fetching events from API:', eventsResult.reason);
         const storedEvents = localStorage.getItem('schoolEvents');
         if (storedEvents) {
           try {
@@ -249,9 +255,13 @@ const AdminDashboard = () => {
   }, []);
 
   useEffect(() => {
+    if (!isLoggedIn) return;
+    
     const onFocus = () => fetchAllData();
     window.addEventListener('focus', onFocus);
-    const interval = setInterval(() => fetchAllData(), 30000);
+    // Reduce polling interval for better performance
+    const interval = setInterval(() => fetchAllData(), 60000); // Changed from 30s to 60s
+    
     return () => {
       imageFiles.forEach((file) => {
         const url = URL.createObjectURL(file);
@@ -266,24 +276,47 @@ const AdminDashboard = () => {
     console.log('🔄 initializeAdmin function called...');
     const stored = localStorage.getItem('auth');
     const storedToken = localStorage.getItem('adminToken') || (stored ? JSON.parse(stored).token : null);
+    
     if (!storedToken) {
+      console.log('🔐 No token found, redirecting to login');
       setIsLoggedIn(false);
+      // Add a small delay to show the loading state briefly
+      setTimeout(() => {
+        navigate('/admin/login', { replace: true });
+      }, 500);
       return;
     }
+    
     try {
+      console.log('🔐 Validating token...');
       const data = await ApiService.get(`/admin/validate`, { Authorization: `Bearer ${storedToken}` });
+      
+      if (data && data.username) {
       setToken(storedToken);
       setUsername(data.username || 'Admin');
       setRole(data.role || 'ADMIN');
       setIsLoggedIn(true);
+        console.log('✅ Admin authenticated successfully');
       fetchAllData();
+      } else {
+        throw new Error('Invalid response from server');
+      }
     } catch (e) {
+      console.log('❌ Token validation failed:', e);
       setIsLoggedIn(false);
       setToken(null);
       setUsername('');
       setRole(null);
       localStorage.removeItem('adminToken');
       localStorage.removeItem('auth');
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      localStorage.removeItem('email');
+      localStorage.removeItem('username');
+      // Add a small delay to show the loading state briefly
+      setTimeout(() => {
+        navigate('/admin/login', { replace: true });
+      }, 500);
     }
   };
 
@@ -315,21 +348,43 @@ const AdminDashboard = () => {
   // Registration flow removed
 
   const handleLogout = () => {
+    // Clear all auth data
     setIsLoggedIn(false);
     setToken(null);
     setUsername("");
+    setRole(null);
     localStorage.removeItem('adminToken');
     localStorage.removeItem('auth');
-    // Redirect back to auth page
-    navigate('/admin');
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('email');
+    localStorage.removeItem('username');
+    
+    // Redirect directly to login page with a small delay
+    setTimeout(() => {
+      navigate('/admin/login', { replace: true });
+    }, 300);
   };
 
   
 
   // Event handlers
   const handleCreateEvent = async () => {
+    // Validate required fields quickly
+    if (!eventForm.title.trim()) {
+      alert('Please enter an event title');
+      return;
+    }
+    
     console.log('Creating event with data:', eventForm);
     console.log('Image files in state:', imageFiles);
+    
+    // Show loading state
+    const createButton = document.querySelector('[data-create-event]') as HTMLButtonElement;
+    if (createButton) {
+      createButton.disabled = true;
+      createButton.innerHTML = '<div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto"></div>';
+    }
     
     try {
       const selectedFiles = Array.from(imageFiles.values());
@@ -340,8 +395,8 @@ const AdminDashboard = () => {
       if (hasFile) {
         // Use multipart/form-data when an image is present
         const formData = new FormData();
-        formData.append('title', eventForm.title);
-        formData.append('description', eventForm.description);
+        formData.append('title', eventForm.title.trim());
+        formData.append('description', eventForm.description.trim());
         formData.append('eventDateTime', formatToSecondPrecision(eventForm.eventDateTime || new Date()));
         formData.append('image', selectedFiles[0]);
 
@@ -355,8 +410,8 @@ const AdminDashboard = () => {
       } else {
         // Fallback to JSON when there is no image
         const eventData = {
-          title: eventForm.title,
-          description: eventForm.description,
+          title: eventForm.title.trim(),
+          description: eventForm.description.trim(),
           imageUrl: null,
           eventDateTime: eventForm.eventDateTime
             ? formatToSecondPrecision(eventForm.eventDateTime)
@@ -366,7 +421,7 @@ const AdminDashboard = () => {
       }
 
       if (createdEvent && createdEvent.id) {
-        // Add to local state
+        // Add to local state immediately for instant UI update
         setEvents(prev => [createdEvent, ...prev]);
         
         // Update localStorage for backward compatibility
@@ -384,13 +439,20 @@ const AdminDashboard = () => {
         setEventForm({ title: "", description: "", eventDateTime: "", imageUrl: "" });
         setImageFiles(new Map());
         
-        alert('Event created successfully and saved to database!');
+        // Show success message briefly
+        alert('Event created successfully!');
       } else {
         throw new Error('Failed to create event - no ID returned');
       }
     } catch (error) {
       console.error('Error creating event:', error);
       alert('Error creating event: ' + (error as Error).message);
+    } finally {
+      // Reset button state
+      if (createButton) {
+        createButton.disabled = false;
+        createButton.innerHTML = '<svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Create Event';
+      }
     }
   };
 
@@ -426,8 +488,17 @@ const AdminDashboard = () => {
   const handleCreateClass = async () => {
     if (isCreatingClass) return;
 
-    console.log('Creating class with data:', classForm);
+    // Validate required fields quickly
+    if (!classForm.subject.trim()) {
+      alert('Please enter a subject');
+      return;
+    }
+    if (!classForm.teacher.trim()) {
+      alert('Please enter a teacher name');
+      return;
+    }
 
+    console.log('Creating class with data:', classForm);
     setIsCreatingClass(true);
 
     try {
@@ -437,9 +508,9 @@ const AdminDashboard = () => {
         ? new Date(classForm.scheduleTime).toISOString().slice(0, 19)
         : new Date().toISOString().slice(0, 19);
       const classData = {
-        subject: classForm.subject,
-        teacher: classForm.teacher,
-        description: classForm.description,
+        subject: classForm.subject.trim(),
+        teacher: classForm.teacher.trim(),
+        description: classForm.description.trim(),
         scheduleTime: scheduleIso,
         isLive: classForm.isLive
       };
@@ -448,7 +519,7 @@ const AdminDashboard = () => {
       const createdClass = await ApiService.post(API_CONFIG.ENDPOINTS.CLASSES, classData);
       
       if (createdClass && createdClass.id) {
-        // Add to local state
+        // Add to local state immediately for instant UI update
         setClasses(prev => [createdClass, ...prev]);
         
         // Store in localStorage for other components to access
@@ -461,7 +532,7 @@ const AdminDashboard = () => {
         setClassForm({ subject: "", teacher: "", description: "", scheduleTime: "", isLive: false });
         
         // Show success message
-        alert('Class created successfully and saved to database!');
+        alert('Class created successfully!');
       } else {
         throw new Error('Failed to create class - no ID returned');
       }
@@ -469,8 +540,9 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error creating class:', error);
       alert('Error creating class: ' + (error as Error).message);
+    } finally {
+      setIsCreatingClass(false);
     }
-    setIsCreatingClass(false);
   };
 
   const handleToggleLiveStatus = async (id: number) => {
@@ -577,16 +649,28 @@ const AdminDashboard = () => {
 
   // Announcement handlers
   const handleCreateAnnouncement = async () => {
-    if (!announcementForm.title.trim() || !announcementForm.message.trim()) {
-      alert('Please fill in both title and message');
+    // Validate required fields quickly
+    if (!announcementForm.title.trim()) {
+      alert('Please enter an announcement title');
       return;
+    }
+    if (!announcementForm.message.trim()) {
+      alert('Please enter an announcement message');
+      return;
+    }
+
+    // Show loading state
+    const createButton = document.querySelector('[data-create-announcement]') as HTMLButtonElement;
+    if (createButton) {
+      createButton.disabled = true;
+      createButton.innerHTML = '<div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto"></div>';
     }
 
     try {
       // Create announcement data for API
       const announcementData = {
-        title: announcementForm.title,
-        message: announcementForm.message,
+        title: announcementForm.title.trim(),
+        message: announcementForm.message.trim(),
         priority: 'NORMAL',
         isActive: true
       };
@@ -595,7 +679,7 @@ const AdminDashboard = () => {
       const createdAnnouncement = await ApiService.post(API_CONFIG.ENDPOINTS.ANNOUNCEMENTS, announcementData);
       
       if (createdAnnouncement && createdAnnouncement.id) {
-        // Add to local state
+        // Add to local state immediately for instant UI update
         setAnnouncements(prev => [createdAnnouncement, ...prev]);
         
         // Update localStorage
@@ -611,13 +695,19 @@ const AdminDashboard = () => {
         
         setAnnouncementForm({ title: "", message: "" });
         
-        alert('Announcement created successfully and saved to database!');
+        alert('Announcement created successfully!');
       } else {
         throw new Error('Failed to create announcement - no ID returned');
       }
     } catch (error) {
       console.error('Error creating announcement:', error);
       alert('Error creating announcement: ' + (error as Error).message);
+    } finally {
+      // Reset button state
+      if (createButton) {
+        createButton.disabled = false;
+        createButton.innerHTML = '<svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>Post Announcement';
+      }
     }
   };
 
@@ -652,27 +742,15 @@ const AdminDashboard = () => {
   console.log('🔄 Render logic - isLoggedIn:', isLoggedIn);
   
   if (!isLoggedIn) {
-    console.log('🔒 Showing authentication form...');
+    console.log('🔒 Redirecting to login...');
     return (
-      <>
-        <Header />
-        <section className="py-20 bg-background">
-          <div className="container mx-auto px-4">
-            <div className="max-w-md mx-auto">
-            <div className="text-center mb-8">
-              <div className="bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <Lock className="h-8 w-8 text-primary" />
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-lg font-medium text-foreground">Redirecting to login...</p>
+          <p className="text-sm text-muted-foreground mt-2">Please wait while we redirect you</p>
               </div>
-              <h2 className="text-2xl font-bold text-foreground">Admin Authentication</h2>
-              <p className="text-muted-foreground">Access the school management dashboard</p>
             </div>
-
-              <AdminLogin onSwitchToRegistration={() => {}} onLoginSuccess={handleLoginSuccess} />
-            </div>
-          </div>
-        </section>
-        <Footer />
-      </>
     );
   }
 
@@ -773,10 +851,14 @@ const AdminDashboard = () => {
                     className="text-sm sm:text-base"
                   />
                 </div>
-                                 <Button onClick={handleCreateEvent} className="mt-4 w-full sm:w-auto">
-                   <Plus className="mr-2 h-4 w-4" />
-                   Create Event
-                 </Button>
+                <Button 
+                  onClick={handleCreateEvent} 
+                  className="mt-4 w-full sm:w-auto bg-primary hover:bg-primary/90 text-white"
+                  data-create-event
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Create Event
+                </Button>
                </Card>
 
                                                           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -835,7 +917,14 @@ const AdminDashboard = () => {
                       <Textarea id="a-message" value={announcementForm.message} onChange={(e) => setAnnouncementForm({ ...announcementForm, message: e.target.value })} placeholder="Write announcement details" rows={4} />
                     </div>
                   </div>
-                  <Button onClick={handleCreateAnnouncement} className="mt-4 w-full sm:w-auto">Post Announcement</Button>
+                <Button 
+                  onClick={handleCreateAnnouncement} 
+                  className="mt-4 w-full sm:w-auto bg-primary hover:bg-primary/90 text-white"
+                  data-create-announcement
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  Post Announcement
+                </Button>
                 </Card>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -900,10 +989,20 @@ const AdminDashboard = () => {
                     </div>
                     
                   </div>
-                                  <Button onClick={handleCreateClass} className="mt-4 w-full sm:w-auto" disabled={isCreatingClass}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    {isCreatingClass ? 'Creating…' : 'Create Class'}
-                  </Button>
+                <Button 
+                  onClick={handleCreateClass} 
+                  className="mt-4 w-full sm:w-auto bg-primary hover:bg-primary/90 text-white disabled:opacity-50" 
+                  disabled={isCreatingClass}
+                >
+                  {isCreatingClass ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto"></div>
+                  ) : (
+                    <>
+                      <Plus className="mr-2 h-4 w-4" />
+                      Create Class
+                    </>
+                  )}
+                </Button>
                </Card>
 
                                                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

@@ -49,10 +49,31 @@ const AnnouncementsDisplay = () => {
   }, []);
 
   const checkAdminStatus = () => {
+    // Always start with false for security
+    setIsAdmin(false);
+    
     try {
       const auth = getStoredAuth();
-      setIsAdmin(!!auth?.token);
-    } catch {
+      console.log('🔐 AnnouncementsDisplay - Auth data:', auth);
+      
+      // Strict checks - must have token AND correct role
+      if (!auth || !auth.token || !auth.role) {
+        console.log('🔐 AnnouncementsDisplay - Missing auth data');
+        return;
+      }
+      
+      // Only allow SUPER_ADMIN role
+      const isSuperAdmin = auth.role === 'SUPER_ADMIN';
+      console.log('🔐 AnnouncementsDisplay - Role check:', { role: auth.role, isSuperAdmin });
+      
+      if (isSuperAdmin) {
+        setIsAdmin(true);
+        console.log('🔐 AnnouncementsDisplay - ADMIN ACCESS GRANTED');
+      } else {
+        console.log('🔐 AnnouncementsDisplay - ADMIN ACCESS DENIED');
+      }
+    } catch (error) {
+      console.log('🔐 AnnouncementsDisplay - Admin check error:', error);
       setIsAdmin(false);
     }
   };
@@ -97,12 +118,16 @@ const AnnouncementsDisplay = () => {
   };
 
   const handleDeleteAnnouncement = async (id: number) => {
+    // Double-check admin status before allowing delete
+    const auth = getStoredAuth();
+    if (!auth?.token || auth.role !== 'SUPER_ADMIN') {
+      alert('Access denied. Only super admins can delete announcements.');
+      return;
+    }
+    
     if (!confirm('Are you sure you want to delete this announcement?')) return;
     
     try {
-      const auth = getStoredAuth();
-      if (!auth?.token) return;
-
       await ApiService.delete(`${API_CONFIG.ENDPOINTS.ANNOUNCEMENTS_ADMIN}/${id}`, { 
         'Authorization': `Bearer ${auth.token}` 
       });
@@ -124,7 +149,7 @@ const AnnouncementsDisplay = () => {
 
   const handleAnnouncementClick = (announcement: Announcement) => {
     // Navigate to admin dashboard with announcement details for editing
-    navigate(`/admin/dashboard?tab=announcements&edit=${announcement.id}`);
+    navigate(`/admin?tab=announcements&edit=${announcement.id}`);
   };
 
   const getPriorityIcon = (priority: string) => {
@@ -201,7 +226,7 @@ const AnnouncementsDisplay = () => {
         {isAdmin && (
           <div className="mt-4">
             <Button 
-              onClick={() => navigate('/admin/dashboard?tab=announcements')}
+              onClick={() => navigate('/admin?tab=announcements')}
               className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90"
             >
               Create Your First Announcement
@@ -270,7 +295,7 @@ const AnnouncementsDisplay = () => {
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigate(`/admin/dashboard?tab=announcements&edit=${announcement.id}`);
+                    navigate(`/admin?tab=announcements&edit=${announcement.id}`);
                   }}
                 >
                   <Edit className="h-3 w-3 mr-2" />
@@ -299,7 +324,7 @@ const AnnouncementsDisplay = () => {
           <Button 
             variant="accent" 
             size="lg"
-            onClick={() => navigate('/admin/dashboard?tab=announcements')}
+            onClick={() => navigate('/admin?tab=announcements')}
           >
             <Plus className="mr-2 h-4 w-4" />
             Add New Announcement

@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Contact from "./pages/Contact";
 import Celebrations from "./pages/Celebrations";
+import Announcements from "./pages/Announcements";
 import AdminDashboard from "./components/AdminDashboard";
 import KindergartenSection from "./pages/KindergartenSection";
 import KindergartenEssay from "./pages/KindergartenEssay";
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/celebrations" element={<Celebrations />} />
+            <Route path="/announcements" element={<Announcements />} />
             <Route path="/academics" element={<Index />} />
             <Route path="/kindergarten" element={<KindergartenSection />} />
             <Route path="/kindergarten-essay" element={<KindergartenEssay />} />
@@ -44,8 +46,8 @@ const App = () => (
             <Route path="/senior-essay" element={<SeniorEssay />} />
             <Route path="/secondary-essay" element={<SecondaryEssay />} />
             <Route path="/higher-secondary-essay" element={<HigherSecondaryEssay />} />
-            <Route path="/admin" element={<AuthenticationPage />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/login" element={<AuthenticationPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
