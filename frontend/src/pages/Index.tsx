@@ -125,12 +125,6 @@ const Index = () => {
             <div className="text-center mt-8 space-y-4">
               <button 
                 onClick={() => navigate('/admin?tab=events')}
-                className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors mr-4"
-              >
-                View All Events
-              </button>
-              <button 
-                onClick={() => navigate('/admin?tab=events')}
                 className="bg-secondary text-white px-6 py-3 rounded-lg hover:bg-secondary/90 transition-colors"
               >
                 Create New Event

@@ -1,12 +1,12 @@
--- Create announcements table
+-- Create announcements table (PostgreSQL)
 CREATE TABLE IF NOT EXISTS announcements (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     message TEXT,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     priority VARCHAR(20) NOT NULL DEFAULT 'NORMAL',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Insert sample announcements
