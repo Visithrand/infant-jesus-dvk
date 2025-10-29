@@ -156,31 +156,54 @@ mvn clean package
 java -jar target/school-website-backend-0.0.1-SNAPSHOT.jar
 ```
 
-## Troubleshooting
+## Azure PostgreSQL (Production) Setup
 
-### Common Issues
+This backend is configured to use Azure PostgreSQL via environment variables. Do not commit secrets.
 
-1. **Database Connection Error**
-   - Ensure MySQL is running
-   - Check database credentials in `application.properties`
-   - Verify database exists
+Required environment variables:
+- `DATABASE_URL` — JDBC URL, e.g. `jdbc:postgresql://<server>.postgres.database.azure.com:5432/<db>?sslmode=require`
+- `DB_USERNAME` — Single Server: `user@server`; Flexible Server: `user`
+- `DB_PASSWORD` — database password
+- `MAIL_USERNAME`, `MAIL_PASSWORD` — SMTP credentials (e.g., Gmail app password)
+- `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_EMAIL` — super admin bootstrap
+- `MAIL_HOST` (default `smtp.gmail.com`), `MAIL_PORT` (default `587`), `MAIL_TO`, `MAIL_DEBUG`
+- `PORT` (default `8080`)
 
-2. **Port Already in Use**
-   - Change port in `application.properties`
-   - Kill process using port 8080
+A template is available at `backend/ENV.EXAMPLE` — copy it to `.env` (or apply values in your deploy environment) and fill in.
 
-3. **File Upload Errors**
-   - Ensure `uploads/` directory has write permissions
-   - Check file size limits in `application.properties`
+### Windows PowerShell (local/prod env test)
+```powershell
+# Set env vars for current session
+$env:DATABASE_URL="jdbc:postgresql://<server>.postgres.database.azure.com:5432/<db>?sslmode=require"
+$env:DB_USERNAME="<user>@<server>"   # Flexible Server: just <user>
+$env:DB_PASSWORD="<password>"
+
+$env:MAIL_USERNAME="<gmail>"
+$env:MAIL_PASSWORD="<app-password>"
+$env:MAIL_TO="<recipient>"
+
+$env:ADMIN_USERNAME="<superadmin>"
+$env:ADMIN_PASSWORD="<superadmin-password>"
+$env:ADMIN_EMAIL="<email>"
+
+# Run Spring Boot
+mvn spring-boot:run
+```
+
+### Azure portal checklist
+- Enable public network access or VNet integration as required
+- Allow your app/server outbound IP in Azure PostgreSQL firewall
+- Keep SSL required (`sslmode=require`)
+- Use the correct username format (Single vs Flexible server)
 
 ## Production Deployment
 
-1. Update `application.properties` for production database
-2. Configure proper JWT secret
-3. Set up proper file storage (consider cloud storage)
+1. Update environment variables on your hosting platform (do not use defaults)
+2. Configure proper JWT secret and rotate credentials regularly
+3. Set up file storage (consider cloud storage)
 4. Configure CORS for production domain
 5. Enable HTTPS
-6. Set up proper logging
+6. Configure logging
 
 ## Support
 
