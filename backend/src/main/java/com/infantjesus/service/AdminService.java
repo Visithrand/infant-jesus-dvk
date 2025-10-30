@@ -142,58 +142,38 @@ public class AdminService {
     }
     
     /**
-     * Authenticate admin login
+     * Authenticate admin login with hardcoded credentials (superadmin / superadmin@123) only
      */
     public Map<String, Object> authenticateAdmin(AdminLoginDto loginDto) {
         Map<String, Object> response = new HashMap<>();
-        
         // Validate input
         if (loginDto.getUsername() == null || loginDto.getUsername().trim().isEmpty()) {
             response.put("success", false);
             response.put("message", "Username is required");
             return response;
         }
-        
         if (loginDto.getPassword() == null || loginDto.getPassword().trim().isEmpty()) {
             response.put("success", false);
             response.put("message", "Password is required");
             return response;
         }
-        
-        // Find admin by username
-        Optional<Admin> adminOptional = adminRepository.findByUsername(loginDto.getUsername().trim());
-        
-        if (adminOptional.isEmpty()) {
+        // Hardcoded admin username and password
+        String HARD_CODED_USERNAME = "superadmin";
+        String HARD_CODED_PASSWORD = "superadmin@123";
+        if (loginDto.getUsername().trim().equals(HARD_CODED_USERNAME)
+            && loginDto.getPassword().equals(HARD_CODED_PASSWORD)) {
+            response.put("success", true);
+            response.put("message", "Login successful");
+            response.put("username", HARD_CODED_USERNAME);
+            response.put("email", "hardcoded@admin.com");
+            response.put("role", "ROLE_SUPER_ADMIN");
+            response.put("adminId", 1);
+            return response;
+        } else {
             response.put("success", false);
             response.put("message", "Invalid credentials");
             return response;
         }
-        
-        Admin admin = adminOptional.get();
-        
-        // Verify password
-        if (!passwordEncoder.matches(loginDto.getPassword(), admin.getPassword())) {
-            response.put("success", false);
-            response.put("message", "Invalid credentials");
-            return response;
-        }
-        
-        // Only allow login if account is ADMIN or SUPER_ADMIN
-        if (admin.getRole() == null || (admin.getRole() != Role.ROLE_ADMIN && admin.getRole() != Role.ROLE_SUPER_ADMIN)) {
-            response.put("success", false);
-            response.put("message", "Unauthorized: admin access only");
-            return response;
-        }
-
-        // Login successful
-        response.put("success", true);
-        response.put("message", "Login successful");
-        response.put("adminId", admin.getId());
-        response.put("username", admin.getUsername());
-        response.put("email", admin.getEmail());
-        response.put("role", admin.getRole().name());
-        
-        return response;
     }
     
     /**
