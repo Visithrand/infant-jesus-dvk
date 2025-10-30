@@ -21,16 +21,12 @@ public class DatabaseTestController {
     private DataSource dataSource;
 
     @GetMapping("/database")
-    public ResponseEntity<Map<String, Object>> testDatabaseConnection() {
+    public ResponseEntity<?> testDatabaseConnection() {
         Map<String, Object> response = new HashMap<>();
-        
         try (Connection connection = dataSource.getConnection()) {
-            // Test basic connection
-            boolean isValid = connection.isValid(5); // 5 second timeout
+            boolean isValid = connection.isValid(5);
             response.put("connection", isValid ? "SUCCESS" : "FAILED");
-            
             if (isValid) {
-                // Get database metadata
                 DatabaseMetaData metaData = connection.getMetaData();
                 response.put("database", metaData.getDatabaseProductName());
                 response.put("version", metaData.getDatabaseProductVersion());
@@ -38,22 +34,10 @@ public class DatabaseTestController {
                 response.put("username", metaData.getUserName());
                 response.put("driver", metaData.getDriverName());
                 response.put("driverVersion", metaData.getDriverVersion());
-                
-                // Test if school-db database exists
-                try {
-                    connection.createStatement().execute("USE `school-db`");
-                    response.put("databaseExists", true);
-                    response.put("databaseName", "school-db");
-                } catch (SQLException e) {
-                    response.put("databaseExists", false);
-                    response.put("databaseError", e.getMessage());
-                }
-                
                 response.put("status", "Database is running and accessible!");
             } else {
                 response.put("status", "Database connection failed!");
             }
-            
         } catch (SQLException e) {
             response.put("connection", "FAILED");
             response.put("status", "Database connection error!");
@@ -61,47 +45,34 @@ public class DatabaseTestController {
             response.put("errorCode", e.getErrorCode());
             response.put("sqlState", e.getSQLState());
         }
-        
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/database/tables")
-    public ResponseEntity<Map<String, Object>> testDatabaseTables() {
+    public ResponseEntity<?> getDatabaseTables() {
         Map<String, Object> response = new HashMap<>();
-        
         try (Connection connection = dataSource.getConnection()) {
-            connection.createStatement().execute("USE `school-db`");
-            
-            // Check if tables exist
             DatabaseMetaData metaData = connection.getMetaData();
-            String[] tableTypes = {"TABLE"};
-            var tables = metaData.getTables("school-db", null, "%", tableTypes);
-            
+            String catalog = connection.getCatalog();
+            String[] types = {"TABLE"};
+            var tables = metaData.getTables(catalog, null, "%", types);
             Map<String, Boolean> tableStatus = new HashMap<>();
-            tableStatus.put("admins", false);
-            tableStatus.put("announcements", false);
-            tableStatus.put("events", false);
-            tableStatus.put("class_schedules", false);
-            tableStatus.put("facilities", false);
-            
+            String[] checkTables = {"admins", "announcements", "events", "class_schedules", "facilities"};
+            for (String table : checkTables) tableStatus.put(table, false);
             while (tables.next()) {
                 String tableName = tables.getString("TABLE_NAME");
                 if (tableStatus.containsKey(tableName)) {
                     tableStatus.put(tableName, true);
                 }
             }
-            
             response.put("connection", "SUCCESS");
-            response.put("database", "school-db");
             response.put("tables", tableStatus);
             response.put("status", "Database tables checked successfully!");
-            
         } catch (SQLException e) {
             response.put("connection", "FAILED");
             response.put("status", "Error checking database tables!");
             response.put("error", e.getMessage());
         }
-        
         return ResponseEntity.ok(response);
     }
 }
