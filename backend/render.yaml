@@ -7,12 +7,12 @@ services:
     envVars:
       - key: PORT
         value: 8080
-      - key: DATABASE_URL
-        value: jdbc:mysql://34.55.213.131:3306/school-db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true&allowMultiQueries=true&cachePrepStmts=true&useServerPrepStmts=true&rewriteBatchedStatements=true&useLocalSessionState=true&useLocalTransactionState=true&cacheResultSetMetadata=true&cacheServerConfiguration=true&elideSetAutoCommits=true&maintainTimeStats=false
-      - key: DB_USERNAME
-        value: root
-      - key: DB_PASSWORD
-        value: Sri@2004
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://dpg-d40uurqli9vc73c03t0g-a.oregon-postgres.render.com:5432/app_db_unkc
+      - key: SPRING_DATASOURCE_USERNAME
+        value: admin
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: rcWOBN1Vc32VQVGfaYMSbTWG99phjU8x
       - key: JWT_SECRET
         generateValue: true
       - key: ADMIN_USERNAME
